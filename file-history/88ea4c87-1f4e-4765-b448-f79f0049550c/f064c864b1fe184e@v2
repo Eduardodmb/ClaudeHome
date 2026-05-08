@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Weekly Performance List View -->
+    <record id="view_mail_activity_weekly_performance_list" model="ir.ui.view">
+        <field name="name">mail.activity.weekly.performance.list</field>
+        <field name="model">mail.activity.weekly.performance</field>
+        <field name="arch" type="xml">
+            <list string="Weekly Performance Dashboard" create="true" edit="true" delete="true">
+                <field name="name"/>
+                <field name="week_start"/>
+                <field name="week_end"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Weekly Performance Form View -->
+    <record id="view_mail_activity_weekly_performance_form" model="ir.ui.view">
+        <field name="name">mail.activity.weekly.performance.form</field>
+        <field name="model">mail.activity.weekly.performance</field>
+        <field name="arch" type="xml">
+            <form string="Weekly Performance Dashboard">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Week Period">
+                            <field name="week_start" required="1"/>
+                            <field name="week_end" readonly="1"/>
+                        </group>
+                        <group string="Filters">
+                            <field name="employee_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Weekly Performance Overview" name="weekly_overview">
+                            <field name="weekly_line_ids" nolabel="1">
+                                <list string="Employee Weekly Performance"
+                                      decoration-danger="week_p1_strikes &gt; 3"
+                                      decoration-warning="week_p1_strikes &gt; 0 and week_p1_strikes &lt;= 3"
+                                      decoration-success="week_progress_percent &gt;= 80">
+                                    <field name="employee_id"/>
+                                    <!-- Prior Week -->
+                                    <field name="prior_week_open_vs_completed"
+                                           string="Prior Week Open/Completed %"
+                                           widget="percentage"
+                                           decoration-danger="prior_week_open_vs_completed &gt; 50"
+                                           decoration-warning="prior_week_open_vs_completed &gt; 20 and prior_week_open_vs_completed &lt;= 50"/>
+                                    <field name="prior_week_p1_strikes" string="Prior Week P1 Strikes"/>
+                                    <!-- Week Accumulated -->
+                                    <field name="week_open_total" string="Week Open"/>
+                                    <field name="week_past_due" string="Past Due" decoration-danger="week_past_due &gt; 0"/>
+                                    <field name="week_missing_date" string="No Date"/>
+                                    <field name="week_completed_total" string="Completed"/>
+                                    <field name="week_progress_percent"
+                                           string="Progress %"
+                                           widget="percentage"
+                                           decoration-success="week_progress_percent &gt;= 80"
+                                           decoration-warning="week_progress_percent &gt;= 50 and week_progress_percent &lt; 80"
+                                           decoration-danger="week_progress_percent &lt; 50"/>
+                                    <field name="week_open_vs_completed"
+                                           string="Week Open/Completed %"
+                                           widget="percentage"/>
+                                    <field name="week_p1_strikes" string="P1 Strikes" decoration-danger="week_p1_strikes &gt; 0"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Daily Breakdown by Employee" name="daily_breakdown">
+                            <field name="weekly_line_ids" nolabel="1" mode="kanban">
+                                <kanban class="o_kanban_mobile">
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div class="oe_kanban_card oe_kanban_global_click">
+                                                <div class="oe_kanban_content">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <strong><field name="employee_id"/></strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mt-2">
+                                                        <div class="col-12">
+                                                            <strong>Prior Week:</strong>
+                                                            Open/Completed: <field name="prior_week_open_vs_completed"/>% |
+                                                            P1 Strikes: <field name="prior_week_p1_strikes"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mt-2">
+                                                        <div class="col-12">
+                                                            <strong>Week Progress:</strong>
+                                                            <field name="week_progress_percent"/>%
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mt-3">
+                                                        <div class="col-12">
+                                                            <strong>Daily Breakdown:</strong>
+                                                            <field name="daily_line_ids" nolabel="1">
+                                                                <tree string="Daily Metrics"
+                                                                      decoration-danger="p1_strikes_day &gt; 0"
+                                                                      decoration-warning="past_due_day &gt; 0">
+                                                                    <field name="day_name"/>
+                                                                    <field name="day_date"/>
+                                                                    <field name="open_total_day" string="Open"/>
+                                                                    <field name="past_due_day" string="Past Due"/>
+                                                                    <field name="missing_date_day" string="No Date"/>
+                                                                    <field name="completed_today" string="Completed"/>
+                                                                    <field name="open_vs_completed" string="Open/Completed %" widget="percentage"/>
+                                                                    <field name="new_p1_items" string="New P1"/>
+                                                                    <field name="p1_strikes_day" string="P1 Strikes"/>
+                                                                </tree>
+                                                            </field>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Employee Weekly Performance Line Form View (for detailed view) -->
+    <record id="view_mail_activity_weekly_performance_line_form" model="ir.ui.view">
+        <field name="name">mail.activity.weekly.performance.line.form</field>
+        <field name="model">mail.activity.weekly.performance.line</field>
+        <field name="arch" type="xml">
+            <form string="Employee Weekly Performance">
+                <sheet>
+                    <group>
+                        <group string="Employee">
+                            <field name="employee_id"/>
+                        </group>
+                    </group>
+                    <group string="Prior Week Summary">
+                        <group>
+                            <field name="prior_week_open_vs_completed" widget="percentage"/>
+                        </group>
+                        <group>
+                            <field name="prior_week_p1_strikes"/>
+                        </group>
+                    </group>
+                    <group string="Week Accumulated Metrics">
+                        <group>
+                            <field name="week_open_total"/>
+                            <field name="week_past_due"/>
+                            <field name="week_missing_date"/>
+                            <field name="week_completed_total"/>
+                        </group>
+                        <group>
+                            <field name="week_progress_percent" widget="percentage"/>
+                            <field name="week_open_vs_completed" widget="percentage"/>
+                            <field name="week_p1_strikes"/>
+                        </group>
+                    </group>
+                    <group string="Daily Breakdown">
+                        <field name="daily_line_ids" nolabel="1">
+                            <tree string="Daily Performance"
+                                  decoration-danger="p1_strikes_day &gt; 0"
+                                  decoration-warning="past_due_day &gt; 0"
+                                  decoration-success="completed_today &gt; 0 and p1_strikes_day == 0">
+                                <field name="day_name"/>
+                                <field name="day_date"/>
+                                <field name="open_total_day"/>
+                                <field name="past_due_day"/>
+                                <field name="missing_date_day"/>
+                                <field name="completed_today"/>
+                                <field name="open_vs_completed" widget="percentage"/>
+                                <field name="new_p1_items"/>
+                                <field name="p1_strikes_day"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Pivot View for Weekly Performance Analysis -->
+    <record id="view_mail_activity_weekly_performance_line_pivot" model="ir.ui.view">
+        <field name="name">mail.activity.weekly.performance.line.pivot</field>
+        <field name="model">mail.activity.weekly.performance.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Weekly Performance Analysis">
+                <field name="employee_id" type="row"/>
+                <field name="week_completed_total" type="measure"/>
+                <field name="week_open_total" type="measure"/>
+                <field name="week_progress_percent" type="measure"/>
+                <field name="week_p1_strikes" type="measure"/>
+                <field name="prior_week_p1_strikes" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph View for Weekly Performance -->
+    <record id="view_mail_activity_weekly_performance_line_graph" model="ir.ui.view">
+        <field name="name">mail.activity.weekly.performance.line.graph</field>
+        <field name="model">mail.activity.weekly.performance.line</field>
+        <field name="arch" type="xml">
+            <graph string="Weekly Performance Comparison" type="bar">
+                <field name="employee_id"/>
+                <field name="week_completed_total" type="measure"/>
+                <field name="week_progress_percent" type="measure"/>
+                <field name="week_p1_strikes" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Daily Performance Pivot View -->
+    <record id="view_mail_activity_daily_performance_pivot" model="ir.ui.view">
+        <field name="name">mail.activity.daily.performance.pivot</field>
+        <field name="model">mail.activity.daily.performance</field>
+        <field name="arch" type="xml">
+            <pivot string="Daily Performance Analysis">
+                <field name="day_name" type="row"/>
+                <field name="completed_today" type="measure"/>
+                <field name="open_total_day" type="measure"/>
+                <field name="p1_strikes_day" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Daily Performance Graph View -->
+    <record id="view_mail_activity_daily_performance_graph" model="ir.ui.view">
+        <field name="name">mail.activity.daily.performance.graph</field>
+        <field name="model">mail.activity.daily.performance</field>
+        <field name="arch" type="xml">
+            <graph string="Daily Performance Trends" type="line">
+                <field name="day_date" interval="day"/>
+                <field name="completed_today" type="measure"/>
+                <field name="open_total_day" type="measure"/>
+                <field name="p1_strikes_day" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_mail_activity_weekly_performance" model="ir.actions.act_window">
+        <field name="name">Weekly Performance Dashboard</field>
+        <field name="res_model">mail.activity.weekly.performance</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Weekly Performance Dashboard
+            </p>
+            <p>
+                Track employee activity performance with daily breakdowns, prior week comparison,
+                and accumulated week metrics including P1 strikes and completion rates.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_mail_activity_weekly_performance_lines" model="ir.actions.act_window">
+        <field name="name">Weekly Performance Analysis</field>
+        <field name="res_model">mail.activity.weekly.performance.line</field>
+        <field name="view_mode">pivot,graph,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No weekly performance data available
+            </p>
+            <p>
+                Create a Weekly Performance Dashboard first to analyze employee performance.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_mail_activity_daily_performance" model="ir.actions.act_window">
+        <field name="name">Daily Performance Analysis</field>
+        <field name="res_model">mail.activity.daily.performance</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No daily performance data available
+            </p>
+            <p>
+                Create a Weekly Performance Dashboard first to see daily breakdowns.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_mail_activity_weekly_performance"
+              name="Weekly Performance Dashboard"
+              parent="customization_left_menu.custom_menu_activity_root"
+              action="action_mail_activity_weekly_performance"
+              sequence="104"/>
+
+    <menuitem id="menu_mail_activity_weekly_performance_analysis"
+              name="Weekly Performance Analysis"
+              parent="customization_left_menu.custom_menu_activity_root"
+              action="action_mail_activity_weekly_performance_lines"
+              sequence="105"/>
+
+    <menuitem id="menu_mail_activity_daily_performance"
+              name="Daily Performance Analysis"
+              parent="customization_left_menu.custom_menu_activity_root"
+              action="action_mail_activity_daily_performance"
+              sequence="106"/>
+
+</odoo>

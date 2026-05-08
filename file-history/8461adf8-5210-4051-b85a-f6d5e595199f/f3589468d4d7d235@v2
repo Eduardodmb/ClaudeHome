@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="crm_case_kanban_view_leads_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.view.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <!-- Per-column aggregate: expected revenue sum (standard CRM kanban progressbar). -->
+            <xpath expr="//kanban//progressbar" position="attributes">
+                <attribute name="sum_field">expected_revenue</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="next_duedate" widget="datetime" options="{'show_time': false, 'show_seconds': false}"/>
+                <!-- <field name="has_missed_due_milestones"/> -->
+                <!-- <field name="missed_due_dates_label"/> -->
+                <!-- <field name="days_in_current_stage"/> -->
+                <!-- <field name="next_due_within_3_days"/> -->
+                <field name="x_post_proposal_lock_active"/>
+                <field name="street"/>
+                <field name="street2"/>
+                <field name="city"/>
+                <field name="state_id"/>
+                <field name="zip"/>
+                <field name="country_id"/>
+
+            </xpath>
+
+            <!-- After tag_ids: visible above lead_properties (properties widget can crowd the card) -->
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <div class="o_kanban_record_subtitle mt-2">
+
+                    <div t-if="record.x_post_proposal_lock_active.raw_value" class="mb-1">
+                        <span class="badge rounded-pill text-bg-secondary" style="font-size: 10px;">Read Only</span>
+                    </div>
+
+                    <!-- <div class="mb-1">
+                        <span class="text-muted">Days in stage: </span>
+                        <span class="fw-bold"><t t-esc="record.days_in_current_stage.raw_value"/></span>
+                    </div> -->
+
+                    <!-- <div t-if="record.missed_due_dates_label.raw_value" class="mb-1">
+                        <span class="badge rounded-pill text-bg-danger" style="font-size: 10px;">
+                            Missed: <t t-esc="record.missed_due_dates_label.value"/>
+                        </span>
+                    </div> -->
+
+                    <!-- <div t-if="record.next_due_within_3_days.raw_value" class="mb-1">
+                        <span class="badge rounded-pill text-bg-danger" style="font-size: 10px;">
+                            Due date coming up soon
+                        </span>
+                    </div> -->
+
+                    <div t-if="record.next_duedate.raw_value" class="mb-1">
+                        <span class="fw-bold text-muted">Next Due: </span>
+                        <field name="next_duedate" widget="datetime" options="{'show_time': false, 'show_seconds': false}"/>
+                    </div>
+
+                    <div class="text-muted">
+                        <i class="fa fa-map-marker me-1" title="Location"/>
+                        <t t-if="record.city.value">
+                            <t t-esc="record.city.value"/>,
+                        </t>
+                        <t t-if="record.state_id.value">
+                            <t t-esc="record.state_id.value"/>
+                        </t>
+                        <t t-if="record.zip.value">
+                            <t t-esc="record.zip.value"/>
+                        </t>
+                        <div t-if="record.country_id.value" class="ms-3">
+                            <t t-esc="record.country_id.value"/>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

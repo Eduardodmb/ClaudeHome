@@ -1,0 +1,161 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Framework;
+use App\Models\FrameworkApp;
+use App\Models\Subcontrol;
+use App\Services\FrameworkImportService;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+
+class FrameworkController extends Controller
+{
+    public function index()
+    {
+        $frameworks = Framework::withCount(['apps', 'assessments'])
+            ->latest()
+            ->paginate(20);
+
+        return view('frameworks.index', compact('frameworks'));
+    }
+
+    public function create()
+    {
+        return view('frameworks.create');
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'version'     => 'nullable|string|max:50',
+            'status'      => 'required|in:active,draft,archived',
+        ]);
+
+        $framework = Framework::create($data);
+
+        return redirect()->route('frameworks.show', $framework)
+            ->with('success', "Framework '{$framework->name}' created.");
+    }
+
+    public function show(Framework $framework)
+    {
+        $framework->load(['apps.parentSubcontrols.subcontrols', 'apps.subcontrols']);
+        $stats = [
+            'apps'        => $framework->apps->count(),
+            'subcontrols' => $framework->subcontrols()->count(),
+            'assessments' => $framework->assessments()->count(),
+        ];
+        return view('frameworks.show', compact('framework', 'stats'));
+    }
+
+    public function edit(Framework $framework)
+    {
+        return view('frameworks.edit', compact('framework'));
+    }
+
+    public function update(Request $request, Framework $framework)
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'version'     => 'nullable|string|max:50',
+            'status'      => 'required|in:active,draft,archived',
+        ]);
+
+        $framework->update($data);
+
+        return redirect()->route('frameworks.show', $framework)
+            ->with('success', 'Framework updated.');
+    }
+
+    public function destroy(Framework $framework)
+    {
+        $framework->delete();
+        return redirect()->route('frameworks.index')
+            ->with('success', "Framework deleted.");
+    }
+
+    public function showImport(Framework $framework)
+    {
+        return view('frameworks.import', compact('framework'));
+    }
+
+    public function processImport(Request $request, Framework $framework)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        try {
+            $service = new FrameworkImportService($framework);
+            $count   = $service->import($request->file('file'));
+
+            return redirect()->route('frameworks.show', $framework)
+                ->with('success', "Imported {$count} subcontrols successfully.");
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Import failed: ' . $e->getMessage()]);
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        $headers = [
+            'Framework List', 'App Name', 'App Description', 'Parent Subcontrol Name',
+            'Subcontrol Name', 'Overview Text', 'Action Item Text', 'Related Documents',
+            'Additional Guidance', 'App Icon', 'Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5',
+        ];
+
+        $filename = 'framework-import-template.csv';
+        $callback = function () use ($headers) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, $headers);
+            // Example row
+            fputcsv($handle, [
+                'CMMC', 'Access Control (AC.1.001)', 'Manage access to systems and data.',
+                'Level 1', 'Limit access to authorized users (1.1)',
+                'Overview of access control requirements.', 'Action items to implement.',
+                'NIST SP 800-171 Section 3.1', 'Additional guidance here.',
+                'access-control.png', 'Level 1', '', '', '', '',
+            ]);
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    public function clone(Framework $framework)
+    {
+        $clone = $framework->replicate();
+        $clone->name   = $framework->name . ' (Copy)';
+        $clone->status = 'draft';
+        $clone->save();
+
+        foreach ($framework->apps as $app) {
+            $newApp = $app->replicate();
+            $newApp->framework_id = $clone->id;
+            $newApp->save();
+
+            foreach ($app->parentSubcontrols as $parent) {
+                $newParent = $parent->replicate();
+                $newParent->framework_app_id = $newApp->id;
+                $newParent->save();
+
+                foreach ($parent->subcontrols as $sub) {
+                    $newSub = $sub->replicate();
+                    $newSub->framework_app_id    = $newApp->id;
+                    $newSub->parent_subcontrol_id = $newParent->id;
+                    $newSub->save();
+                }
+            }
+        }
+
+        return redirect()->route('frameworks.show', $clone)
+            ->with('success', 'Framework cloned successfully.');
+    }
+}

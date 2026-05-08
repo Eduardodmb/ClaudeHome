@@ -1,0 +1,225 @@
+<x-layouts.app title="{{ $assessment->name }}">
+    <div class="space-y-4" x-data="assessmentFindings()">
+
+        {{-- Header --}}
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <h1 class="page-title">{{ $assessment->name }}</h1>
+                <p class="page-subtitle">{{ $assessment->framework->name }} &mdash; Assessment Findings</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-900">{{ number_format($assessment->completion_percentage, 0) }}%</div>
+                    <div class="text-xs text-gray-500">Complete</div>
+                </div>
+                <a href="{{ route('assessments.export-xlsx', $assessment) }}" class="btn-outline btn-sm">
+                    @include('components.icon', ['name' => 'download']) Export XLSX
+                </a>
+                <a href="{{ route('assessments.ssp', $assessment) }}" class="btn-outline btn-sm">
+                    @include('components.icon', ['name' => 'document']) SSP
+                </a>
+            </div>
+        </div>
+
+        {{-- Progress bar --}}
+        <div class="card p-4">
+            <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                <span>Overall Progress</span>
+                <span>{{ $assessment->findings->whereNotNull('status')->count() }} / {{ $assessment->findings->count() }} controls reviewed</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-blue-600 h-3 rounded-full transition-all duration-500"
+                     style="width: {{ $assessment->completion_percentage }}%"></div>
+            </div>
+            <div class="flex items-center gap-4 mt-2 text-xs">
+                @php
+                    $counts = $assessment->findings->countBy('status');
+                @endphp
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span>Met: {{ $counts['met'] ?? 0 }}</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-500"></span>Partial: {{ $counts['partially_met'] ?? 0 }}</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span>Not Met: {{ $counts['not_met'] ?? 0 }}</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-gray-400"></span>N/A: {{ $counts['not_applicable'] ?? 0 }}</span>
+            </div>
+        </div>
+
+        {{-- Controls by app --}}
+        @foreach($assessment->framework->apps as $app)
+            @php
+                $appFindings = $assessment->findings->filter(fn($f) => $f->subcontrol?->frameworkApp?->id === $app->id);
+                $appDone = $appFindings->whereNotNull('status')->count();
+                $appTotal = $appFindings->count();
+            @endphp
+
+            <div class="card" x-data="{ open: true }">
+                <div class="card-header cursor-pointer select-none" @click="open = !open">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-0' : '-rotate-90'"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                            <h2 class="text-sm font-semibold text-gray-900">{{ $app->name }}</h2>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-gray-500">{{ $appDone }} of {{ $appTotal }}</span>
+                            <div class="w-20 bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-blue-600 h-1.5 rounded-full" style="width: {{ $appTotal > 0 ? ($appDone/$appTotal*100) : 0 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="open" x-transition>
+                    <div class="divide-y divide-gray-100">
+                        @foreach($app->subcontrols as $subcontrol)
+                            @php $finding = $findingsBySubcontrol[$subcontrol->id] ?? null; @endphp
+                            <div class="p-4" x-data="findingPanel({{ $finding?->id ?? 'null' }}, {{ $assessment->id }}, {{ $subcontrol->id }}, '{{ $finding?->status ?? '' }}')">
+
+                                <div class="flex items-start justify-between gap-4">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900">{{ $subcontrol->name }}</p>
+                                        @if($subcontrol->overview)
+                                            <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ strip_tags($subcontrol->overview) }}</p>
+                                        @endif
+                                    </div>
+
+                                    {{-- Status selector --}}
+                                    <div class="shrink-0 flex items-center gap-2">
+                                        @foreach(['met' => ['Met','bg-green-100 text-green-800 border-green-300'], 'partially_met' => ['Partial','bg-yellow-100 text-yellow-800 border-yellow-300'], 'not_met' => ['Not Met','bg-red-100 text-red-800 border-red-300'], 'not_applicable' => ['N/A','bg-gray-100 text-gray-600 border-gray-300']] as $statusVal => $statusInfo)
+                                        <button
+                                            @click="setStatus('{{ $statusVal }}')"
+                                            :class="currentStatus === '{{ $statusVal }}' ? '{{ $statusInfo[1] }} border' : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-400'"
+                                            class="px-2.5 py-1 rounded-full text-xs font-medium transition-colors">
+                                            {{ $statusInfo[0] }}
+                                        </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                {{-- Expandable detail --}}
+                                <div x-show="expanded" x-transition class="mt-3 border-t border-gray-100 pt-3">
+                                    <div class="grid grid-cols-1 gap-3">
+                                        <div>
+                                            <label class="form-label text-xs">Implementation Details</label>
+                                            <textarea x-model="details" rows="3" class="form-input text-sm"
+                                                      placeholder="Describe how this control is implemented..."></textarea>
+                                        </div>
+                                        <div>
+                                            <label class="form-label text-xs">Notes</label>
+                                            <textarea x-model="notes" rows="2" class="form-input text-sm"
+                                                      placeholder="Internal notes..."></textarea>
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <label class="form-label text-xs mb-0">Recommendations</label>
+                                                <button @click="generateAI()" :disabled="aiLoading"
+                                                        class="btn-ghost btn-sm text-purple-600 hover:bg-purple-50">
+                                                    @include('components.icon', ['name' => 'ai', 'class' => 'w-3.5 h-3.5'])
+                                                    <span x-text="aiLoading ? 'Generating...' : 'AI Generate'"></span>
+                                                </button>
+                                            </div>
+                                            <textarea x-model="recommendations" rows="3" class="form-input text-sm"
+                                                      placeholder="Recommendations..."></textarea>
+                                            <p x-show="aiTimestamp" class="text-xs text-purple-500 mt-1">
+                                                Auto-generated with AI — <span x-text="aiTimestamp"></span>
+                                            </p>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <button @click="save()" :disabled="saving"
+                                                    class="btn-primary btn-sm">
+                                                <span x-text="saving ? 'Saving...' : 'Save'"></span>
+                                            </button>
+                                            <p x-show="saved" class="text-xs text-green-600">Saved ✓</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button @click="expanded = !expanded" class="mt-2 text-xs text-blue-600 hover:underline">
+                                    <span x-text="expanded ? 'Collapse' : 'Expand details'"></span>
+                                </button>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endforeach
+
+    </div>
+
+    @push('scripts')
+    <script>
+    function assessmentFindings() {
+        return {};
+    }
+
+    function findingPanel(findingId, assessmentId, subcontrolId, currentStatus) {
+        return {
+            findingId,
+            assessmentId,
+            subcontrolId,
+            currentStatus,
+            expanded: false,
+            saving: false,
+            saved: false,
+            aiLoading: false,
+            aiTimestamp: '',
+            details: '',
+            notes: '',
+            recommendations: '',
+
+            async setStatus(status) {
+                this.currentStatus = status;
+                this.expanded = true;
+                await this.save();
+            },
+
+            async save() {
+                this.saving = true;
+                this.saved = false;
+                try {
+                    const res = await fetch(`/assessments/${this.assessmentId}/findings`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            subcontrol_id: this.subcontrolId,
+                            status: this.currentStatus,
+                            implementation_details: this.details,
+                            notes: this.notes,
+                            recommendations: this.recommendations,
+                        }),
+                    });
+                    if (res.ok) { this.saved = true; setTimeout(() => this.saved = false, 2000); }
+                } finally { this.saving = false; }
+            },
+
+            async generateAI() {
+                this.aiLoading = true;
+                try {
+                    const res = await fetch(`/assessments/${this.assessmentId}/ai-recommendations`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ subcontrol_id: this.subcontrolId }),
+                    });
+                    const data = await res.json();
+                    if (data.recommendation) {
+                        this.recommendations = data.recommendation;
+                        this.aiTimestamp = new Date(data.generated_at).toLocaleString();
+                    } else {
+                        alert(data.error || 'AI generation failed.');
+                    }
+                } catch(e) { alert('Error generating recommendations.'); }
+                finally { this.aiLoading = false; }
+            },
+        };
+    }
+    </script>
+    @endpush
+</x-layouts.app>

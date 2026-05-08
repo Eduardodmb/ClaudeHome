@@ -1,0 +1,35 @@
+
+{
+    "name": "Ticket System Module",
+    "version": "18.0.1.1.7",
+    "license": "AGPL-3",
+    "author": "Prayas Thapa <itengineer@acglp.com>, Omar Morales <omorales@acglp.com>",
+    "category": "Activity",
+    "summary": "Uses existing activity functionality in Odoo as a ticket system",
+    "description": "Departmental tickets on mail.activity: persistence, growth plans, Microsoft Graph mail, kanban patch.",
+    "depends": ["base", "mail", "hr", "activity_modification", "document_library", "hr_employee_certifications", "hr_employee_growth"],
+    "external_dependencies": {
+        "python": ["requests"],
+    },
+    'assets': {
+        'web.assets_backend': [
+            'ticket_system/static/src/js/activity_kanban_patch.js',
+        ],
+    },
+    "data": [
+             "security/department_ticket_groups.xml",
+             "security/ir.model.access.csv",
+             "views/ticket_view.xml",
+             "views/ticket_wizard_view.xml",
+             "views/ticket_update_view.xml",
+             "views/activity_plan_template.xml",
+             "views/activity_bulk_edit_view.xml",
+             "views/hr_department_anchor_ticket_columns.xml",
+             "views/hr_department_project.xml",
+             "views/hr_employee.xml",
+             "views/hr_employee_growth_views.xml",
+             "views/activity_view_tree.xml",
+             "views/activity_view_kanban.xml",
+            ],
+    "installable": True,
+}

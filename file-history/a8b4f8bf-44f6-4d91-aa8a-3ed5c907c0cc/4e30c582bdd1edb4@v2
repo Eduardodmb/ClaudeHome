@@ -1,0 +1,201 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\QuestionnaireTemplate;
+use Illuminate\Database\Seeder;
+
+class QuestionnaireTemplateSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $templates = [
+            [
+                'name'        => 'CCPA Readiness Template',
+                'description' => 'Assess vendor readiness for California Consumer Privacy Act compliance.',
+                'status'      => 'active',
+                'structure'   => $this->ccpaStructure(),
+            ],
+            [
+                'name'        => 'CMMC Security Questionnaire',
+                'description' => 'Evaluate vendor alignment with CMMC cybersecurity practices.',
+                'status'      => 'active',
+                'structure'   => $this->cmmcStructure(),
+            ],
+            [
+                'name'        => 'Third Party Risk Management Basic',
+                'description' => 'Basic vendor risk assessment covering fundamental security controls.',
+                'status'      => 'active',
+                'structure'   => $this->tprmBasicStructure(),
+            ],
+            [
+                'name'        => 'Third Party Risk Management Expanded',
+                'description' => 'Expanded vendor risk assessment with detailed security domains.',
+                'status'      => 'active',
+                'structure'   => $this->tprmExpandedStructure(),
+            ],
+            [
+                'name'        => 'Third Party Risk Management Comprehensive',
+                'description' => 'Comprehensive vendor due diligence covering all risk domains.',
+                'status'      => 'active',
+                'structure'   => $this->tprmComprehensiveStructure(),
+            ],
+        ];
+
+        foreach ($templates as $template) {
+            QuestionnaireTemplate::firstOrCreate(
+                ['name' => $template['name']],
+                array_merge($template, ['scoring_rules' => ['yes' => 1, 'no' => 0, 'partial' => 0.5]])
+            );
+        }
+    }
+
+    private function ccpaStructure(): array
+    {
+        return [
+            [
+                'group'     => 'Data Inventory & Mapping',
+                'questions' => [
+                    ['id' => 'ccpa_1', 'question' => 'Do you maintain an inventory of personal information you collect, use, disclose, or sell?', 'type' => 'yes_no', 'required' => true, 'request_evidence' => true],
+                    ['id' => 'ccpa_2', 'question' => 'Describe your process for data mapping and inventory updates.', 'type' => 'textarea', 'required' => false],
+                ],
+            ],
+            [
+                'group'     => 'Consumer Rights',
+                'questions' => [
+                    ['id' => 'ccpa_3', 'question' => 'Do you have a process to respond to consumer requests to know, delete, or opt-out?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'ccpa_4', 'question' => 'What is your response time SLA for consumer rights requests?', 'type' => 'text', 'required' => false],
+                ],
+            ],
+            [
+                'group'     => 'Security Practices',
+                'questions' => [
+                    ['id' => 'ccpa_5', 'question' => 'Do you implement reasonable security measures to protect personal information?', 'type' => 'yes_no', 'required' => true, 'request_evidence' => true],
+                ],
+            ],
+        ];
+    }
+
+    private function cmmcStructure(): array
+    {
+        return [
+            [
+                'group'     => 'Access Control',
+                'questions' => [
+                    ['id' => 'cmmc_ac_1', 'question' => 'Do you limit system access to authorized users and processes?', 'type' => 'yes_no', 'required' => true, 'request_evidence' => true],
+                    ['id' => 'cmmc_ac_2', 'question' => 'Do you use multi-factor authentication for privileged accounts?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'cmmc_ac_3', 'question' => 'How do you manage privileged access?', 'type' => 'textarea', 'required' => false],
+                ],
+            ],
+            [
+                'group'     => 'Incident Response',
+                'questions' => [
+                    ['id' => 'cmmc_ir_1', 'question' => 'Do you have a documented incident response plan?', 'type' => 'yes_no', 'required' => true, 'request_evidence' => true],
+                    ['id' => 'cmmc_ir_2', 'question' => 'How often do you test your incident response plan?', 'type' => 'dropdown', 'options' => ['Annually', 'Semi-Annually', 'Quarterly', 'Never'], 'required' => true],
+                ],
+            ],
+            [
+                'group'     => 'Configuration Management',
+                'questions' => [
+                    ['id' => 'cmmc_cm_1', 'question' => 'Do you maintain baseline configurations for your systems?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'cmmc_cm_2', 'question' => 'Upload your configuration management policy.', 'type' => 'file_upload', 'required' => false],
+                ],
+            ],
+        ];
+    }
+
+    private function tprmBasicStructure(): array
+    {
+        return [
+            [
+                'group'     => 'General Information',
+                'questions' => [
+                    ['id' => 'tprm_b_1', 'question' => 'Do you have a documented information security policy?', 'type' => 'yes_no', 'required' => true, 'request_evidence' => true],
+                    ['id' => 'tprm_b_2', 'question' => 'Do you conduct annual security awareness training?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'tprm_b_3', 'question' => 'Do you perform background checks on employees with access to sensitive data?', 'type' => 'yes_no', 'required' => true],
+                ],
+            ],
+            [
+                'group'     => 'Data Protection',
+                'questions' => [
+                    ['id' => 'tprm_b_4', 'question' => 'Is data encrypted at rest and in transit?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'tprm_b_5', 'question' => 'Do you have a data breach notification process?', 'type' => 'yes_no', 'required' => true],
+                ],
+            ],
+        ];
+    }
+
+    private function tprmExpandedStructure(): array
+    {
+        return [
+            [
+                'group'     => 'Governance',
+                'questions' => [
+                    ['id' => 'tprm_e_1', 'question' => 'Do you have a dedicated CISO or security leadership?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'tprm_e_2', 'question' => 'Do you have a risk management program?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'tprm_e_3', 'question' => 'Do you hold any security certifications (SOC 2, ISO 27001, etc.)?', 'type' => 'yes_no', 'required' => true, 'request_evidence' => true],
+                ],
+            ],
+            [
+                'group'     => 'Vulnerability Management',
+                'questions' => [
+                    ['id' => 'tprm_e_4', 'question' => 'How frequently do you conduct vulnerability scans?', 'type' => 'dropdown', 'options' => ['Weekly', 'Monthly', 'Quarterly', 'Annually', 'Never'], 'required' => true],
+                    ['id' => 'tprm_e_5', 'question' => 'Do you perform penetration testing?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'tprm_e_6', 'question' => 'What is your average time to remediate critical vulnerabilities?', 'type' => 'text', 'required' => false],
+                ],
+            ],
+            [
+                'group'     => 'Business Continuity',
+                'questions' => [
+                    ['id' => 'tprm_e_7', 'question' => 'Do you have a Business Continuity Plan (BCP)?', 'type' => 'yes_no', 'required' => true, 'request_evidence' => true],
+                    ['id' => 'tprm_e_8', 'question' => 'What is your RTO/RPO for critical systems?', 'type' => 'textarea', 'required' => false],
+                ],
+            ],
+        ];
+    }
+
+    private function tprmComprehensiveStructure(): array
+    {
+        return [
+            [
+                'group'     => 'Governance & Compliance',
+                'questions' => [
+                    ['id' => 'tprm_c_1', 'question' => 'Do you have a formal information security governance program?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'tprm_c_2', 'question' => 'List all compliance frameworks or certifications you maintain.', 'type' => 'textarea', 'required' => true, 'request_evidence' => true],
+                    ['id' => 'tprm_c_3', 'question' => 'Do you conduct annual security audits by a third party?', 'type' => 'yes_no', 'required' => true],
+                ],
+            ],
+            [
+                'group'     => 'Access & Identity Management',
+                'questions' => [
+                    ['id' => 'tprm_c_4', 'question' => 'Do you use an Identity Provider (IdP) for access management?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'tprm_c_5', 'question' => 'Is MFA enforced for all users accessing production systems?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'tprm_c_6', 'question' => 'How do you handle access revocation when an employee leaves?', 'type' => 'textarea', 'required' => true],
+                ],
+            ],
+            [
+                'group'     => 'Data Security',
+                'questions' => [
+                    ['id' => 'tprm_c_7', 'question' => 'What data classification scheme do you use?', 'type' => 'textarea', 'required' => true],
+                    ['id' => 'tprm_c_8', 'question' => 'Is all sensitive data encrypted at rest using AES-256 or equivalent?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'tprm_c_9', 'question' => 'Describe your data retention and destruction policy.', 'type' => 'textarea', 'required' => true, 'request_evidence' => true],
+                ],
+            ],
+            [
+                'group'     => 'Incident Management',
+                'questions' => [
+                    ['id' => 'tprm_c_10', 'question' => 'Provide your incident response policy.', 'type' => 'file_upload', 'required' => true],
+                    ['id' => 'tprm_c_11', 'question' => 'Have you experienced a data breach in the past 3 years?', 'type' => 'yes_no', 'required' => true,
+                        'follow_up' => ['trigger' => 'yes', 'question' => 'Describe the breach and remediation steps taken.', 'type' => 'textarea']],
+                ],
+            ],
+            [
+                'group'     => 'Third-Party Management',
+                'questions' => [
+                    ['id' => 'tprm_c_12', 'question' => 'Do you assess the security posture of your own third-party vendors?', 'type' => 'yes_no', 'required' => true],
+                    ['id' => 'tprm_c_13', 'question' => 'Do you include security requirements in vendor contracts?', 'type' => 'yes_no', 'required' => true],
+                ],
+            ],
+        ];
+    }
+}

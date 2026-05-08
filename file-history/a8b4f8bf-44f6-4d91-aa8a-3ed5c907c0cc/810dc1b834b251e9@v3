@@ -1,0 +1,58 @@
+FROM php:8.2-fpm
+
+# System dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    zip \
+    unzip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+        pdo_mysql \
+        mbstring \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        zip \
+        xml
+
+# Composer
+COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
+
+# Node.js (for asset compilation)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /var/www
+
+# Create storage/cache directories with correct permissions
+RUN mkdir -p storage/framework/{sessions,views,cache} \
+             storage/logs \
+             bootstrap/cache \
+    && chown -R www-data:www-data /var/www
+
+COPY docker/app/fpm-pool.conf /usr/local/etc/php-fpm.d/www.conf
+COPY docker/app/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+USER root
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+USER www-data
+
+EXPOSE 9000
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

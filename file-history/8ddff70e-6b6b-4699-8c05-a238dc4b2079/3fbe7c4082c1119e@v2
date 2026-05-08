@@ -1,0 +1,61 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\BelongsToCustomer;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
+class Assessment extends Model
+{
+    use BelongsToCustomer, SoftDeletes, LogsActivity;
+
+    protected $fillable = [
+        'customer_id', 'name', 'description', 'framework_id', 'status',
+        'start_date', 'end_date', 'completion_percentage', 'created_by',
+    ];
+
+    protected $casts = [
+        'start_date'            => 'date',
+        'end_date'              => 'date',
+        'completion_percentage' => 'decimal:2',
+    ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly(['name', 'status', 'completion_percentage'])->logOnlyDirty();
+    }
+
+    public function framework()
+    {
+        return $this->belongsTo(Framework::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function assessors()
+    {
+        return $this->belongsToMany(User::class, 'assessment_users');
+    }
+
+    public function findings()
+    {
+        return $this->hasMany(AssessmentFinding::class);
+    }
+
+    public function recalculateCompletion(): void
+    {
+        $total = $this->findings()->count();
+        if ($total === 0) {
+            $this->update(['completion_percentage' => 0]);
+            return;
+        }
+        $completed = $this->findings()->whereNotNull('status')->count();
+        $this->update(['completion_percentage' => round(($completed / $total) * 100, 2)]);
+    }
+}

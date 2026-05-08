@@ -1,0 +1,238 @@
+# Project Accounting View Module
+
+## Overview
+Provides a dedicated read-only view of project information specifically designed for the accounting department. This module allows accounting staff to access essential project data without the ability to modify it.
+
+## Features
+
+### 1. Read-Only Access
+- All fields are read-only to prevent accidental modifications
+- No create, edit, or delete permissions
+- Export to Excel enabled for reporting purposes
+
+### 2. Comprehensive Project Information Display
+
+#### List View
+- **Basic Information**: Project name, project number (project_no_id)
+- **Customer Details**: Partner/customer information
+- **Project Status**: Stage and active status
+- **Dates**: Start date and deadline
+- **Financial Metrics**:
+  - BOM Summary Total
+  - Total Change Orders
+  - Purchase Orders Total
+  - Project Balance (with color coding: green for positive, red for negative)
+- **Hours Tracking**: Allocated, spent, and balance hours
+- **Assignment**: Project manager/user
+
+#### Form View with Tabs
+1. **Financial Information**
+   - Revenue section: BOM total, internal/external change orders
+   - Costs section: Purchase orders total
+   - Balance: Overall project financial balance
+
+2. **BOM Details**
+   - Items & Materials (budgeted and current expenses)
+   - Labor (budgeted and current expenses)
+   - Subcontractor (budgeted and current expenses)
+   - Other Expenses: Travel, miscellaneous, reserve (budgeted and current)
+
+3. **Hours Tracking**
+   - Allocated hours
+   - Spent hours (timesheets and daily reports)
+   - Hours balance
+
+4. **Additional Information**
+   - Project description and notes
+
+### 3. Security Features
+- **Dedicated Security Group**: `Accounting / Project Viewer`
+- **Read-Only Permissions**: Can only view, not modify
+- **Record Rules**: Access to all projects with read-only restrictions
+- **Model Access**: Limited to necessary models (projects, tasks, partners, users, stages)
+
+### 4. Menu Structure
+Located under: **Project → Projects (Accounting)**
+
+## Installation
+
+### Prerequisites
+- Odoo 18.0
+- Required modules:
+  - `project` (base project module)
+  - `project_custom_fields` (custom field definitions)
+
+### Installation Steps
+1. Copy module to your Odoo addons directory
+2. Update apps list: **Apps → Update Apps List**
+3. Search for "Project Accounting View"
+4. Click **Install**
+
+## Configuration
+
+### Assigning Users to Accounting Group
+1. Navigate to **Settings → Users & Companies → Users**
+2. Select the user
+3. Go to **Access Rights** tab
+4. Under **Accounting**, enable **Accounting / Project Viewer**
+5. Save the user
+
+## Usage
+
+### Accessing the Accounting View
+1. Log in as a user with the "Accounting / Project Viewer" permission
+2. Navigate to **Project → Projects (Accounting)**
+3. Browse projects in the read-only list view
+4. Click on any project to view detailed information
+
+### Exporting Data
+1. Select projects in the list view (or select all)
+2. Click the **Action** menu
+3. Choose **Export**
+4. Select desired fields
+5. Export to Excel or CSV
+
+## Technical Details
+
+### Module Structure
+```
+project_accounting_view/
+├── __init__.py
+├── __manifest__.py
+├── models/
+│   ├── __init__.py
+│   └── project_project.py
+├── views/
+│   └── project_accounting_views.xml
+├── security/
+│   ├── project_accounting_security.xml
+│   └── ir.model.access.csv
+└── README.md
+```
+
+### Dependencies
+- **project**: Core project functionality
+- **project_custom_fields**: Provides custom field definitions including:
+  - `project_no_id`: Project identification number
+  - BOM-related fields (x_bom_summary_*)
+  - Dashboard fields (dashboard_*)
+
+### Key Models
+- **project.project**: Main model being viewed
+- **project.task**: Tasks visible in project details
+- **res.partner**: Customer/partner information
+- **res.users**: User assignment information
+- **project.project.stage**: Project stage information
+
+### Security Configuration
+
+#### Groups
+- `group_project_accounting_user`: Main security group for accounting users
+  - Category: Accounting
+  - Implies: base.group_user (Employee)
+
+#### Access Rights (ir.model.access.csv)
+| Model | Read | Write | Create | Delete |
+|-------|------|-------|--------|--------|
+| project.project | ✓ | ✗ | ✗ | ✗ |
+| project.task | ✓ | ✗ | ✗ | ✗ |
+| res.partner | ✓ | ✗ | ✗ | ✗ |
+| res.users | ✓ | ✗ | ✗ | ✗ |
+| project.project.stage | ✓ | ✗ | ✗ | ✗ |
+
+#### Record Rules
+- **project_accounting_read_all_rule**: Allows reading all projects (no domain restrictions)
+
+### Fields Displayed
+
+#### From project.project (base)
+- name
+- partner_id
+- user_id
+- stage_id
+- active
+- date_start
+- date
+- description
+- company_id
+
+#### From project_custom_fields
+- project_no_id
+- x_bom_summary_total
+- x_bom_summary_items
+- x_bom_summary_items_current_expense
+- x_bom_summary_labor
+- x_bom_summary_labor_current_expense
+- x_bom_summary_subcontractor
+- x_bom_summary_subcontractor_current_expense
+- x_bom_summary_travel
+- x_bom_summary_travel_current_expense
+- x_bom_summary_miscellaneous
+- x_bom_summary_miscellaneous_current_expense
+- x_bom_summary_reserve
+- x_bom_summary_reserve_current_expense
+
+#### From project_dashboard (if installed)
+- dashboard_internal_co_total
+- dashboard_external_co_total
+- dashboard_total_co
+- dashboard_po_total
+- dashboard_timesheet_hours
+- dashboard_daily_report_hours
+- dashboard_total_spent_hours
+- dashboard_allocated_hours
+- dashboard_hours_balance
+- dashboard_project_balance
+
+## Best Practices
+
+### For Accounting Users
+- Use the Excel export feature for reporting and analysis
+- Filter projects by stage or partner for focused reviews
+- Monitor project balance field (green = healthy, red = over budget)
+- Review BOM vs. current expenses to track cost overruns
+
+### For System Administrators
+- Regularly audit users in the "Accounting / Project Viewer" group
+- Consider creating additional filtered views for specific accounting needs
+- Monitor access logs if sensitive project information is involved
+
+## Troubleshooting
+
+### Missing Fields in View
+**Problem**: Some fields (like dashboard_* fields) are not visible  
+**Solution**: Ensure dependent modules are installed:
+- `project_dashboard` for dashboard fields
+- `project_custom_fields` for custom BOM fields
+
+### User Cannot Access Menu
+**Problem**: "Projects (Accounting)" menu not visible  
+**Solution**: 
+1. Verify user has "Accounting / Project Viewer" permission
+2. Check that user is an employee (has base.group_user)
+3. Clear browser cache and refresh
+
+### Fields Show No Data
+**Problem**: Fields are visible but show no values  
+**Solution**:
+1. Verify that projects have data in source modules
+2. Check that BOM totals and dashboard fields are computed
+3. Ensure change orders, purchase orders, and timesheets are properly linked
+
+## Version Information
+- **Version**: 18.0.1.0.0
+- **Odoo Version**: 18.0
+- **Author**: ACGLP
+- **License**: LGPL-3
+
+## Support
+For issues or questions, contact the ACGLP development team.
+
+## Changelog
+
+### Version 18.0.1.0.0 (Initial Release)
+- Read-only list and form views for accounting department
+- Security group with read-only permissions
+- Integration with project_custom_fields module
+- Display of financial metrics, BOM details, and hours tracking
+- Excel export capability

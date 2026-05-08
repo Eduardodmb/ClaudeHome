@@ -1,0 +1,358 @@
+from odoo import models, fields, api
+from .graph_api import GraphAPIClient
+import logging
+_logger = logging.getLogger(__name__)
+
+class MailActivityTag(models.Model):
+    """ 
+    Simple Categorization:
+    Defines tags like 'Urgent', 'IT', or 'Maintenance' so users can 
+    quickly filter the ticket list.
+    """
+    _name = 'mail.activity.tag'
+    _description = 'Activity Tag'
+
+    name = fields.Char(string='Tag Name', required=True)
+    color = fields.Integer(string='Color Index')
+
+class MailActivityUpdate(models.Model):
+    """
+    Audit Log:
+    A permanent record of progress notes. This is where the notes
+    from the wizard end up after the wizard itself is deleted.
+    """
+    _name = 'mail.activity.update'
+    _description = 'Activity Update Log'
+    _order = 'date desc'
+
+    activity_id = fields.Many2one(
+        'mail.activity',
+        string='Activity',
+        required=True,
+        ondelete='cascade'
+    )
+    date = fields.Datetime(
+        string='Date',
+        default=fields.Datetime.now,
+        required=True
+    )
+    user_id = fields.Many2one(
+        'res.users',
+        string='User',
+        default=lambda self: self.env.user,
+        required=True
+    )
+    note = fields.Html(string='Update Note')
+    attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'mail_activity_update_attachment_rel',
+        'update_id',
+        'attachment_id',
+        string='Attachments',
+        help='Attach multiple files to this update'
+    )
+    notify_creator = fields.Boolean(
+        string='Notify Ticket Creator',
+        default=True,
+        help='Send email notification to the person who created this ticket'
+    )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        updates = super().create(vals_list)
+
+        for update in updates:
+            if update.notify_creator and update.activity_id.create_uid:
+                try:
+                    graph_client = GraphAPIClient(self.env)
+                    creator = update.activity_id.create_uid
+
+                    if creator.email and creator != update.user_id:
+                        subject = f"Update on Ticket: {update.activity_id.summary or 'No Subject'}"
+                        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+                        action_url = f"{base_url}/web#id={update.activity_id.id}&model=mail.activity&view_type=form"
+
+                        body = f"""
+                            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                                <div style="background-color: #714B67; color: white; padding: 20px; text-align: center;">
+                                    <h2 style="margin: 0;">Ticket Update Notification</h2>
+                                </div>
+
+                                <div style="padding: 20px;">
+                                    <p>Hello {creator.name},</p>
+                                    <p>An update has been added to a ticket you created:</p>
+
+                                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                                        <tr>
+                                            <td style="padding: 10px; border-bottom: 1px solid #f0f0f0; font-weight: bold; width: 30%;">Ticket:</td>
+                                            <td style="padding: 10px; border-bottom: 1px solid #f0f0f0;">{update.activity_id.summary or 'No Summary'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 10px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">Updated By:</td>
+                                            <td style="padding: 10px; border-bottom: 1px solid #f0f0f0;">{update.user_id.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 10px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">Date:</td>
+                                            <td style="padding: 10px; border-bottom: 1px solid #f0f0f0;">{update.date}</td>
+                                        </tr>
+                                    </table>
+
+                                    <div style="background-color: #f8f9fa; border-left: 5px solid #714B67; padding: 15px; margin: 20px 0;">
+                                        <strong>Update Note:</strong><br/>
+                                        <div style="margin-top: 5px;">
+                                            {update.note or 'No notes provided.'}
+                                        </div>
+                                    </div>
+
+                                    <p style="margin-top: 30px;">Please click the button below to view the ticket and respond if needed.</p>
+
+                                    <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                        <a href="{action_url}" style="background-color: #714B67; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                                            View Ticket in Odoo
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div style="background-color: #f9f9f9; color: #888; padding: 15px; text-align: center; font-size: 0.8em; border-top: 1px solid #e0e0e0;">
+                                    This is an automated notification from the ACG Ticket System.
+                                </div>
+                            </div>
+                        """
+
+                        graph_client.send_mail(
+                            recipient_email=creator.email,
+                            subject=subject,
+                            content=body
+                        )
+                except Exception as e:
+                    _logger.error("Failed to send update notification: %s", str(e))
+
+        return updates
+
+
+class ActivityGroup(models.Model):
+    """ 
+    Organizational Buckets:
+    Used to group activities into logical sections like 'Phase 1' 
+    or 'Onboarding Stages'.
+    """
+    _name = "acg.activity.group"
+    _description = "Activity Group"
+    _order = "name"
+
+    name = fields.Char(required=True, index=True)
+    active = fields.Boolean(default=True)
+    notes = fields.Text()    
+
+class MailActivity(models.Model):
+    """
+    The Core Ticket Model:
+    Inherits Odoo's standard activity system and transforms it 
+    into a departmental ticketing tool.
+    """
+    _inherit = 'mail.activity'
+
+    target_department_id = fields.Many2one(
+        'hr.department', 
+        string="Target Department"
+    )
+
+    target_document_item_id = fields.Many2one(
+        'document.library.item',
+        string = "Target Document"
+    )
+
+    additional_document_ids = fields.Many2many(
+        'document.library.item',
+        'mail_activity_document_rel',
+        'activity_id',
+        'document_id',
+        string="Additional Documents",
+        help="Select multiple documents related to this activity"
+    )
+
+    activity_tag_ids = fields.Many2many(
+        'mail.activity.tag',
+        string='Tags'
+    )
+    update_line_ids = fields.One2many(
+        'mail.activity.update', 
+        'activity_id', 
+        string="Updates"
+    )
+    
+    certification_name_id = fields.Many2many(
+        'hr.certification.name', 
+        string="Certification Name"
+    )
+
+    group_id = fields.Many2one(
+        "acg.activity.group",
+        string="Group Name",
+        index=True,
+    )
+
+    plan_template_id = fields.Many2one(
+        "mail.activity.plan.template",
+        string="Activity Plan Template",
+        index=True,
+        readonly=True
+    )
+
+    priority = fields.Selection(
+        selection=[
+            ('p1', 'P1'),
+            ('p2', 'P2'),
+            ('p3', 'P3'),
+        ],
+        string='Priority',
+    )
+
+    @api.onchange('target_department_id')
+    def _onchange_target_department(self):
+        """ 
+        Smart Routing:
+        When a department is picked, automatically set the activity 
+        to track against that specific department record.
+        """
+        if self.target_department_id:
+            self.res_model_id = self.env['ir.model']._get_id('hr.department')
+            self.res_id = self.target_department_id.id
+
+    @api.model_create_multi
+    def create(self, vals_list):
+
+        """
+        Creation Override:
+        1. Inherits logic from Plan Templates.
+        2. Saves the record to the database.
+        3. Triggers Microsoft Graph API Email notifications.
+        """
+        # --- INHERIT FROM TEMPLATE ---
+        template_ids = {v.get("plan_template_id") for v in vals_list if v.get("plan_template_id")}
+        templates = {}
+        if template_ids:
+            recs = self.env["mail.activity.plan.template"].browse(list(template_ids)).exists()
+            templates = {t.id: t for t in recs}
+
+        for v in vals_list:
+            tmpl = templates.get(v.get("plan_template_id"))
+            if not tmpl:
+                continue
+
+            # if any value missing, pull from template fields directly (no need _determine_*)
+            if not v.get("group_id") and tmpl.group_id:
+                v["group_id"] = tmpl.group_id.id
+            if not v.get("target_document_item_id") and tmpl.target_document_item_id:
+                v["target_document_item_id"] = tmpl.target_document_item_id.id
+            if not v.get("additional_document_ids") and hasattr(tmpl, 'additional_document_ids') and tmpl.additional_document_ids:
+                v["additional_document_ids"] = [(6, 0, tmpl.additional_document_ids.ids)]
+            if not v.get("certification_name_ids") and tmpl.certification_name_ids:
+                v["certification_name_ids"] = [(6, 0, tmpl.certification_name_ids.ids)]
+
+        # Department ticket: ensure res_id is set from target_department_id (constraint: res_id not null)
+        for v in vals_list:
+            if v.get("target_department_id") and not v.get("res_id"):
+                v["res_id"] = v["target_department_id"]
+                if not v.get("res_model_id"):
+                    v["res_model_id"] = self.env["ir.model"]._get_id("hr.department")
+
+        # 1. Create the records in Odoo first
+        activities = super(MailActivity, self).create(vals_list)
+        
+        # 2. Initialize the Graph Client once for the batch
+        try:
+            graph_client = GraphAPIClient(self.env)
+        except Exception as e:
+            _logger.error("Failed to initialize GraphAPIClient: %s", str(e))
+            return activities
+
+        # 3. Loop through created activities
+        for activity in activities:
+            # Check if it's a department ticket and has a recipient
+            if activity.res_model == 'hr.department' and activity.target_department_id.dept_email:
+                subject = f"New Department Ticket in Odoo: {activity.summary or 'No Subject'}"
+                # Clean HTML formatting for the email body
+                base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+                action_url = f"{base_url}/web#id={activity.res_id}&model={activity.res_model}&view_type=form"
+                # Professional HTML Email Body
+                body = f"""
+                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                        <div style="background-color: #714B67; color: white; padding: 20px; text-align: center;">
+                            <h2 style="margin: 0;">New Department Ticket Assigned</h2>
+                        </div>
+                        
+                        <div style="padding: 20px;">
+                            <p>Hello Team,</p>
+                            <p>A new activity has been formally assigned to your department for processing:</p>
+                            
+                            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                                <tr>
+                                    <td style="padding: 10px; border-bottom: 1px solid #f0f0f0; font-weight: bold; width: 30%;">Department:</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #f0f0f0;">{activity.target_department_id.name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">Summary:</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #f0f0f0;">{activity.summary or 'No Summary'}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">Deadline:</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #f0f0f0;">
+                                        <span style="background: #fff5f5; color: #c53030; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; font-weight: bold;">
+                                            {activity.date_deadline or 'No Deadline Set'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div style="background-color: #f8f9fa; border-left: 5px solid #714B67; padding: 15px; margin: 20px 0;">
+                                <strong>Instructions/Notes:</strong><br/>
+                                <div style="margin-top: 5px; font-style: italic;">
+                                    {activity.note or 'No additional details provided.'}
+                                </div>
+                            </div>
+
+                            <p style="margin-top: 30px;">Please use the button below to view the record details and update the status in Odoo.</p>
+                            
+                            <div style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                                <a href="{action_url}" style="background-color: #714B67; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                                    View Ticket in Odoo
+                                </a>
+                            </div>
+                        </div>
+
+                        <div style="background-color: #f9f9f9; color: #888; padding: 15px; text-align: center; font-size: 0.8em; border-top: 1px solid #e0e0e0;">
+                            This is an automated notification from the ACG Department Ticket System.
+                        </div>
+                    </div>
+                """
+                
+                try:
+                    # Execute the API call
+                    graph_client.send_mail(
+                        recipient_email=activity.target_department_id.dept_email,
+                        subject=subject,
+                        content=body
+                    )
+                except Exception as e:
+                    # Log the error so the Odoo record is still saved even if email fails
+                    _logger.error("Microsoft Graph API failed to send email: %s", str(e))
+
+        return activities
+
+    def action_open_as_wizard(self):
+        """ 
+        Enhanced UX:
+        Force open the activity record in a clean popup modal instead of 
+        redirecting the whole page.
+        """
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Open Activity',
+            'res_model': 'mail.activity',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'view_id': self.env.ref('mail.mail_activity_view_form_popup').id,
+            'target': 'new',
+        }

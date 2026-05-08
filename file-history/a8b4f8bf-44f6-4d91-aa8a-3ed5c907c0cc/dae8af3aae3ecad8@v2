@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ParentSubcontrol extends Model
+{
+    protected $fillable = ['framework_app_id', 'name', 'sort_order'];
+
+    public function frameworkApp()
+    {
+        return $this->belongsTo(FrameworkApp::class);
+    }
+
+    public function subcontrols()
+    {
+        return $this->hasMany(Subcontrol::class)->orderBy('sort_order');
+    }
+}

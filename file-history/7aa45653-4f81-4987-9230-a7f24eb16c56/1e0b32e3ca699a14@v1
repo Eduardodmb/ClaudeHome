@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_employee_form_fields_style" model="ir.ui.view">
+        <field name="name">hr.employee.form.fields.style</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="replace">
+                <sheet>
+                     <div name="button_box" class="oe_button_box">
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="avatar_128" invisible="1"/>
+                    <div class="row justify-content-between position-relative w-100 m-0 mb-2">
+                        <div class="oe_title mw-75 ps-0 pe-2">
+                            <h1 class="d-flex flex-row align-items-center">
+                                <div invisible="not user_id" class="me-2">
+                                    <widget name="hr_employee_chat" invisible="not context.get('chat_icon')"/>
+                                </div>
+                                <field name="name" placeholder="Employee's Name" required="True" style="font-size: min(4vw, 2.6rem);"/>
+                                
+                            </h1>
+                        </div>
+                        <div class="o_employee_avatar m-0 p-0" style="border: 4px solid orange; border-radius: 8px;" invisible="'contractor' not in (employee_type or '').lower()">
+                            <field name="image_1920" widget="image" class="oe_avatar m-0" options="{&quot;zoom&quot;: true, &quot;preview_image&quot;:&quot;avatar_128&quot;}"/>
+                            <field name="show_hr_icon_display" invisible="1"/>
+                            <field name="hr_icon_display" class="d-flex align-items-end fs-6 o_employee_availability" invisible="not show_hr_icon_display or not id" widget="hr_presence_status"/>
+                        </div>
+                        <div class="o_employee_avatar m-0 p-0" style="border: 4px solid green; border-radius: 8px;" invisible="'contractor' in (employee_type or '').lower()">
+                            <field name="image_1920" widget="image" class="oe_avatar m-0" options="{&quot;zoom&quot;: true, &quot;preview_image&quot;:&quot;avatar_128&quot;}"/>
+                            <field name="show_hr_icon_display" invisible="1"/>
+                            <field name="hr_icon_display" class="d-flex align-items-end fs-6 o_employee_availability" invisible="not show_hr_icon_display or not id" widget="hr_presence_status"/>
+                        </div>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="first_name"/>
+                            <field name="middle_name"/>
+                            <field name="last_name"/>
+                            <field name="work_email" widget="email" placeholder="e.g. johndoe@example.com"/>
+                            <field name="alias_email"/>
+                            <field name="work_phone" widget="phone"/>
+                             <field name="work_phone_extension" 
+                                    placeholder="e.g. 669" 
+                                    options="{'maxlength': 3}"
+                                    maxlength="3"/>
+                            <field name="mobile_phone" string="Personal mobile" widget="phone"/>
+                            <field name="company_country_id" invisible="1"/>
+                            <field name="company_country_code" invisible="1"/>
+                            <field name="employee_type"/>
+                        </group>
+                        <group>
+                            <field name="department_id"/>
+                            <field name="job_id" context="{'default_no_of_recruitment': 0, 'default_is_favorite': False}" placeholder="e.g. Sales Manager"/>
+                            <field name="parent_id" widget="many2one_avatar_user"/>
+                            <field name="coach_id" string="Supervisor" widget="many2one_avatar_user"/>
+                            <field name="Hire_Date"/>
+                            <field name="sharepoint_link" widget="url"/>
+                            <field name="category_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="Tags" groups="hr.group_hr_user"/>                           
+                            <field name="dial_in" string="Direct line"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="employee_properties" columns="2"/>
+                    <notebook>
+                        <page name="Vetting" string="Vetting">
+                            <group>
+                                <group>
+                                    <field name="attachment" string="Drive license" filename="attachment_filename" widget="binary" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="eye_color" readonly="1"/>
+                                    <field name="hair_color"  readonly="1"/>
+                                    <field name="employee_height" readonly="1"/>
+                                    <field name="employee_weight" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="personal_information" string="Private Information" groups="hr.group_hr_user">
+                            <group>
+                                <group string="Private Contact">
+                                    <label for="private_street" string="Private Address"/>
+                                    <div class="o_address_format">
+                                        <field name="private_street" placeholder="Street..." class="o_address_street"/>
+                                        <field name="private_street2" placeholder="Street 2..." class="o_address_street"/>
+                                        <field name="private_city" placeholder="City" class="o_address_city"/>
+                                        <field name="private_state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}" context="{'default_country_id': private_country_id}"/>
+                                        <field name="private_zip" placeholder="ZIP" class="o_address_zip"/>
+                                        <field name="private_country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                    </div>
+                                    <field name="private_email" placeholder="e.g. myprivateemail@example.com"/>
+                                    <field name="private_phone"/>
+                                    <field name="bank_account_id" context="{'default_partner_id': work_contact_id}" options="{'no_quick_create': True}" readonly="not id"/>
+                                    <label for="distance_home_work"/>
+                                    <div class="o_row" name="div_km_home_work">
+                                        <field name="distance_home_work" class="o_hr_narrow_field"/>
+                                        <span><field name="distance_home_work_unit"/></span>
+                                    </div>
+                                    <field name="private_car_plate"/>
+                                    <field name="driver_tickets" />
+                                    <field name="driver_license_number" />
+                                    <field name="driver_license_state" />
+                                    <field name="attachment" string="Drive license" filename="attachment_filename" widget="binary"/>
+                                    <field name="drivers_license_expiration_date"/>
+                                    <field name="on_driver_list"/>
+                                </group>
+                                <group string="Citizenship">
+                                    <field name="country_id" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                    <field name="identification_id"/>
+                                    <field name="ssnid"/>
+                                    <field name="passport_id"/>
+                                    <field name="passport_expiration_date"/>
+                                    <field name="gender"/>
+                                    <field name="birthday"/>
+                                    <field name="age" />
+                                    <field name="place_of_birth"/>
+                                    <field name="country_of_birth"/>
+                                </group>
+                                <group string="Emergency" name="emergency">
+                                    <field name="emergency_contact"/>
+                                    <field name="emergency_phone" class="o_force_ltr"/>
+                                    <field name="emergency_contact_secondary"/>
+                                    <field name="emergency_phone_secondary"/>
+                                    <separator string="Family Status"/>
+                                    <field name="marital"/>
+                                    <field name="spouse_complete_name" invisible="marital not in ['married', 'cohabitant']"/>
+                                    <field name="spouse_birthdate" invisible="marital not in ['married', 'cohabitant']"/>
+                                    <field name="children"/>
+                                </group>
+                                <group string="Education">
+                                    <field name="certificate"/>
+                                    <field name="study_field"/>
+                                    <field name="study_school"/>
+                                    <separator name="has_work_permit" string="Work Permit"/>
+                                    <field name="visa_no" string="Visa Number (TN,HB-1)"/>
+                                    <field name="visa_expire" string="Visa Expiration Date"/>                                    
+                                    <field name="permit_no" string="I-94 Number"/>
+                                    <field name="work_permit_expiration_date" string="I-94 Expiration Date"/>
+                                    <field name="work_permit_name" invisible="1"/>
+                                    <field name="has_work_permit" string="I-94 Upload" widget="work_permit_upload" filename="work_permit_name"/>
+                                </group>
+                                <group string="Additional Information">
+                                    <field name="eye_color"/>
+                                    <field name="hair_color" />
+                                    <field name="employee_height" />
+                                    <field name="employee_weight" />
+                                    <field name="initials" />
+                                    <field name="hubzone" />
+                                    <field name="hubzone_attachment_ids" widget="many2many_binary"/>
+                                    <field name="health_insurance" />
+                                    <field name="vision_insurance" />
+                                    <field name="dental_insurance" />
+                                    <field name="offer_letter_sent_by" />
+                                    <field name="ft_bliss_pass_last_year" />
+                                </group>
+                                <group string="Payroll">
+                                    <field name="print_on_check_as"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="skills_resume" string="Resume">
+                            <div class="row">
+                                <div class="o_hr_skills_editable o_hr_skills_group o_group_resume col-lg-7 d-flex flex-column">
+                                    <separator string="Resume" class="mb-4"/>
+                                    <!-- This field uses a custom list view rendered by the 'resume_one2many' widget.
+                                        Adding fields in the list arch below makes them accessible to the widget
+                                    -->
+                                    <field mode="list" nolabel="1" name="resume_line_ids" widget="resume_one2many">
+                                        <list>
+                                            <field name="line_type_id"/>
+                                            <field name="name"/>
+                                            <field name="description"/>
+                                            <field name="date_start"/>
+                                            <field name="date_end"/>
+                                            <field name="display_type" column_invisible="True"/>
+                                        </list>
+                                    </field>
+
+                                </div>
+                                <div class="o_hr_skills_editable o_hr_skills_group o_group_skills col-lg-5 d-flex flex-column">
+                                    <field mode="list" nolabel="1" name="employee_skill_ids" widget="skills_one2many" class="mt-2">
+                                        <list>
+                                            <field name="skill_id"/>
+                                            <field name="skill_level_id"/>
+                                            <field name="level_progress" widget="progressbar"/>
+                                            <field name="skill_type_id" optional="hidden"/>
+                                        </list>
+                                    </field>
+                                </div>
+                            </div>
+                        </page>
+                        <page string="Activities" name="activities_tab">
+                            <div class="mb-2">
+                                <button name="action_open_activities_bulk_edit"
+                                        type="object"
+                                        string="Open for Bulk Edit"
+                                        icon="fa-external-link"
+                                        class="btn-primary"
+                                        help="Open activities in a new window with checkboxes for bulk editing"/>
+                            </div>
+                            <field name="activity_ids"
+                            context="{
+                                'default_res_model': 'hr.employee',
+                                'default_res_id': id,
+                                'default_res_model_id': %(hr.model_hr_employee)d,
+                                'active_id': id,
+                                'active_model': 'hr.employee',
+                                'mail_create_nosubscribe': True, 'mail_create_nolog': True
+                            }">
+                                <list editable="bottom"  create="1"
+                                    decoration-bf="activity_type_id.category == 'meeting'">
+                                    <header>
+                                        <button name="action_bulk_edit"
+                                                type="object"
+                                                string="Bulk Edit"
+                                                icon="fa-edit"/>
+                                    </header>
+                                    <field name="res_model" column_invisible="True"/>
+                                    <field name="res_model_id" column_invisible="True"/>
+                                    <field name="activity_type_id"/>
+                                    <field name="summary"/>
+                                    <!-- <field name="target_department_id"
+                                        placeholder="Select Department..."/> -->
+                                    <field name="target_document_item_id"
+                                        placeholder="Select Document..."/>
+                                    <field name="custom_state" widget="badge"
+                                        decoration-success="custom_state == 'done'"
+                                        decoration-info="custom_state == 'planned'"
+                                        decoration-danger="custom_state == 'cancelled'"/>
+                                    <field name="date_deadline"/>
+                                    <field name="user_id"/>
+                                    <button name="action_open_as_wizard" type="object" icon="fa-external-link" title="Open full wizard"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="HR Files" groups="hr_employee_hr_files_tab.group_employee_files_hr_admins">
+                            <div class="oe_button_box" name="button_box">
+                                <button name="action_populate_required_documents"
+                                        string="Load/Sync Required Documents"
+                                        type="object"
+                                        class="oe_stat_button"
+                                        icon="fa-refresh"
+                                        help="Populate or sync the required documents checklist. Use this for existing employees or when new document types are added."/>
+                            </div>
+
+                            <group>
+                                <group>
+                                <field name="documents_done_count"/>
+                                <field name="documents_total_count"/>
+                                <field name="documents_completion_percentage"/>
+                                </group>
+                            </group>
+
+                            <separator string="Required Documents Checklist"/>
+                            <field name="required_documents_ids">
+                                <list editable="bottom" default_order="sequence">
+                                <field name="is_done"/>
+                                <field name="document_name"/>
+                                <field name="category"/>
+                                <field name="date_completed"/>
+                                <field name="completed_by_id"/>
+                                <field name="comments"/>
+                                <field name="attachment" filename="attachment_filename"/>
+                                <field name="document_type" invisible="1" column_invisible="1"/>
+                                <field name="attachment_filename" invisible="1" column_invisible="1"/>
+                                <field name="sequence" invisible="1" column_invisible="1"/>
+                                </list>
+                                <form>
+                                <group>
+                                    <group>
+                                    <field name="document_type" readonly="1" />
+                                    <field name="document_name"/>
+                                    <field name="category"/>
+                                    <field name="sequence"/>
+                                    </group>
+                                    <group>
+                                    <field name="is_done"/>
+                                    <field name="date_completed"/>
+                                    <field name="completed_by_id"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                    <field name="attachment_filename" invisible="1"/>
+                                    <field name="comments"/>
+                                </group>
+                                </form>
+                            </field>
+
+                            <separator string="Uploaded Files Archive"/>
+                            <field name="files_ids">
+                                <list editable="bottom">
+                                <field name="date"/>
+                                <field name="file_type"/>
+                                <field name="category"/>
+                                <field name="comments"/>
+                                <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                <field name="attachment_filename" column_invisible="1"/>
+                                </list>
+                                <form>
+                                <group>
+                                    <field name="date"/>
+                                    <field name="file_type"/>
+                                    <field name="category"/>
+                                    <field name="comments"/>
+                                    <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                    <field name="attachment_filename" invisible="1"/>
+                                </group>
+                                </form>
+                            </field>
+                            </page>
+                        <page name="public" string="Work Information">
+                            <div id="o_work_employee_container" class="d-lg-flex"> <!-- These two div are used to position org_chart -->
+                                <div id="o_work_employee_main" class="flex-grow-1">
+                                    <group string="Location">
+                                        <field name="address_id" context="{'show_address': 1}" options="{&quot;highlight_first_line&quot;: True}"/>
+                                        <field name="work_location_id" context="{'default_address_id': address_id}" placeholder="e.g. Building 2, Remote, etc."/>
+                                    </group>
+                                    <group name="managers" string="Approvers" class="hide-group-if-empty" invisible="1">
+                                        <!-- is overridden in other hr related modules -->
+                                    </group>
+                                    <group name="departure" string="Departure" invisible="active">
+                                        <field name="departure_reason_id" options="{'no_edit': True, 'no_create': True, 'no_open': True}"/>
+                                        <field name="departure_description"/>
+                                        <field name="departure_date"/>
+                                    </group>
+                                    <group string="Schedule">
+                                        <field name="resource_calendar_id" help="The default working hours are set in configuration."/>
+                                        <field name="id" invisible="1"/>
+                                        <field name="tz" required="id"/>
+                                    </group>
+                                </div>
+                            </div>
+                        </page>
+                        <page string="Growth Plans" name="growth_plans_tab">
+                            <field name="growth_plan_ids" >
+                                <list string="Growth Plans">
+                                    <field name="name"/>
+                                    <field name="plan_type"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="status"/>
+                                    <field name="overall_progress"/>
+                                    <field name="manager_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Certificates" name="page_employee_certifications">
+                            <field name="employee_certification_ids">
+                                <list string="Employee Certifications" 
+                                    ref="hr_employee_certifications.hr_employee_certification_view_tree_resume" 
+                                    widget="section_and_note_one2many">
+                                </list>
+                            </field>
+                            <field name="compliance_line_ids" readonly="1" force_save="1">
+                                <list decoration-danger="status in ('expired', 'missing')" 
+                                    decoration-warning="status == 'renewal'" 
+                                    decoration-success="status == 'active'"
+                                    create="0" edit="0" delete="0"> 
+                                    <field name="certification_name_id"/>
+                                    <field name="expiration_date"/>
+                                    <field name="status" widget="badge"
+                                        decoration-danger="status in ('expired', 'missing')" 
+                                        decoration-warning="status == 'renewal'" 
+                                        decoration-success="status == 'active'"/>
+                                    <field name="employee_certification_id" column_invisible="True"/>
+                                    <button name="open_certificate" type="object" icon="fa-external-link" 
+                                            string="View Cert" 
+                                            invisible="not employee_certification_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Reports" groups="hr_employee_hr_report_tab.group_employee_incidents_hr_privilage">
+                            <field name="incident_ids">
+                                <list editable="bottom">
+                                    <button name="action_open_incident_form"
+                                            type="object"
+                                            icon="fa-external-link"
+                                            title="Open"
+                                            class="btn-link"/>
+                                    <field name="date"/>
+                                    <field name="incident_type"/>
+                                    <field name="status" widget="badge" decoration-info="status == 'pending'" decoration-warning="status == 'in_progress'" decoration-success="status == 'completed'"/>
+                                    <field name="responsible_id"/>
+                                    <field name="date_follow_up"/>
+                                    <field name="manager_id"/>
+                                    <field name="manager_status"/>
+                                    <field name="comments" optional="hide"/>
+                                </list>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group string="Incident Information">
+                                                <field name="date"/>
+                                                <field name="incident_type"/>
+                                                <field name="status"/>
+                                                <field name="responsible_id"/>
+                                            </group>
+                                            <group string="Follow Up">
+                                                <field name="date_follow_up"/>
+                                                <field name="comments_follow_up" placeholder="Enter follow-up comments..."/>
+                                            </group>
+                                        </group>
+                                        <group>
+                                            <group string="Manager Review">
+                                                <field name="manager_id"/>
+                                                <field name="manager_status"/>
+                                                <field name="date_completed_manager"/>
+                                            </group>
+                                        </group>
+                                        <group string="General Comments">
+                                            <field name="comments" placeholder="Enter general comments..."/>
+                                        </group>
+                                        <group string="Attachments">
+                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                            <field name="attachment_filename" invisible="1"/>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="OnBoarding Notes" groups="hr_employee_training_tab.group_employee_training_admins">
+                            <field name="trainings_ids">
+                                <list editable="bottom">
+                                <field name="date"/>
+                                <field name="file_type"/>
+                                <field name="who_id"/>
+                                <field name="comments"/>
+                                <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                <field name="approve_id"/>
+                                <field name="approve_comments"/>
+                                </list>
+                                <form>
+                                <group>
+                                    <field name="date"/>
+                                    <field name="file_type"/>
+                                    <field name="who_id"/>
+                                    <field name="comments"/>
+                                    <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                    <field name="approve_id"/>
+                                    <field name="approve_comments"/>
+                                </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Reimbursements">
+                            <separator string="Employee Certifications (for Reimbursement Reference)"/>
+                            <field name="certification_ids" readonly="1">
+                                <list string="Certifications" create="0" edit="0" delete="0">
+                                    <field name="certification_name_id" string="Certification"/>
+                                    <field name="issue_date" string="Certification Date"/>
+                                    <field name="certification_cost" string="Cost" widget="monetary"/>
+                                    <field name="coverage_end_date" string="Coverage Until (Date + 1 Year)"/>
+                                    <field name="status" widget="badge"
+                                        decoration-danger="status == 'expired'"
+                                        decoration-warning="status == 'renewal'"
+                                        decoration-success="status == 'active'"/>
+                                </list>
+                            </field>
+
+                            <separator string="Others Reimbursements"/>
+                            <group>
+                                <field name="others_reimbursement_ids">
+                                    <list editable="bottom">
+                                        <field name="date"/>
+                                        <field name="item_type"/>
+                                        <field name="other_description"
+                                               invisible="item_type != 'other'"
+                                               placeholder="Describe..."/>
+                                        <field name="cost" sum="Total Cost"/>
+                                        <field name="currency_id" column_invisible="1"/>
+                                        <field name="comments" optional="hide"/>
+                                        <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                        <field name="attachment_filename" column_invisible="1"/>
+                                    </list>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name="date"/>
+                                                <field name="item_type"/>
+                                                <field name="other_description"
+                                                       invisible="item_type != 'other'"
+                                                       placeholder="Describe other item..."/>
+                                                <field name="cost"/>
+                                                <field name="currency_id" invisible="1"/>
+                                            </group>
+                                            <group>
+                                                <field name="comments"/>
+                                                <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                <field name="attachment_filename" invisible="1"/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Termination">
+                            <group>
+                                <group string="Termination Dates">
+                                <field name="last_day_worked"/>
+                                <field name="last_day_on_benefits"/>
+                                <field name="last_day_on_payroll" />
+                                </group>
+                                <group string="Termination Details">
+                                <field name="termination_type"/>
+                                <field name="termination_reason"/>
+                                <field name="recommend_rehire"/>
+                                <field name="protest_unemployment" />
+                                </group>
+                            </group>
+                            <group string="Severance Pay">
+                                <field name="severance_pay" />
+                            </group>
+                            <group>
+                                <field name="termination_files_ids">
+                                    <list editable="bottom">
+                                    <field name="date"/>
+                                    <field name="file_type"/>
+                                    <field name="comments"/>
+                                    <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                    </list>
+                                    <form>
+                                    <group>
+                                        <field name="date"/>
+                                        <field name="file_type"/>
+                                        <field name="comments"/>
+                                        <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                    </group>
+                                    </form>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Licenses">
+                            <field name="license_ids">
+                                <list editable="bottom">
+                                    <field name="license_name_id" options="{'no_create': True, 'no_create_edit': False}"/>
+                                    <field name="license_type_id" options="{'no_create': True, 'no_create_edit': False}"/>
+                                    <field name="expire_date"/>
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="license_name_id" options="{'no_create': True, 'no_create_edit': False}"/>
+                                        <field name="license_type_id" options="{'no_create': True, 'no_create_edit': False}"/>
+                                        <field name="expire_date"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Worker's Code">
+                            <field name="workers_code_ids">
+                                <list editable="bottom">
+                                    <field name="type_code_id" options="{'no_create': True, 'no_create_edit': False}"/>
+                                    <field name="workers_comp_code_type_ids" options="{'no_create': True, 'no_create_edit': False}"/>
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="type_code_id" options="{'no_create': True, 'no_create_edit': False}"/>
+                                        <field name="workers_comp_code_type_ids" options="{'no_create': True, 'no_create_edit': False}"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Leave Of Absence">
+                            <field name="leave_absence_ids">
+                                <list editable="bottom">
+                                    <field name="start_date"/>
+                                    <field name="expected_return_date"/>
+                                    <field name="actual_return_date"/>
+                                    <field name="paid"/>
+                                    <field name="leave_type" options="{'no_create': True, 'no_create_edit': False}"/>
+                                    <field name="leave_reason" options="{'no_create': True, 'no_create_edit': False}"/>
+                                </list>
+                                <form>
+                                    <group>
+                                        <group string="Leave Dates">
+                                            <field name="start_date"/>
+                                            <field name="expected_return_date"/>
+                                            <field name="actual_return_date"/>
+                                        </group>
+                                        <group string="Leave Pay and Type">
+                                            <field name="paid"/>
+                                            <field name="leave_type" options="{'no_create': True, 'no_create_edit': False}"/>
+                                            <field name="leave_reason" options="{'no_create': True, 'no_create_edit': False}"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page name="hr_settings" string="Settings" groups="hr.group_hr_user">
+                            <group>
+                                <group string="Status" name="active_group">
+                                    <!-- <field name="employee_type"/> -->
+                                    <field name="full_part_time"/>
+                                    <field name="seasonal"/>
+                                    <field name="exempt"/>
+                                    <field name="key_employee"/>
+                                    <label for="user_id"/>
+                                    <div class="o_row">
+                                        <field name="user_id" string="Related User" help="" domain="[('company_ids', 'in', company_id), ('share', '=', False)]" context="{'default_create_employee_id': id}" widget="many2one_avatar_user"/>
+                                        <button string="Create User" class="btn btn-link" type="object" name="action_create_user" invisible="user_id"/>
+                                    </div>
+                                </group>
+                                <group string="Attendance/Point of Sale" name="identification_group">
+                                    <field name="pin" string="PIN Code"/>
+                                    <label for="barcode"/>
+                                    <div class="o_row">
+                                        <field name="barcode"/>
+                                        <button string="Generate" class="btn btn-link" type="object" name="generate_random_barcode" invisible="barcode"/>
+                                        <button name="407" string="Print Badge" class="btn btn-link" type="action" invisible="not barcode"/>
+                                    </div>
+                                </group>
+                                <group name="application_group" string="Application Settings" invisible="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>            
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

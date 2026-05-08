@@ -1,0 +1,152 @@
+<odoo>
+    <record id="view_crm_lead_subcontractor_search" model="ir.ui.view">
+        <field name="name">crm.lead.subcontractor.search</field>
+        <field name="model">crm.lead.subcontractor</field>
+        <field name="arch" type="xml">
+            <search string="Search Subcontractors">
+                <field name="partner_id" string="Subcontractor"/>
+                <field name="trade"/>
+                <field name="po"/>
+                <field name="lead_id" string="Opportunity"/>
+                <separator/>
+                <filter string="Requested" name="status_requested" domain="[('status', '=', 'requested')]"/>
+                <filter string="Bidding" name="status_bidding" domain="[('status', '=', 'bidding')]"/>
+                <filter string="Quote Received" name="status_received" domain="[('status', '=', 'received')]"/>
+                <filter string="Selected" name="status_selected" domain="[('status', '=', 'selected')]"/>
+                <filter string="Rejected" name="status_rejected" domain="[('status', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="Package Requested" name="pkg_requested" domain="[('package_status', '=', 'requested')]"/>
+                <filter string="Package Received" name="pkg_received" domain="[('package_status', '=', 'received')]"/>
+                <filter string="Package Rejected" name="pkg_rejected" domain="[('package_status', '=', 'rejected')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Subcontractor" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Status" name="group_by_status" context="{'group_by': 'status'}"/>
+                    <filter string="Package Status" name="group_by_package" context="{'group_by': 'package_status'}"/>
+                    <filter string="Opportunity" name="group_by_lead" context="{'group_by': 'lead_id'}"/>
+                    <filter string="Quote Date" name="group_by_quote_date" context="{'group_by': 'quote_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_crm_lead_subcontractor_list" model="ir.ui.view">
+        <field name="name">crm.lead.subcontractor.list</field>
+        <field name="model">crm.lead.subcontractor</field>
+        <field name="arch" type="xml">
+            <list string="Subcontractors">
+                <field name="sequence" widget="handle"/>
+                <field name="partner_id"/>
+                <field name="trade"/>
+                <field name="status"/>
+                <field name="amount"/>
+                <field name="quote_date"/>
+                <field name="po"/>
+                <field name="package_status"/>
+                <field name="overall_rating" optional="show" widget="float" decoration-success="overall_rating >= 4" decoration-warning="overall_rating >= 2 and overall_rating &lt; 4" decoration-danger="overall_rating &lt; 2"/>
+                <field name="is_evaluated" invisible="1"/>
+                <field name="extra_attachment_ids" widget="many2many_binary"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_crm_lead_subcontractor_form" model="ir.ui.view">
+        <field name="name">crm.lead.subcontractor.form</field>
+        <field name="model">crm.lead.subcontractor</field>
+        <field name="arch" type="xml">
+            <form string="Subcontractor">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_evaluate_subcontractor" icon="fa-star" invisible="is_evaluated">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="overall_rating" widget="float"/>
+                                </span>
+                                <span class="o_stat_text">Rating</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="lead_id" readonly="1"/>
+                            <field name="partner_id"/>
+                            <field name="partner_rating_info" readonly="1"/>
+                            <field name="trade"/>
+                            <field name="status"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="quote_date"/>
+                            <field name="po"/>
+                            <field name="package_status"/>
+                            <field name="extra_attachment_ids" widget="many2many_binary"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                        <page string="Performance Evaluation" name="evaluation">
+                            <group>
+                                <group string="Ratings">
+                                    <field name="performance_rating"/>
+                                    <field name="quality_rating"/>
+                                    <field name="communication_rating"/>
+                                    <field name="timeliness_rating"/>
+                                    <field name="overall_rating" readonly="1" widget="float" string="Overall Average"/>
+                                </group>
+                                <group string="Evaluation Details">
+                                    <field name="evaluation_date"/>
+                                    <field name="evaluated_by"/>
+                                    <field name="is_evaluated" invisible="1"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="evaluation_notes" placeholder="Add any additional comments about this subcontractor's performance..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Add into LEADS -->
+    <record id="crm_lead_form_inherit_subcontractors" model="ir.ui.view">
+        <field name="name">crm.lead.form.inherit.subcontractors</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Subcontractors" name="subcontractors_tab">
+                    <field name="subcontractor_line_ids"
+                           context="{'default_lead_id': id}"
+                           mode="list,form">
+                        <list editable="bottom" string="Subcontractors">
+                            <field name="sequence" widget="handle"/>
+                            <field name="partner_id"/>
+                            <field name="partner_rating_info" optional="show" readonly="1"/>
+                            <field name="trade"/>
+                            <field name="status"/>
+                            <field name="amount"/>
+                            <field name="quote_date"/>
+                            <field name="po"/>
+                            <field name="package_status"/>
+                            <field name="performance_rating" optional="hide"/>
+                            <field name="quality_rating" optional="hide"/>
+                            <field name="communication_rating" optional="hide"/>
+                            <field name="timeliness_rating" optional="hide"/>
+                            <field name="overall_rating" optional="show" decoration-success="overall_rating >= 4" decoration-warning="overall_rating >= 2 and overall_rating &lt; 4" decoration-danger="overall_rating &lt; 2"/>
+                            <field name="is_evaluated" invisible="1"/>
+                            <field name="extra_attachment_ids" widget="many2many_binary"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

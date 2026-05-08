@@ -1,0 +1,96 @@
+/* Kickoff Checklist - Full Content Display in List View */
+
+/* Column Widths - Fixed sizes for specific columns */
+.o_list_table .o_data_row td.o_list_record_selector,
+.o_list_table .o_data_row td.o_handle_cell {
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+}
+
+.o_list_table .o_data_row td.o_data_cell[name="name"] {
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+}
+
+.o_list_table .o_data_row td.o_data_cell[name="description"] {
+    width: 200px !important;
+    min-width: 200px !important;
+}
+
+.o_list_table .o_data_row td.o_data_cell[name="date_required"] {
+    width: 110px !important;
+    min-width: 110px !important;
+    max-width: 110px !important;
+}
+
+.o_list_table .o_data_row td.o_data_cell[name="status"] {
+    width: 110px !important;
+    min-width: 110px !important;
+    max-width: 110px !important;
+}
+
+.o_list_table .o_data_row td.o_data_cell[name="attachment_ids"] {
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+}
+
+/* ACG, Customer, Subcontractor columns - auto-expand to fill remaining space */
+.o_list_table .o_data_row td.o_data_cell[name="acg_txt"],
+.o_list_table .o_data_row td.o_data_cell[name="customer_txt"],
+.o_list_table .o_data_row td.o_data_cell[name="subcontractor_txt"] {
+    width: auto !important;
+    min-width: 200px !important;
+}
+
+/* Remove height restrictions on HTML fields in kickoff checklist */
+.o_list_table .o_data_row .o_field_html {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+/* Allow text wrapping in all cells */
+.o_list_table .o_data_row td {
+    white-space: normal !important;
+    vertical-align: top !important;
+    padding: 8px !important;
+}
+
+/* Ensure HTML content is fully visible */
+.o_list_table .o_data_row .o_field_html .oe_form_field_html {
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Force HTML widget to show full content, not truncated preview */
+.o_list_table .o_field_html iframe,
+.o_list_table .o_field_html .note-editor,
+.o_list_table .o_field_html .o_readonly {
+    min-height: 60px !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+/* Better row spacing for readability */
+.o_list_table tbody tr {
+    height: auto !important;
+    min-height: 60px !important;
+}
+
+/* Ensure text fields wrap properly */
+.o_list_table .o_data_row .o_field_char,
+.o_list_table .o_data_row .o_field_text {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+/* Specific wrapping for name field */
+.o_list_table .o_data_row td.o_data_cell[name="name"] {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}

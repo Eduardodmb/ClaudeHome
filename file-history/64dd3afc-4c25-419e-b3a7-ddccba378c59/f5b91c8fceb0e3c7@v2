@@ -1,0 +1,142 @@
+# VCard Manager — Claude Context
+
+## What this project is
+A Laravel 11 SaaS platform where admins manage customers and publish employee vCard pages.
+Each admin buys "seats"; one seat = one active public vCard at `/{customerSlug}/{employeeSlug}`.
+A super admin manages all admins and their seat balances. No payment gateway — seat allocation is manual.
+
+## Stack
+- PHP 8.3-FPM + Laravel 11 (no Breeze/Jetstream — custom auth)
+- MySQL 8 via Docker Compose
+- Nginx Alpine as reverse proxy
+- Node 20 + Vite + Tailwind CSS v3 + Alpine.js v3
+- File storage: Laravel `public` disk → `storage/app/public/` symlinked to `public/storage/`
+
+## Important: setup flow
+This repo contains only the application layer. `setup.sh` runs `composer create-project laravel/laravel`
+into `/tmp/scaffold` then `cp -n` (no-clobber) copies base Laravel files into the project root.
+Our custom files are never overwritten. Files NOT in this repo (auto-generated at setup):
+`artisan`, `composer.json`, `composer.lock`, `package.json`, `package-lock.json`,
+`config/`, `public/index.php`, `bootstrap/providers.php`, `storage/`, `vite.config.js`, `.gitignore`.
+
+## Ports
+- App (Nginx): **8085** (was changed from 8080)
+- MySQL: 3306
+- Vite HMR: 5173 (only with `--profile dev`)
+
+## Seeded accounts
+| Email | Password | Role |
+|-------|----------|------|
+| super@vcardapp.com | password | super_admin |
+| admin1@vcardapp.com | password | admin (5 seats) |
+| admin2@vcardapp.com | password | admin (3 seats) |
+| admin3@vcardapp.com | password | admin (3 seats) |
+
+## Key file locations
+
+```
+app/
+  Http/
+    Controllers/
+      Auth/LoginController.php          — login/logout
+      Admin/DashboardController.php     — stats dashboard
+      Admin/CustomerController.php      — customer CRUD
+      Admin/EmployeeController.php      — employee CRUD + seat check + file uploads
+      Admin/SeatController.php          — seat balance view + super admin: add seats
+      Admin/UserController.php          — super admin: manage admin users
+    VCardController.php                 — public vCard page
+    Middleware/EnsureAdmin.php          — auth guard, optional super_admin role check
+  Models/
+    User.php                            — role enum, seats_total, seatsUsed(), hasAvailableSeat()
+    Customer.php                        — belongs to User, generateSlug()
+    Employee.php                        — belongs to Customer, generateSlug()
+    EmployeeSkill / Experience / Portfolio / SeatTransaction
+routes/web.php                          — all routes
+bootstrap/app.php                       — registers 'admin' middleware alias
+database/
+  migrations/                           — 7 custom migrations (2024_01_01_*)
+  seeders/DatabaseSeeder.php
+resources/views/
+  layouts/admin.blade.php               — sidebar layout for all admin pages
+  auth/login.blade.php                  — standalone dark login page
+  admin/dashboard.blade.php             — stats + recent items
+  admin/customers/{index,create,edit}
+  admin/employees/{index,form}          — form.blade.php is shared create/edit with Alpine.js tabs
+  admin/seats/index.blade.php           — seat balance; super admin sees all admins + add-seats form
+  admin/users/index.blade.php           — super admin only
+  vcard/show.blade.php                  — public Ryan-style vCard page
+  components/stat-card.blade.php
+```
+
+## Data model relationships
+```
+users
+  └── customers (user_id)
+        └── employees (customer_id)
+              ├── employee_skills (employee_id)
+              ├── employee_experiences (employee_id)
+              └── employee_portfolio (employee_id)
+seat_transactions (user_id, created_by → users)
+```
+
+## Seat enforcement
+- `User::seatsUsed()` — counts active employees across all customers owned by this user
+- `User::hasAvailableSeat()` — `seatsUsed() < seats_total`
+- Checked in `EmployeeController::create()` (redirect with error) and `store()` (abort 403)
+- Super admins bypass seat checks
+
+## Route naming convention
+```
+admin.dashboard
+admin.customers.{index,create,store,edit,update,destroy}
+admin.customers.employees.{index,create,store,edit,update,destroy}
+admin.seats.index
+admin.seats.add            (POST, super_admin only)
+admin.users.{index,store,destroy}  (super_admin only)
+vcard.show                 /{customerSlug}/{employeeSlug}
+```
+
+## Middleware
+`'admin'` alias → `EnsureAdmin::handle($request, $next, $role = 'any')`
+- `middleware('admin')` — allows any admin or super_admin
+- `middleware('admin:super_admin')` — super_admin only
+
+## Employee form (most complex view)
+`admin/employees/form.blade.php` is shared for create and edit. It uses:
+- Alpine.js `x-data` with arrays for skills, experiences, portfolio
+- Tabbed UI: Basic Info / Skills / Experience / Portfolio
+- Dynamic add/remove rows powered by Alpine
+- Hidden `existing_image` inputs preserve portfolio images on re-save
+- File inputs named `portfolio_images[{index}]` for new uploads
+
+Controller `syncRelations()` deletes all related rows then recreates from posted arrays.
+
+## File upload paths (public disk)
+- Avatars:   `avatars/{filename}`
+- Logos:     `logos/{filename}`
+- Portfolio: `portfolio/{filename}`
+
+## Frontend
+- Tailwind v3 with `@tailwindcss/forms` plugin
+- `tailwind.config.js` scans `resources/**/*.blade.php` and `resources/**/*.js`
+- `postcss.config.js` wires Tailwind + autoprefixer into Vite
+- Alpine.js imported in `resources/js/app.js` and started globally
+- `resources/js/app.js` also imports Laravel's `bootstrap.js` (axios + CSRF)
+
+## Docker services
+- `app`   — PHP 8.3-FPM, mounts project root
+- `nginx` — reverse proxy on port 8085
+- `mysql` — MySQL 8, health-checked before app starts
+- `node`  — (profile: dev) Vite dev server with HMR on 5173
+
+## Common development commands
+```bash
+bash setup.sh                          # first-time setup
+make up                                # docker compose up -d
+make dev                               # start with Vite HMR
+make shell                             # sh into app container
+make artisan migrate                   # run migrations
+make fresh                             # migrate:fresh --seed
+make mysql                             # open MySQL shell
+docker compose run --rm app php artisan <cmd>
+```

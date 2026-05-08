@@ -1,0 +1,45 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\User;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+
+class DatabaseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        User::create([
+            'name'        => 'Super Admin',
+            'email'       => 'super@vcardapp.com',
+            'password'    => Hash::make('password'),
+            'role'        => 'super_admin',
+            'seats_total' => 0,
+        ]);
+
+        User::create([
+            'name'        => 'Admin One',
+            'email'       => 'admin1@vcardapp.com',
+            'password'    => Hash::make('password'),
+            'role'        => 'admin',
+            'seats_total' => 5,
+        ]);
+
+        User::create([
+            'name'        => 'Admin Two',
+            'email'       => 'admin2@vcardapp.com',
+            'password'    => Hash::make('password'),
+            'role'        => 'admin',
+            'seats_total' => 3,
+        ]);
+
+        User::create([
+            'name'        => 'Admin Three',
+            'email'       => 'admin3@vcardapp.com',
+            'password'    => Hash::make('password'),
+            'role'        => 'admin',
+            'seats_total' => 3,
+        ]);
+    }
+}

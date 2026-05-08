@@ -1,0 +1,460 @@
+<odoo>
+    <!-- Search view for Daily Search Leads -->
+    <record id="view_daily_search_lead_search" model="ir.ui.view">
+        <field name="name">daily.search.lead.search</field>
+        <field name="model">daily.search.lead</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="lead_name"/>
+                <field name="date_found"/>
+                <field name="solicitation_number"/>
+                <field name="lead_type"/>
+                <field name="lead_subject" optional="hide"/>
+                <field name="customer_end_user"/>
+                <field name="naics_code"/>
+                <field name="set_aside"/>
+                <field name="website_id"/>
+                <field name="project_id"/>
+                <field name="source_type_display_label"/>
+                <filter string="Active Leads (Bid/NA)"
+                        name="active_leads"
+                        domain="[('decision', 'in', ['go', 'na'])]"/>
+                <filter string="No-Bid Leads" name="filter_no_go" domain="[('decision', '=', 'no_go')]"/>
+                <filter string="Found Today" name="found_today" domain="[('date_found', '=', context_today())]"/>
+                <filter string="Vehicle: Sources Sought" name="filter_vehicle_sources_sought" domain="[('vehicle_type', '=', 'sources_sought')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Source Type"
+                            name="group_by_source_type_display_label"
+                            context="{'group_by': 'source_type_display_label'}"/>
+                    <filter string="Bid/No-Bid" name="group_by_decision" context="{'group_by': 'decision'}"/>
+                    <filter string="Type" name="group_by_type" context="{'group_by': 'lead_type'}"/>
+                    <filter string="Customer/End User" name="group_by_customer" context="{'group_by': 'customer_end_user'}"/>
+                    <filter string="Date Found" name="group_by_date_found" context="{'group_by': 'date_found'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Qualification queue for undecided leads only. -->
+    <record id="action_daily_search_leads" model="ir.actions.act_window">
+        <field name="name">All Leads</field>
+        <field name="res_model">daily.search.lead</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_daily_search_lead_search"/>
+        <field name="domain">[('decision', '=', 'na')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new lead to track.
+            </p>
+            <p>
+                Leads marked <strong>No-Bid</strong> are listed under
+                <em>Daily Search → No-Bid</em>.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_daily_search_leads_bid" model="ir.actions.act_window">
+        <field name="name">Bid</field>
+        <field name="res_model">daily.search.lead</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_daily_search_lead_search"/>
+        <field name="domain">[('decision', '=', 'go'), ('crm_lead_id', '=', False)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Bid-marked leads yet.
+            </p>
+            <p>Leads explicitly marked <strong>Bid</strong> appear here.</p>
+        </field>
+    </record>
+
+    <record id="action_daily_search_leads_no_bid" model="ir.actions.act_window">
+        <field name="name">No-Bid</field>
+        <field name="res_model">daily.search.lead</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_daily_search_lead_search"/>
+        <field name="domain">[('decision', '=', 'no_go')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No No-Bid leads yet.
+            </p>
+            <p>All leads marked <strong>No-Bid</strong> (with reason) are tracked here.</p>
+        </field>
+    </record>
+
+    <record id="action_daily_search_leads_sources_sought_bidding" model="ir.actions.act_window">
+        <field name="name">Sources Sought Pre-Bidding</field>
+        <field name="res_model">daily.search.lead</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_daily_search_lead_search"/>
+        <field name="domain" eval="['&amp;', ('decision', '=', 'go'), ('vehicle_type', '=', 'sources_sought')]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No  lSources Sought pre-biddingeads yet.
+            </p>
+            <p>
+                <strong>Bid-marked</strong> leads whose <strong>Vehicle Type</strong> is <strong>Sources Sought</strong> appear here.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_daily_search_manual_lead_entry" model="ir.actions.act_window">
+        <field name="name">Manual Entry</field>
+        <field name="res_model">daily.search.lead</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'form_view_initial_mode': 'edit'}</field>
+    </record>
+
+    <!-- Bulk action: mark selected leads as Bid -->
+    <record id="action_bulk_mark_bid" model="ir.actions.server">
+        <field name="name">Mark as Bid</field>
+        <field name="model_id" ref="model_daily_search_lead"/>
+        <field name="binding_model_id" ref="model_daily_search_lead"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">records.write({'decision': 'go'})</field>
+    </record>
+
+    <!-- Bulk action: mark selected leads as No-Bid -->
+    <record id="action_bulk_mark_no_bid" model="ir.actions.server">
+        <field name="name">Mark as No-Bid</field>
+        <field name="model_id" ref="model_daily_search_lead"/>
+        <field name="binding_model_id" ref="model_daily_search_lead"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">records.write({'decision': 'no_go'})</field>
+    </record>
+
+    <record id="view_daily_search_lead_tree" model="ir.ui.view">
+        <field name="name">daily.search.lead.tree</field>
+        <field name="model">daily.search.lead</field>
+        <field name="arch" type="xml">
+            <list default_order="date_found desc, id desc"
+                  editable="top"
+                  decoration-muted="decision == 'no_go'"
+                  decoration-success="decision == 'go'">
+                <!-- PDF priority order -->
+                <field name="lead_name" required="not api_result_id" readonly="api_result_id"/>
+                <field name="project_link_html" string="Odoo Project" optional="show" widget="html"/>
+                <field name="api_result_id" column_invisible="1"/>
+                <field name="project_id" column_invisible="1"/>
+                <field name="manual_sources_sought" optional="hide"/>
+                <field name="sources_sought_project_url" optional="hide" widget="url"/>
+                <field name="date_found"/>
+                <field name="solicitation_number" required="not api_result_id" readonly="api_result_id"/>
+                <field name="lead_type"
+                       string="Type"
+                       required="not api_result_id"
+                       readonly="api_result_id"/>
+                <field name="lead_type_display" string="Type (display)" optional="hide"/>
+                <field name="similarity_percent"/>
+                <field name="lead_subject_wrapped" column_invisible="True"/>
+                <field name="link_hg_display" widget="html" string="Link to Site, Email, Call, Existing Customer"/>
+                <!-- Source Type: computed HTML — API = external hyperlinks; manual = MANUAL ENTRY → this lead form. -->
+                <field name="source_type_link_display"
+                       widget="html"
+                       string="Source Type"
+                       readonly="1"/>
+                <field name="set_aside"/>
+                <!-- Stored Char: editable in list (display field is not). -->
+                <field name="place_of_performance"
+                       string="Place of Performance"
+                       required="not api_result_id"
+                       readonly="api_result_id"/>
+                <field name="place_of_performance_display" string="Place of Performance (display)" optional="hide"/>
+                <field name="posted_date" optional="show"/>
+                <field name="due_date" optional="show"/>
+                <field name="updated_due_datetime" optional="show"/>
+                <field name="site_visit_datetime" optional="show"/>
+                <field name="qa_datetime" optional="show"/>
+                <field name="customer_end_user_display" string="CX/End User"/>
+                <field name="vehicle_type" required="not api_result_id" readonly="api_result_id"/>
+                <field name="naics_full_display"/>
+                <field name="decision"
+                    string="Bid/No-Bid"
+                    widget="selection_badge"
+                    decoration-success="decision == 'go'"
+                    decoration-danger="decision == 'no_go'"
+                    decoration-info="decision == 'na'"/>
+                <field name="lead_description_display" optional="hide" string="Description"/>
+                <field name="sow_summary_display" optional="hide" string="SOW Summary"/>
+                <field name="ai_summary_display" optional="hide" string="AI Summary"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_daily_search_lead_form" model="ir.ui.view">
+        <field name="name">daily.search.lead.form</field>
+        <field name="model">daily.search.lead</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_port_to_crm"
+                            string="Port to CRM"
+                            type="object"
+                            class="oe_highlight"
+                            invisible="crm_lead_id != False or decision == 'no_go'"/>
+                    <button name="action_open_lead_document_wizard"
+                            string="Ingest Docs (AI)"
+                            type="object"
+                            class="oe_highlight"/>
+                </header>
+                <sheet class="o_form_sheet_full">
+                    <group string="SOW Summary">
+                        <field name="sow_summary"
+                               widget="text"
+                               colspan="2"
+                               nolabel="1"
+                               placeholder="Scope of work summary (editable here; flows to CRM and Project when ported)."/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="lead_name" required="not api_result_id" readonly="api_result_id"/>
+                            <field name="lead_type" required="not api_result_id" readonly="api_result_id"/>
+                            <field name="source_type_link_display"
+                                   widget="html"
+                                   string="Source Type"
+                                   readonly="1"/>
+                            <field name="similarity_percent"/>
+                            <field name="lead_subject" widget="text" string="Lead Subject"/>
+                            <field name="set_aside"/>
+                            <field name="place_of_performance" required="not api_result_id" readonly="api_result_id"/>
+                            <field name="posted_date"/>
+                            <field name="due_date"/>
+                            <field name="site_visit_datetime"/>
+                            <field name="qa_datetime"/>
+                            <field name="agency_name"/>
+                            <field name="customer_end_user"/>
+                            <field name="vehicle_type" required="not api_result_id" readonly="api_result_id"/>
+                            <field name="naics_code"/>
+                            <field name="naics_description" widget="text"/>
+                            <field name="psc_code"/>
+                            <field name="psc_description" widget="text"/>
+                            <field name="solicitation_number" required="not api_result_id" readonly="api_result_id"/>
+                            <field name="date_found"/>
+                        </group>
+                        <group>
+                            <field name="decision" widget="radio" options="{'horizontal': true}"/>
+                            <field name="no_go_reason_id"
+                                   invisible="decision != 'no_go'"
+                                   required="decision == 'no_go'"
+                                   options="{'no_create_edit': False}"/>
+                            <field name="no_go_explanation" invisible="decision != 'no_go'"/>
+                            <field name="crm_lead_id" readonly="1"/>
+                            <field name="odoo_project_lead_number" invisible="1"/>
+                            <field name="project_link_html"
+                                   widget="html"
+                                   string="Odoo Project"
+                                   colspan="2"
+                                   invisible="not project_id"/>
+                            <field name="sources_sought_project_url"
+                                   widget="url"
+                                   string="Project URL (copy)"
+                                   readonly="1"
+                                   invisible="not project_id"/>
+                            <field name="manual_sources_sought" readonly="1" invisible="not manual_sources_sought"/>
+                            <field name="magnitude"/>
+                            <field name="estimate_value_range_display" readonly="1"/>
+                            <field name="best_value"/>
+                            <field name="bonding_requirements"/>
+                            <field name="pricing_notes"/>
+                            <field name="evaluation_criteria"/>
+                            <field name="estimated_competition_band"/>
+                            <field name="factors_of_evaluation_html" widget="html" readonly="1"/>
+                            <button name="action_generate_factors_of_evaluation"
+                                    type="object"
+                                    string="Generate Factors (AI)"
+                                    class="oe_highlight"/>
+                            <field name="incumbent_or_similar_awards"/>
+                            <field name="company_area_config_id" options="{'no_create': True}"/>
+                            <field name="subcontractor_needed"/>
+                            <field name="current_sba_size_standard"/>
+                            <field name="signs_of_shaping"/>
+                            <field name="owner_id"/>
+                            <field name="website_id"/>
+                            <field name="api_source_search"/>
+                            <field name="tracked_initiated_date"/>
+                            <field name="original_due_datetime"/>
+                            <field name="updated_due_datetime"/>
+                            <field name="site_visit_date"/>
+                            <field name="site_visit_mandatory"/>
+                            <field name="qa_date"/>
+                            <field name="total_value" widget="monetary"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Documents &amp; AI">
+                            <group>
+                                <group>
+                                    <field
+                                        name="rag_attachment_ids"
+                                        widget="many2many_binary"
+                                        options="{'no_create': False}"
+                                    />
+                                    <button name="action_open_lead_document_wizard"
+                                            type="object"
+                                            string="Run Ingestion Wizard"
+                                            class="oe_highlight"/>
+                                    <button name="action_refresh_rag_ingest_status"
+                                            type="object"
+                                            string="Refresh Ingestion Status"/>
+                                </group>
+                                <group>
+                                    <field name="rag_last_ingest_status" widget="badge"/>
+                                    <field name="rag_enrichment_status" widget="badge"/>
+                                    <field name="rag_summary_status" widget="badge"/>
+                                    <field name="rag_similarity"/>
+                                    <field name="rag_last_job_id"/>
+                                    <field name="rag_last_ingested_at"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="document_description" widget="html" readonly="1"/>
+                            </group>
+                            <group string="HigherGov — raw markdown">
+                                <field name="document_description_markdown" readonly="1" widget="text"/>
+                            </group>
+                            <group string="Uploaded / ingested (docling)">
+                                <field name="rag_document_description" widget="html" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="rag_document_markdown" readonly="1" widget="text"/>
+                                <field name="rag_doc_ids" readonly="1" widget="text"/>
+                                <field name="rag_enrichment_json" readonly="1" widget="text"/>
+                                <field name="rag_last_ingest_error" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Links">
+                            <group>
+                                <group>
+                                    <field name="link_hg" widget="url"/>
+                                    <field name="link_sam" widget="url"/>
+                                    <field name="link_source_1" widget="url"/>
+                                    <field name="link_source_2" widget="url"/>
+                                    <field name="url_field" widget="url"/>
+                                </group>
+                                <group>
+                                    <field name="customer_contact_link"
+                                           widget="url"
+                                           placeholder="Missing link should be added by BD"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Bid Intel">
+                            <group>
+                                <group>
+                                    <field name="magnitude"/>
+                                    <field name="bonding_requirements"/>
+                                    <field name="pricing_notes"/>
+                                </group>
+                                <group>
+                                    <field name="evaluation_criteria"/>
+                                    <field name="best_value"/>
+                                    <field name="estimated_competition_level"/>
+                                    <field name="incumbent_or_similar_awards"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Internal">
+                            <group>
+                                <group>
+                                    <field name="set_aside"/>
+                                    <field name="agency_customer"/>
+                                    <field name="agency_type"/>
+                                    <field name="agency_abbreviation"/>
+                                    <field name="set_aside_location"/>
+                                    <field name="pipeline"/>
+                                    <field name="stage"/>
+                                    <field name="updated"/>
+                                    <field name="other_date"/>
+                                    <field name="sol_ss_date"/>
+                                    <field name="date_found"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Description">
+                            <group>
+                                <field name="comments"/>
+                            </group>
+                        </page>
+                        <page string="API Source Snapshot" invisible="not api_result_id">
+                            <group>
+                                <group>
+                                    <field name="api_opp_category"/>
+                                    <field name="api_description_text"/>
+                                    <field name="api_notes"/>
+                                    <field name="api_project_information"/>
+                                    <field name="api_ai_summary_raw"/>
+                                    <field name="api_created_date"/>
+                                    <field name="api_last_modified"/>
+                                    <field name="api_cancelled_date"/>
+                                    <field name="api_status_name_raw"/>
+                                    <field name="naics_code"/>
+                                    <field name="naics_description" widget="text"/>
+                                    <field name="psc_code"/>
+                                    <field name="psc_description" widget="text"/>
+                                </group>
+                                <group>
+                                    <field name="api_source_path_raw" widget="url"/>
+                                    <field name="api_document_path_raw" widget="url"/>
+                                    <field name="api_repost_url_raw" widget="url"/>
+                                    <field name="api_source_id_version_raw"/>
+                                    <field name="api_version_key_raw"/>
+                                    <field name="api_source_type_raw"/>
+                                    <field name="api_path_raw" widget="url"/>
+                                    <field name="api_nsn_raw"/>
+                                    <field name="api_nigp_codes_raw"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="api_primary_contact_name_raw"/>
+                                    <field name="api_primary_contact_email_raw"/>
+                                    <field name="api_primary_contact_phone_raw"/>
+                                    <field name="api_secondary_contact_name_raw"/>
+                                    <field name="api_secondary_contact_email_raw"/>
+                                    <field name="api_secondary_contact_phone_raw"/>
+                                </group>
+                                <group>
+                                    <field name="api_val_est_low_raw"/>
+                                    <field name="api_val_est_high_raw"/>
+                                    <field name="api_total_value_raw"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_daily_search_lead_form_api_ext" model="ir.ui.view">
+        <field name="name">daily.search.lead.form.api.ext</field>
+        <field name="model">daily.search.lead</field>
+        <field name="inherit_id" ref="view_daily_search_lead_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_source_result"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-globe"
+                            invisible="not api_result_id">
+                        <div class="o_stat_info">
+                            <span class="o_stat_text">Source</span>
+                            <span class="o_stat_text">Result</span>
+                        </div>
+                    </button>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='owner_id']" position="after">
+                <field name="api_result_id" invisible="1"/>
+                <field name="api_source_id" readonly="1" invisible="not api_source_id"/>
+                <field name="external_id" readonly="1" groups="base.group_no_one"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

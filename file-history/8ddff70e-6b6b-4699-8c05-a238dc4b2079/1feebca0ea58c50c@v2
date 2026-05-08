@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Connector extends Model
+{
+    protected $fillable = ['name', 'slug', 'description', 'logo_icon', 'status', 'config_fields'];
+
+    protected $casts = [
+        'config_fields' => 'array',
+    ];
+
+    public function configuration()
+    {
+        return $this->hasOne(ConnectorConfiguration::class);
+    }
+
+    public function evidenceItems()
+    {
+        return $this->hasMany(EvidenceItem::class);
+    }
+
+    public function isConnected(): bool
+    {
+        return $this->status === 'connected';
+    }
+}

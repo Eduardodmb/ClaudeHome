@@ -1,0 +1,344 @@
+from odoo import models, fields, api
+from .graph_client import GraphClient  
+
+class XChecklistType(models.Model):
+    _name = 'x.checklist.type'
+    _description = 'Checklist Type'
+
+    name = fields.Char(string='Name', required=True)
+    description = fields.Text(string='Description')
+
+class XChecklistCategory(models.Model):
+    _name = 'x.checklist.category'
+    _description = 'Checklist Category'
+
+    name = fields.Char(string='Name', required=True)
+    description = fields.Text(string='Description')
+
+class XCheckListItem(models.Model):
+    _name = 'x.checklist.item'
+    _description = "Checklist Item universal for any Lead/Project"
+    _rec_name = 'task'
+    stage_id = fields.Many2one('crm.stage', string='Applicable Stage', required=False,help='The CRM Stage associated with the checklist item')
+
+    task = fields.Char(
+        string='Checklist Task', 
+        required=True,
+        translate=True
+    )
+    
+    solicitation_details = fields.Text(
+        string='Solicitation Details', 
+        translate=True
+    )
+    checklist_type_id = fields.Many2one(
+        'x.checklist.type', 
+        string='Checklist Type', 
+        required=True,
+        help='The sub-type of the checklist item (e.g., Technical, Financial).'
+    )
+
+    checklist_task_category_id = fields.Many2one(
+        'x.checklist.category', 
+        string='Task Category', 
+        required=True,
+        help='The category/type of the checklist item (e.g., Technical, Financial).'
+    )
+    
+    sequence = fields.Integer(string="Sequence", default=10, help="Order of the task in the list")
+    
+    batch_group = fields.Selection([
+        ('0', 'Batch 0'),
+        ('1', 'Batch 1: Estimator Validation'),
+        ('2', 'Batch 2: BOM Estimator'),
+        ('3', 'Batch 3: Bid Package')
+    ], string="Batch Group", required=True, default='1')
+
+    
+    def action_wipe_and_reload_templates(self):
+        """
+        Deletes ALL checklist templates, categories, and types 
+        after clearing out any dependent lead lines.
+        """
+        self.env['crm.lead.checklist.line'].search([]).unlink()
+
+        self.env['x.checklist.item'].search([]).unlink()
+        self.env['x.checklist.category'].search([]).unlink()
+        self.env['x.checklist.type'].search([]).unlink()
+
+        module = self.env['ir.module.module'].search([('name', '=', 'crm_custom_fields')])
+        if module:
+            module.button_immediate_upgrade()
+
+class CrmLeadChecklistLine(models.Model):
+    _name = 'crm.lead.checklist.line'
+    _description = 'Lead Checklist Progress Line'
+    
+    lead_id = fields.Many2one('crm.lead', string='Lead / Opportunity', ondelete='cascade')
+    checklist_item_id = fields.Many2one('x.checklist.item', string='Checklist Template', required=True)
+    
+    stage_id = fields.Many2one(related='checklist_item_id.stage_id', store=True, string='Stage')
+    task = fields.Char(string='Task Description')
+    solicitation_details = fields.Text(string='Solicitation Details') 
+    due_date = fields.Date(string='Due Date')
+    checklist_type_id = fields.Many2one(related='checklist_item_id.checklist_type_id', store=True, string='Type')
+    status = fields.Selection([
+        ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
+        ('done', 'Done'),
+        ('not_applicable', 'Not Applicable')
+    ], string='Status', default='pending')
+    checklist_type_name = fields.Char(related='checklist_item_id.checklist_type_id.name', string="Type Name", store=True)
+    batch_group = fields.Selection(
+        related='checklist_item_id.batch_group', 
+        store=True, 
+        string="Batch Group"
+    )
+    sequence = fields.Integer(
+        related='checklist_item_id.sequence', 
+        store=True, 
+        string="Sequence"
+    )
+    attachment_ids = fields.Many2many(
+        'ir.attachment', 
+        string='Attachments',
+        help='Upload or link multiple files to this checklist task'
+    )
+    @api.onchange('checklist_item_id')
+    def _onchange_checklist_item_id(self):
+        """Copies template details when the checklist item is selected."""
+        if self.checklist_item_id:
+            self.task = self.checklist_item_id.task
+            self.solicitation_details = self.checklist_item_id.solicitation_details
+        else:
+            self.task = False
+            self.solicitation_details = False
+
+    def write(self, vals):
+        res = super(CrmLeadChecklistLine, self).write(vals)
+        
+        # Only trigger logic if status changed to 'done' or 'not_applicable'
+        if 'status' in vals and vals['status'] in ['done', 'not_applicable']:
+            for line in self:
+                line._check_deliverable_triggers()
+        return res
+    def _check_deliverable_triggers(self):
+        """
+        Logic:
+        1. Check if this line is a Mid Process or Final Deliverable.
+        2. If so, ensure ALL previous items in this batch are done/NA.
+        3. If yes, send email.
+        4. If it is a Final Deliverable, add the next batch.
+        """
+        self.ensure_one()
+        
+        # normalize string comparison
+        type_name = (self.checklist_type_name or '').strip()
+        is_mid_process = 'Mid Process' in type_name
+        is_deliverable = 'Deliverable' in type_name and not is_mid_process
+
+        if not (is_mid_process or is_deliverable):
+            return
+
+        # Check if everything *before* this item in the SAME batch is complete
+        incomplete_previous_tasks = self.env['crm.lead.checklist.line'].search_count([
+            ('lead_id', '=', self.lead_id.id),
+            ('batch_group', '=', self.batch_group),
+            ('sequence', '<', self.sequence), 
+            ('status', 'in', ['pending', 'in_progress'])
+        ])
+
+        if incomplete_previous_tasks > 0:
+            # We do not trigger if previous tasks are still pending
+            return
+
+        
+        # 1. Send Notification Email
+        self._send_review_notification(is_final=is_deliverable)
+
+        # 2. If Final Deliverable, Unlock Next Batch
+        #COMMENGTING OUT FOR NOW AS ALL CHECKLIST ITEMS ARE ADDED RIGTH AWAY
+        # if is_deliverable:
+        #     if self.batch_group == '1':
+        #         self.lead_id._add_checklist_batch('2')
+        #     elif self.batch_group == '2':
+        #         self.lead_id._add_checklist_batch('3')
+
+    def _send_review_notification(self, is_final):
+        
+        client = GraphClient(self.env)
+        
+        subject = f"🔔 Action Required: Checklist Review for {self.lead_id.name}" #
+        
+        # Professional HTML Body
+        body_content = f"""
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+            <div style="background-color: #004a99; color: white; padding: 20px; text-align: center;">
+                <h2 style="margin: 0;">Checklist Milestone Reached</h2>
+            </div>
+            <div style="padding: 20px;">
+                <p>Hello Team,</p>
+                <p>A significant milestone has been completed for the following Lead:</p>
+                
+                <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #f0f0f0; font-weight: bold; width: 30%;">Lead Name:</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #f0f0f0;">{self.lead_id.name}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">Checkpoint:</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #f0f0f0;">{self.task}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">Milestone Type:</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #f0f0f0;"><span style="background: #e1f5fe; color: #01579b; padding: 4px 8px; border-radius: 4px; font-size: 0.9em;">{self.checklist_type_name}</span></td>
+                    </tr>
+                </table>
+
+                <div style="background-color: #fff9c4; border-left: 5px solid #fbc02d; padding: 15px; margin: 20px 0;">
+                    <strong>Status Update:</strong> All tasks preceding this deliverable in <b>Batch {self.batch_group}</b> have been marked as Complete or N/A.
+                </div>
+
+                <p style="margin-top: 30px;">Please log in to Odoo to review the documentation and proceed with the next steps.</p>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" style="background-color: #004a99; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">View Lead in Odoo</a>
+                </div>
+            </div>
+            <div style="background-color: #f9f9f9; color: #888; padding: 15px; text-align: center; font-size: 0.8em; border-top: 1px solid #e0e0e0;">
+                This is an automated notification from the ACG Checklist System.
+            </div>
+        </div>
+        """ # tasks preceding this deliverable have been completed. Please review.
+
+        # Microsoft Graph SendMail Payload
+        payload = {
+            "message": {
+                "subject": subject,
+                "body": {
+                    "contentType": "HTML",
+                    "content": body_content
+                },
+                "toRecipients": [
+                    {
+                        "emailAddress": {
+                            "address": "sales@acglp.com"
+                        }
+                    }
+                ]
+            },
+            "saveToSentItems": "true"
+        }
+
+        endpoint = f"/users/IT-Admin@acglp.com/sendMail"
+        client.call_api('POST', endpoint, payload=payload)
+
+class CrmLead(models.Model):
+    _inherit = 'crm.lead'
+
+    checklist_item_ids = fields.One2many('crm.lead.checklist.line', 'lead_id', string='Checklist Items')
+    
+    def action_start_checklist(self):
+        """Button to manually start Batch 1 * changed to all batches now*"""
+        # self._add_checklist_batch('1')
+        # self._add_checklist_batch('2')
+        # self._add_checklist_batch('3')
+        template_batches = self.env['x.checklist.item'].read_group([], ['batch_group'], ['batch_group'])
+        for batch in template_batches:
+            if batch['batch_group']:
+                self._add_checklist_batch(batch['batch_group'])
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Auto-start Batch 1 on Lead Creation"""
+        # leads = super(CrmLead, self).create(vals_list)
+        # for lead in leads:
+        #     lead._add_checklist_batch('1')
+        #     lead._add_checklist_batch('2')
+        #     lead._add_checklist_batch('3')
+        # return leads
+        leads = super(CrmLead, self).create(vals_list)
+        #changed to add all batches regardless of numbers
+        template_batches = self.env['x.checklist.item'].read_group([], ['batch_group'], ['batch_group'])
+        batch_codes = [b['batch_group'] for b in template_batches if b['batch_group']]
+        
+        for lead in leads:
+            for code in batch_codes:
+                lead._add_checklist_batch(code)
+        return leads
+
+    def _add_checklist_batch(self, batch_group_code):
+        """Adds all templates belonging to a specific batch group"""
+        templates = self.env['x.checklist.item'].search([
+            ('batch_group', '=', batch_group_code)
+        ])
+        
+        new_lines = []
+        for template in templates:
+            exists = self.env['crm.lead.checklist.line'].search_count([
+                ('lead_id', '=', self.id),
+                ('checklist_item_id', '=', template.id)
+            ])
+            if not exists:
+                new_lines.append({
+                    'lead_id': self.id,
+                    'checklist_item_id': template.id,
+                    'task': template.task,
+                    'solicitation_details': template.solicitation_details,
+                    'status': 'pending',
+                })
+        
+        if new_lines:
+            self.env['crm.lead.checklist.line'].create(new_lines)
+            
+            batch_names = {'1': 'Estimator Validation', '2': 'BOM Estimator', '3': 'Bid Package'}
+            self.message_post(body=f"Checklist Batch Added: {batch_names.get(batch_group_code)}")
+
+
+class ChecklistTemplateWizard(models.TransientModel):
+    _name = 'checklist.template.wizard'
+    _description = 'Wizard to add checklist items from templates'
+
+    lead_id = fields.Many2one(
+        'crm.lead', 
+        string='Lead / Opportunity', 
+        required=True
+    )
+
+    checklist_template_ids = fields.Many2many(
+        'x.checklist.item', 
+        string='Checklist Templates', 
+        required=True,
+        help='Select the templates you wish to add as tasks to this Lead.'
+    )
+
+    def create_checklist_lines(self):
+
+        self.ensure_one()
+        new_lines = []
+
+        # Iterate over all selected templates
+        for template in self.checklist_template_ids:
+            # Create a dictionary of values for the new checklist line
+            line_values = {
+                'lead_id': self.lead_id.id,
+                'checklist_item_id': template.id,
+                'task': template.task,
+                'solicitation_details': template.solicitation_details,
+                'status': 'pending', 
+            }
+            new_lines.append(line_values)
+
+        # Create the records in a single batch
+        if new_lines:
+            self.env['crm.lead.checklist.line'].create(new_lines)
+            
+        # Return an action to reload the lead form view to show the new tasks
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'crm.lead',
+            'view_mode': 'form',
+            'res_id': self.lead_id.id,
+            'target': 'current',
+            'views': [(False, 'form')],
+        }

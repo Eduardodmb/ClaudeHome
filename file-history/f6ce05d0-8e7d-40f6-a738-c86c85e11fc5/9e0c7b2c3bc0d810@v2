@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_case_opportunities_filter_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.search.opportunity.inherit.custom</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="lead_seq" string="Lead Number"/>
+                <field name="solicitation_number"/>
+                <field name="job_category_id"/>
+                <field name="division_id"/>
+                <field name="bonding_id"/>
+                <field name="estimate_type_id"/>
+                <field name="lead_source_custom_id"/>
+                <field name="subcontractor_level"/>
+                <field name="secondary_job_category_ids"/>
+                <field name="scope_of_work"/>
+            </xpath>
+            <xpath expr="//filter[@name='assigned_to_me']" position="before">
+                <filter string="CUI" name="is_cui" domain="[('is_cui', '=', True)]"/>
+                <filter string="Business Development" name="is_business_development" domain="[('is_business_development', '=', True)]"/>
+                <separator/>
+                <filter string="Submission Date" name="filter_submission_date" date="submission_date"/>
+                <filter string="Site Visit" name="filter_next_visit" date="next_visit"/>
+                <filter string="Q&amp;A Date" name="filter_qa_date" date="qa_date"/>
+                <filter string="Next Due Date" name="filter_next_duedate" date="next_duedate"/>
+                <filter string="Missed due milestones" name="filter_missed_due_milestones" domain="[('has_missed_due_milestones', '=', True)]"/>
+                <separator/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="Division" name="group_by_division_id" context="{'group_by': 'division_id'}"/>
+                <filter string="Job Category" name="group_by_job_category_id" context="{'group_by': 'job_category_id'}"/>
+                <filter string="Bonding" name="group_by_bonding_id" context="{'group_by': 'bonding_id'}"/>
+                <filter string="Estimate Type" name="group_by_estimate_type_id" context="{'group_by': 'estimate_type_id'}"/>
+                <filter string="Lead Source" name="group_by_lead_source_custom_id" context="{'group_by': 'lead_source_custom_id'}"/>
+                <filter string="Subcontractor Level" name="group_by_subcontractor_level" context="{'group_by': 'subcontractor_level'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_crm_case_leads_filter_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.search.lead.inherit.custom</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="lead_seq" string="Lead Number"/>
+                <field name="solicitation_number"/>
+                <field name="job_category_id"/>
+                <field name="division_id"/>
+                <field name="bonding_id"/>
+                <field name="estimate_type_id"/>
+                <field name="lead_source_custom_id"/>
+                <field name="subcontractor_level"/>
+                <field name="secondary_job_category_ids"/>
+                <field name="scope_of_work"/>
+            </xpath>
+            <xpath expr="//filter[@name='assigned_to_me']" position="before">
+                <filter string="CUI" name="is_cui" domain="[('is_cui', '=', True)]"/>
+                <filter string="Business Development" name="is_business_development" domain="[('is_business_development', '=', True)]"/>
+                <separator/>
+                <filter string="Submission Date" name="filter_submission_date" date="submission_date"/>
+                <filter string="Site Visit" name="filter_next_visit" date="next_visit"/>
+                <filter string="Q&amp;A Date" name="filter_qa_date" date="qa_date"/>
+                <filter string="Next Due Date" name="filter_next_duedate" date="next_duedate"/>
+                <filter string="Missed due milestones" name="filter_missed_due_milestones" domain="[('has_missed_due_milestones', '=', True)]"/>
+                <separator/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="Division" name="group_by_division_id" context="{'group_by': 'division_id'}"/>
+                <filter string="Job Category" name="group_by_job_category_id" context="{'group_by': 'job_category_id'}"/>
+                <filter string="Bonding" name="group_by_bonding_id" context="{'group_by': 'bonding_id'}"/>
+                <filter string="Estimate Type" name="group_by_estimate_type_id" context="{'group_by': 'estimate_type_id'}"/>
+                <filter string="Lead Source" name="group_by_lead_source_custom_id" context="{'group_by': 'lead_source_custom_id'}"/>
+                <filter string="Subcontractor Level" name="group_by_subcontractor_level" context="{'group_by': 'subcontractor_level'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm.crm_lead_action_pipeline" model="ir.actions.act_window">
+        <field name="name">Pipeline</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,list,graph,pivot,form,calendar,activity</field>
+        <field name="domain">[
+            ('type', '=', 'opportunity'),
+            ('stage_id.name', 'in', [
+                '0. Initial Checklist',
+                '1. Scope Review - Estimator',
+                '2. Cost Estimate - Estimator',
+                '3. Proposal - Estimator',
+                '4. Final Review',
+                '4.1 Re-Quote'
+            ])
+        ]</field>
+        <field name="context">{
+            'default_type': 'opportunity',
+            'search_default_stage': 1,
+        }</field>
+    </record>
+</odoo>

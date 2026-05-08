@@ -1,0 +1,18 @@
+# -*- coding: utf-8 -*-
+from odoo import fields, models
+
+
+class ResUsers(models.Model):
+    _inherit = 'res.users'
+
+    ticket_abbreviation = fields.Char(
+        string='Ticket Abbreviation',
+        help='Short code for bulk ticket upload (e.g., EMAR, AE, OMO)',
+        index=True
+    )
+
+    _sql_constraints = [
+        ('unique_ticket_abbreviation',
+         'UNIQUE(ticket_abbreviation)',
+         'Ticket abbreviation must be unique!')
+    ]

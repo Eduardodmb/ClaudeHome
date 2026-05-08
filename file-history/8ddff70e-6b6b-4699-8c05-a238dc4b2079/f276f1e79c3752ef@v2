@@ -1,0 +1,100 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+
+class RolesAndPermissionsSeeder extends Seeder
+{
+    public function run(): void
+    {
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        $permissions = [
+            // Customers (super-admin only)
+            'customers.manage',
+            // Users
+            'users.view', 'users.create', 'users.edit', 'users.delete',
+            // Frameworks
+            'frameworks.view', 'frameworks.create', 'frameworks.edit', 'frameworks.delete', 'frameworks.import',
+            // Control Activities
+            'control-activities.view', 'control-activities.create', 'control-activities.edit', 'control-activities.delete',
+            // Documents
+            'documents.view', 'documents.create', 'documents.edit', 'documents.delete',
+            // Assessments
+            'assessments.view', 'assessments.create', 'assessments.edit', 'assessments.delete',
+            'assessments.findings.edit', 'assessments.export', 'assessments.ssp',
+            // Risks
+            'risks.view', 'risks.create', 'risks.edit', 'risks.delete',
+            // Tasks
+            'tasks.view', 'tasks.create', 'tasks.edit', 'tasks.delete',
+            // Vendors
+            'vendors.view', 'vendors.create', 'vendors.edit', 'vendors.delete',
+            'questionnaires.view', 'questionnaires.create', 'questionnaires.send',
+            // Connectors
+            'connectors.view', 'connectors.manage',
+            // Audits
+            'audits.view', 'audits.create', 'audits.edit', 'audits.delete',
+            // Reports
+            'reports.view', 'reports.create', 'reports.download',
+            // Settings
+            'settings.view', 'settings.edit', 'branding.edit',
+            // Activity Logs
+            'activity-logs.view',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
+        }
+
+        // Super Admin — all permissions including customer management
+        $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
+        $superAdmin->syncPermissions(Permission::all());
+
+        // Admin — all permissions except customer management
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $admin->syncPermissions(Permission::where('name', '!=', 'customers.manage')->get());
+
+        // Assessor — conducts assessments, view/edit findings
+        $assessor = Role::firstOrCreate(['name' => 'assessor']);
+        $assessor->syncPermissions([
+            'frameworks.view',
+            'control-activities.view', 'control-activities.create', 'control-activities.edit',
+            'documents.view', 'documents.create', 'documents.edit',
+            'assessments.view', 'assessments.create', 'assessments.edit',
+            'assessments.findings.edit', 'assessments.export', 'assessments.ssp',
+            'risks.view', 'risks.create', 'risks.edit',
+            'tasks.view', 'tasks.create', 'tasks.edit',
+            'vendors.view', 'questionnaires.view',
+            'reports.view', 'reports.create', 'reports.download',
+            'audits.view',
+        ]);
+
+        // Auditor — read-only
+        $auditor = Role::firstOrCreate(['name' => 'auditor']);
+        $auditor->syncPermissions([
+            'frameworks.view',
+            'control-activities.view',
+            'documents.view',
+            'assessments.view', 'assessments.export',
+            'risks.view',
+            'tasks.view',
+            'vendors.view', 'questionnaires.view',
+            'reports.view', 'reports.download',
+            'audits.view',
+        ]);
+
+        // User — basic access
+        $user = Role::firstOrCreate(['name' => 'user']);
+        $user->syncPermissions([
+            'frameworks.view',
+            'documents.view',
+            'assessments.view',
+            'risks.view',
+            'tasks.view', 'tasks.create', 'tasks.edit',
+            'reports.view',
+        ]);
+    }
+}

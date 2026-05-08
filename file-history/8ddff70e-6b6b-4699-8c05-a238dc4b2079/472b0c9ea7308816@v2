@@ -1,0 +1,43 @@
+---
+name: CMMCUnlock Project State
+description: Current build status, what's been completed, and what's next for CMMCUnlock Laravel app
+type: project
+originSessionId: 8ddff70e-6b6b-4699-8c05-a238dc4b2079
+---
+CMMCUnlock is a CMMC compliance management Laravel 11 app at X:\02_JZS\06_CMMCUnlock.
+
+**Why:** Building a full-featured CMMC/compliance SaaS platform — frameworks, assessments, risk management, vendor risk, task tracking, audit management, connectors, reports.
+
+## Checkpoint history
+- **Checkpoint 1 (Initial commit 2026-04-27):** Backend skeleton — models, migrations, controllers (stubs), seeders, Docker setup, Spatie Permission/ActivityLog.
+- **Session 2 (2026-04-27, uncommitted):** Full UI buildout — all 40+ blade views rebuilt from stubs to real UI using app layout component with sidebar nav, breadcrumbs, flash messages.
+- **Session 3 (2026-04-28):** Backend completions:
+  - Created `app/Models/Connector.php` (was missing, ConnectorController used raw SQL)
+  - Refactored `ConnectorController` to use Eloquent + route model binding
+  - Completed `ReportController` — all 6 report types now export CSV (compliance_dashboard, document_inventory, control_activities were stubs)
+  - Created `app/Mail/QuestionnaireInvitation.php` + `resources/views/emails/questionnaire-invitation.blade.php`
+  - Updated `QuestionnaireController.send()` to actually send email to vendor primary contact
+  - Implemented `VendorController.bulkImport()` — CSV import with optional primary contact columns
+  - Implemented `UserController.bulkImport()` — CSV import, assigns random password (user must use forgot-password flow)
+  - Added Import CSV modal to vendors/index and users/index views
+
+## What still needs to be built
+- **Authorization policies** (`app/Policies/`) — no fine-grained auth yet; any authenticated user can edit/delete anything
+- **Connector sync implementation** — currently just marks `sync_status = in_progress`; real API calls per connector type not implemented
+- **Questionnaire show view** — `questionnaires/show.blade.php` may be stub (needs verification)
+- **Questionnaire edit view** — `questionnaires/edit.blade.php` may be stub
+- **Vendor show/edit views** — may need work
+- **Assessment findings UI** — `assessments/findings` route exists but view quality uncertain
+- **Database seeders** — ConnectorSeeder, RolesAndPermissionsSeeder, QuestionnaireTemplateSeeder exist
+- **Docker/deployment** — Dockerfile updated with fpm-pool.conf; entrypoint.sh modified
+- **ANTHROPIC_API_KEY** — needed for AI recommendations in AssessmentService
+
+## Tech stack
+- Laravel 11.31, PHP (Docker), SQLite (dev), Tailwind CSS via Vite, Alpine.js, Spatie Permission + ActivityLog, Maatwebsite Excel, DomPDF, Laravel Sanctum
+
+## Key files
+- Routes: routes/web.php
+- Layout: resources/views/components/layouts/app.blade.php
+- Services: app/Services/AssessmentService.php, app/Services/FrameworkImportService.php
+
+**How to apply:** Use this to know what's been done and continue building from the "still needs to be built" list.

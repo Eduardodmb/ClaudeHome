@@ -1,0 +1,65 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('frameworks', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('version')->nullable();
+            $table->enum('status', ['active', 'draft', 'archived'])->default('draft');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('framework_apps', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('framework_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('icon')->nullable();
+            $table->integer('sort_order')->default(0);
+            $table->timestamps();
+        });
+
+        Schema::create('parent_subcontrols', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('framework_app_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->integer('sort_order')->default(0);
+            $table->timestamps();
+        });
+
+        Schema::create('subcontrols', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('framework_app_id')->constrained()->onDelete('cascade');
+            $table->foreignId('parent_subcontrol_id')->nullable()->constrained()->onDelete('set null');
+            $table->string('name');
+            $table->text('overview')->nullable();
+            $table->text('action_items')->nullable();
+            $table->text('related_documents')->nullable();
+            $table->text('additional_guidance')->nullable();
+            $table->string('level_1')->nullable();
+            $table->string('level_2')->nullable();
+            $table->string('level_3')->nullable();
+            $table->string('level_4')->nullable();
+            $table->string('level_5')->nullable();
+            $table->integer('sort_order')->default(0);
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('subcontrols');
+        Schema::dropIfExists('parent_subcontrols');
+        Schema::dropIfExists('framework_apps');
+        Schema::dropIfExists('frameworks');
+    }
+};

@@ -1,0 +1,21 @@
+<?php
+namespace App\Http\Controllers;
+use App\Models\Vendor; use App\Models\Subcontrol;
+use Illuminate\Http\Request;
+
+class VendorController extends Controller {
+    public function index() { $vendors=Vendor::withCount(['contacts','questionnaires'])->latest()->paginate(25); return view('vendors.index',compact('vendors')); }
+    public function create() { $subcontrols=Subcontrol::with('frameworkApp.framework')->get(); return view('vendors.create',compact('subcontrols')); }
+    public function store(Request $request) {
+        $data=$request->validate(['name'=>'required|string|max:255','status'=>'required|in:active,inactive','vendor_type'=>'required']);
+        $vendor=Vendor::create(array_merge($data,['description'=>$request->description,'street_1'=>$request->street_1,'city'=>$request->city,'country'=>$request->country,'state'=>$request->state,'zip_code'=>$request->zip_code,'notes'=>$request->notes]));
+        if($request->subcontrol_ids) $vendor->subcontrols()->sync($request->subcontrol_ids);
+        foreach(($request->contacts??[]) as $c) { if(!empty($c['email'])) $vendor->contacts()->create($c); }
+        return redirect()->route('vendors.show',$vendor)->with('success','Vendor created.');
+    }
+    public function show(Vendor $vendor) { $vendor->load(['contacts','subcontrols.frameworkApp','questionnaires']); return view('vendors.show',compact('vendor')); }
+    public function edit(Vendor $vendor) { $subcontrols=Subcontrol::with('frameworkApp.framework')->get(); return view('vendors.edit',compact('vendor','subcontrols')); }
+    public function update(Request $request, Vendor $vendor) { $vendor->update($request->only('name','status','vendor_type','description','street_1','street_2','city','country','state','zip_code','notes')); return redirect()->route('vendors.show',$vendor)->with('success','Vendor updated.'); }
+    public function destroy(Vendor $vendor) { $vendor->delete(); return redirect()->route('vendors.index')->with('success','Vendor deleted.'); }
+    public function bulkImport(Request $request) { return back()->with('error','Bulk import not yet implemented.'); }
+}

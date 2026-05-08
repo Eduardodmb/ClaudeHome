@@ -1,0 +1,49 @@
+<x-layouts.app title="Vendors">
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div><h1 class="page-title">Vendors</h1><p class="page-subtitle">Manage third-party vendors and supplier risk.</p></div>
+        <a href="{{ route('vendors.create') }}" class="btn-primary">@include('components.icon',['name'=>'plus']) Add Vendor</a>
+    </div>
+
+    @if($vendors->isEmpty())
+    <div class="card">
+        <div class="empty-state py-20">
+            @include('components.icon',['name'=>'vendor','class'=>'empty-state-icon'])
+            <p class="empty-state-title">No vendors yet</p>
+            <p class="empty-state-text">Add vendors to assess third-party risk and send questionnaires.</p>
+            <a href="{{ route('vendors.create') }}" class="btn-primary btn-sm mt-4">Add Vendor</a>
+        </div>
+    </div>
+    @else
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Location</th><th>Contacts</th><th>Questionnaires</th><th class="text-right">Actions</th></tr></thead>
+            <tbody>
+            @foreach($vendors as $v)
+            @php $tc=['saas'=>'badge-blue','open_source'=>'badge-green','on_prem'=>'badge-orange','consulting'=>'badge-purple','financial'=>'badge-yellow','other'=>'badge-gray']; @endphp
+            <tr>
+                <td class="font-medium text-gray-900">{{ $v->name }}</td>
+                <td><span class="{{ $tc[$v->vendor_type]??'badge-gray' }}">{{ str_replace('_',' ',ucfirst($v->vendor_type)) }}</span></td>
+                <td><span class="{{ $v->status==='active'?'badge-green':'badge-red' }}">{{ ucfirst($v->status) }}</span></td>
+                <td class="text-gray-500 text-xs">{{ collect([$v->city,$v->state,$v->country])->filter()->implode(', ') ?: '—' }}</td>
+                <td class="text-gray-500 text-sm">{{ $v->contacts_count }}</td>
+                <td class="text-gray-500 text-sm">{{ $v->questionnaires_count }}</td>
+                <td>
+                    <div class="flex items-center justify-end gap-1">
+                        <a href="{{ route('vendors.show',$v) }}" class="btn-ghost btn-sm">@include('components.icon',['name'=>'eye'])</a>
+                        <a href="{{ route('vendors.edit',$v) }}" class="btn-ghost btn-sm">@include('components.icon',['name'=>'edit'])</a>
+                        <form method="POST" action="{{ route('vendors.destroy',$v) }}" onsubmit="return confirm('Delete vendor?')" class="inline">
+                            @csrf @method('DELETE')
+                            <button class="btn-ghost btn-sm text-red-500 hover:text-red-700">@include('components.icon',['name'=>'trash'])</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+    <div>{{ $vendors->links() }}</div>
+    @endif
+</div>
+</x-layouts.app>

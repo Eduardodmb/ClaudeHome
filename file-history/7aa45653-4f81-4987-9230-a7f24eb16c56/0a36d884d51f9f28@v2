@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_dashboard_list" model="ir.ui.view">
+        <field name="name">project.project.dashboard.list</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-success">dashboard_project_balance &gt; 0</attribute>
+                <attribute name="decoration-danger">dashboard_project_balance &lt; 0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="replace">
+                <field name="name" optional="show"/>
+                <field name="main_category_id" optional="show"/>
+                <field name="date_start" string="Start Date" optional="show"/>
+                <field name="date" string="End Date" optional="show"/>
+                <field name="location" optional="show"/>
+                <field name="type_of_award" optional="show"/>
+                <field name="contract_po" optional="show"/>
+                <field name="x_bom_summary_total_adjustment"
+                        string="BOM Est. Budget"
+                        widget="monetary"
+                        options="{'currency_field': 'company_currency'}"
+                        optional="show"/>
+                <field name="x_bom_summary_total_current_expense"
+                        string="BOM Current"
+                        widget="monetary"
+                        options="{'currency_field': 'company_currency'}"
+                        optional="show"/>
+                <field name="x_bom_summary_balance_grand"
+                        string="BOM Balance"
+                        widget="monetary"
+                        options="{'currency_field': 'company_currency'}"
+                        optional="show"/>
+                <field name="deliverable_summary" string="Deliverables" optional="show"/>
+                <field name="certified_payroll" optional="show"/>
+                <field name="allocated_hours" widget="float_time" optional="show"/>
+                <field name="dashboard_total_spent_hours" widget="float_time" optional="show"/>
+                <field name="dashboard_hours_balance" widget="float_time" optional="show"/>
+                <field name="dashboard_internal_co_total"
+                       widget="monetary"
+                       optional="show"/>
+                <field name="dashboard_external_co_total"
+                       widget="monetary"
+                       optional="show"/>
+                <field name="dashboard_project_balance"
+                       string="Balance"
+                       widget="monetary"
+                       optional="show"/>
+                <field name="dashboard_profit_percentage"
+                       string="Profit %"
+                       widget="percentage"
+                       optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_project_dashboard_form" model="ir.ui.view">
+        <field name="name">project.project.dashboard.form</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Financial Dashboard" name="financial_dashboard" sequence="2200">
+                    <group>
+                        <group string="Revenue">
+                            <field name="x_bom_summary_modified_total"/>
+                            <field name="dashboard_total_co"/>
+                            <field name="dashboard_internal_co_total"/>
+                            <field name="dashboard_external_co_total"/>
+                        </group>
+                        <group string="Costs">
+                            <field name="dashboard_po_total"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Project Activity">
+                            <field name="dashboard_timesheet_hours" widget="float_time"/>
+                            <field name="dashboard_daily_reports_count"/>
+                            <field name="dashboard_daily_report_hours" widget="float_time"/>
+                            <field name="dashboard_total_spent_hours" widget="float_time"/>
+                        </group>
+                        <group string="Balance">
+                            <field name="allocated_hours" widget="float_time"/>
+                            <field name="dashboard_hours_balance" widget="float_time"/>
+                            <separator/>
+                            <field name="dashboard_project_balance"
+                                   widget="monetary"
+                                   class="oe_subtotal_footer_separator"/>
+                            <field name="dashboard_profit_percentage"
+                                   widget="percentage"
+                                   class="oe_subtotal_footer_separator"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

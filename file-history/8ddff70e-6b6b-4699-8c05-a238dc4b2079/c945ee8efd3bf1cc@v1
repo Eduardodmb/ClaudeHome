@@ -1,0 +1,138 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FrameworkController;
+use App\Http\Controllers\ControlActivityController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\AssessmentController;
+use App\Http\Controllers\RiskController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\QuestionnaireController;
+use App\Http\Controllers\QuestionnaireTemplateController;
+use App\Http\Controllers\ConnectorController;
+use App\Http\Controllers\AuditController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ProfileController;
+
+// Redirect root to dashboard or login
+Route::get('/', fn() => redirect()->route('dashboard'));
+
+// Guest routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login',   [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/login',  [AuthenticatedSessionController::class, 'store']);
+
+    Route::get('/forgot-password',  [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+
+    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('/reset-password',        [NewPasswordController::class, 'store'])->name('password.store');
+});
+
+// Authenticated routes
+Route::middleware('auth')->group(function () {
+
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Profile
+    Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Frameworks
+    Route::resource('frameworks', FrameworkController::class);
+    Route::get('frameworks/{framework}/import',   [FrameworkController::class, 'showImport'])->name('frameworks.import');
+    Route::post('frameworks/{framework}/import',  [FrameworkController::class, 'processImport'])->name('frameworks.import.process');
+    Route::get('frameworks/download-template',    [FrameworkController::class, 'downloadTemplate'])->name('frameworks.template');
+    Route::post('frameworks/{framework}/clone',   [FrameworkController::class, 'clone'])->name('frameworks.clone');
+
+    // Control Activities
+    Route::resource('control-activities', ControlActivityController::class);
+
+    // Documents
+    Route::resource('documents', DocumentController::class);
+    Route::get('documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
+
+    // Assessments
+    Route::resource('assessments', AssessmentController::class);
+    Route::get('assessments/{assessment}/findings',          [AssessmentController::class, 'findings'])->name('assessments.findings');
+    Route::post('assessments/{assessment}/findings',         [AssessmentController::class, 'updateFinding'])->name('assessments.findings.update');
+    Route::post('assessments/{assessment}/ai-recommendations', [AssessmentController::class, 'generateAIRecommendations'])->name('assessments.ai');
+    Route::get('assessments/{assessment}/export-xlsx',       [AssessmentController::class, 'exportXlsx'])->name('assessments.export-xlsx');
+    Route::get('assessments/{assessment}/generate-ssp',      [AssessmentController::class, 'generateSSP'])->name('assessments.ssp');
+    Route::post('assessments/{assessment}/clone',            [AssessmentController::class, 'clone'])->name('assessments.clone');
+
+    // Risks
+    Route::resource('risks', RiskController::class);
+    Route::get('risk-dashboard',                [RiskController::class, 'dashboard'])->name('risks.dashboard');
+    Route::post('risks/snapshot',               [RiskController::class, 'createSnapshot'])->name('risks.snapshot');
+
+    // Tasks
+    Route::resource('tasks', TaskController::class);
+    Route::get('tasks-kanban',                  [TaskController::class, 'kanban'])->name('tasks.kanban');
+    Route::patch('tasks/{task}/status',         [TaskController::class, 'updateStatus'])->name('tasks.status');
+    Route::post('tasks/{task}/comments',        [TaskController::class, 'addComment'])->name('tasks.comments.store');
+
+    // Vendors
+    Route::resource('vendors', VendorController::class);
+    Route::post('vendors/bulk-import',          [VendorController::class, 'bulkImport'])->name('vendors.bulk-import');
+
+    // Questionnaires
+    Route::resource('questionnaire-templates', QuestionnaireTemplateController::class);
+    Route::resource('questionnaires', QuestionnaireController::class);
+    Route::post('questionnaires/{questionnaire}/send',    [QuestionnaireController::class, 'send'])->name('questionnaires.send');
+    Route::post('questionnaires/{questionnaire}/resend',  [QuestionnaireController::class, 'resend'])->name('questionnaires.resend');
+
+    // Connectors
+    Route::get('connectors',                          [ConnectorController::class, 'index'])->name('connectors.index');
+    Route::post('connectors/{connector}/connect',     [ConnectorController::class, 'connect'])->name('connectors.connect');
+    Route::post('connectors/{connector}/disconnect',  [ConnectorController::class, 'disconnect'])->name('connectors.disconnect');
+    Route::post('connectors/{connector}/test',        [ConnectorController::class, 'test'])->name('connectors.test');
+    Route::post('connectors/{connector}/sync',        [ConnectorController::class, 'sync'])->name('connectors.sync');
+
+    // Audits
+    Route::resource('audits', AuditController::class);
+    Route::post('audits/{audit}/clone',               [AuditController::class, 'clone'])->name('audits.clone');
+
+    // Reports
+    Route::get('reports',                             [ReportController::class, 'index'])->name('reports.index');
+    Route::post('reports/generate',                   [ReportController::class, 'generate'])->name('reports.generate');
+    Route::get('reports/{report}/download',           [ReportController::class, 'download'])->name('reports.download');
+    Route::delete('reports/{report}',                 [ReportController::class, 'destroy'])->name('reports.destroy');
+
+    // Admin-only routes
+    Route::middleware('can:users.view')->group(function () {
+        Route::resource('users', UserController::class);
+        Route::post('users/{user}/toggle-active',    [UserController::class, 'toggleActive'])->name('users.toggle-active');
+        Route::post('users/bulk-import',             [UserController::class, 'bulkImport'])->name('users.bulk-import');
+    });
+
+    Route::middleware('can:settings.edit')->group(function () {
+        Route::get('settings',              [SettingsController::class, 'index'])->name('settings.index');
+        Route::post('settings',             [SettingsController::class, 'update'])->name('settings.update');
+        Route::post('settings/branding',    [SettingsController::class, 'updateBranding'])->name('settings.branding');
+        Route::post('settings/logo',        [SettingsController::class, 'uploadLogo'])->name('settings.logo');
+    });
+});
+
+// Public questionnaire response (token-based, no auth)
+Route::get('/q/{token}',   [QuestionnaireController::class, 'publicShow'])->name('questionnaires.public');
+Route::post('/q/{token}',  [QuestionnaireController::class, 'publicSubmit'])->name('questionnaires.public.submit');
+
+// Cron endpoint (protected by secret key)
+Route::get('/cron/run', function () {
+    if (request('key') !== config('app.cron_secret')) {
+        abort(403);
+    }
+    \Illuminate\Support\Facades\Artisan::call('schedule:run');
+    return 'OK';
+})->name('cron.run');

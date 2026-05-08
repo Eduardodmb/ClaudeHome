@@ -1,0 +1,130 @@
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api
+
+
+class ResPartner(models.Model):
+    """
+    Add subcontractor rating information to contacts.
+
+    This model aggregates ratings from all models that inherit from
+    subcontractor.evaluation.mixin and link to this partner.
+    """
+    _inherit = 'res.partner'
+
+    subcontractor_avg_rating = fields.Float(
+        string="Average Rating",
+        compute="_compute_subcontractor_ratings",
+        store=False,
+        help="Average rating from all evaluations as subcontractor"
+    )
+
+    subcontractor_total_evaluations = fields.Integer(
+        string="Total Evaluations",
+        compute="_compute_subcontractor_ratings",
+        store=False,
+        help="Total number of evaluations received"
+    )
+
+    subcontractor_rating_display = fields.Char(
+        string="Rating Summary",
+        compute="_compute_subcontractor_ratings",
+        store=False,
+        help="Summary display of rating and evaluation count"
+    )
+
+    def _get_subcontractor_evaluation_models(self):
+        """
+        Returns list of models that should be included in rating calculation.
+
+        Override this method in other modules to add your subcontractor models.
+
+        Example:
+        --------
+        def _get_subcontractor_evaluation_models(self):
+            models = super()._get_subcontractor_evaluation_models()
+            models.extend([
+                'project.project.subcontractor',
+                'crm.lead.subcontractor',
+            ])
+            return models
+
+        Returns:
+            list: Model names that inherit from subcontractor.evaluation.mixin
+        """
+        # Base list - can be extended by other modules
+        return []
+
+    @api.depends()
+    def _compute_subcontractor_ratings(self):
+        """
+        Calculate average rating and evaluation count across all evaluation sources.
+
+        This method looks at all models returned by _get_subcontractor_evaluation_models()
+        and aggregates their ratings.
+        """
+        for partner in self:
+            all_ratings = []
+            total_evaluations = 0
+
+            # Get all models that should contribute to the rating
+            evaluation_models = partner._get_subcontractor_evaluation_models()
+
+            for model_name in evaluation_models:
+                if model_name not in self.env:
+                    continue
+
+                try:
+                    # Search for records where this partner is the subcontractor
+                    records = self.env[model_name].search([
+                        ('partner_id', '=', partner.id),
+                        ('is_evaluated', '=', True),
+                        ('overall_rating', '>', 0)
+                    ])
+
+                    # Collect ratings
+                    for record in records:
+                        if record.overall_rating > 0:
+                            all_ratings.append(record.overall_rating)
+                            total_evaluations += 1
+
+                except Exception:
+                    # Skip if model doesn't have required fields
+                    continue
+
+            # Calculate average
+            if all_ratings:
+                partner.subcontractor_avg_rating = sum(all_ratings) / len(all_ratings)
+            else:
+                partner.subcontractor_avg_rating = 0.0
+
+            partner.subcontractor_total_evaluations = total_evaluations
+
+            # Create display string
+            if all_ratings:
+                stars = '⭐' * int(partner.subcontractor_avg_rating)
+                partner.subcontractor_rating_display = (
+                    f"{partner.subcontractor_avg_rating:.1f}/5 {stars} "
+                    f"({total_evaluations} evaluation{'s' if total_evaluations != 1 else ''})"
+                )
+            elif total_evaluations > 0:
+                partner.subcontractor_rating_display = f"Not yet rated ({total_evaluations} evaluations)"
+            else:
+                partner.subcontractor_rating_display = "No evaluation history"
+
+    def action_view_subcontractor_evaluations(self):
+        """
+        Open a view showing all evaluations for this subcontractor.
+
+        This is a generic action that can be overridden by specific modules
+        to show their evaluation records.
+        """
+        self.ensure_one()
+        # This will be extended by other modules to show their specific records
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Subcontractor Evaluations'),
+            'res_model': 'res.partner',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }

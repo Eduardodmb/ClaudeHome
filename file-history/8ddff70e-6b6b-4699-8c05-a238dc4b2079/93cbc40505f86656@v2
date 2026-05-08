@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\BelongsToCustomer;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
+class ControlActivity extends Model
+{
+    use BelongsToCustomer, SoftDeletes, LogsActivity;
+
+    protected $fillable = ['customer_id', 'name', 'description', 'frequency', 'action'];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly(['name', 'frequency', 'action'])->logOnlyDirty();
+    }
+
+    public function subcontrols()
+    {
+        return $this->belongsToMany(Subcontrol::class, 'control_activity_subcontrol');
+    }
+
+    public function risks()
+    {
+        return $this->belongsToMany(Risk::class, 'risk_control_activities');
+    }
+}

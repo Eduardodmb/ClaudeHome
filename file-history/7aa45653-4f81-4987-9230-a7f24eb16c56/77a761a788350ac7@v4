@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_form_tab_ordering" model="ir.ui.view">
+        <field name="name">project.project.form.tab.ordering</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+
+            <!-- HIDE SETTINGS TAB -->
+            <xpath expr="//page[@name='settings']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- SET TAB SEQUENCE FOR ORDERING -->
+            <!-- Only tabs from this module - others set in their own modules -->
+
+            <!-- TEAM -->
+            <xpath expr="//page[@name='TEAM']" position="attributes">
+                <attribute name="sequence">200</attribute>
+            </xpath>
+
+            <!-- PROJECT CONTACTS -->
+            <xpath expr="//page[@name='contacts']" position="attributes">
+                <attribute name="sequence">400</attribute>
+            </xpath>
+
+            <!-- CERTIFICATIONS -->
+            <xpath expr="//page[@name='certifications']" position="attributes">
+                <attribute name="sequence">700</attribute>
+            </xpath>
+
+            <!-- DELIVERABLES -->
+            <xpath expr="//page[@name='deliverables']" position="attributes">
+                <attribute name="sequence">800</attribute>
+            </xpath>
+
+            <!-- MEETINGS -->
+            <xpath expr="//page[@name='project_meetings']" position="attributes">
+                <attribute name="sequence">1100</attribute>
+            </xpath>
+
+            <!-- SUBCONTRACTORS -->
+            <xpath expr="//page[@name='subcontractors_tab']" position="attributes">
+                <attribute name="sequence">1200</attribute>
+            </xpath>
+
+            <!-- APPOINTMENTS -->
+            <xpath expr="//page[@name='appointments_page']" position="attributes">
+                <attribute name="sequence">2400</attribute>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,157 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Assessment;
+use App\Models\ControlActivity;
+use App\Models\Document;
+use App\Models\Framework;
+use App\Models\Report;
+use App\Models\Risk;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class ReportController extends Controller
+{
+    public function index()
+    {
+        $reports = Report::with('creator')->latest()->paginate(25);
+        return view('reports.index', compact('reports'));
+    }
+
+    public function generate(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:user_activity,assessment_status,compliance_dashboard,document_inventory,control_activities,risk_register',
+            'name' => 'required|string|max:255',
+        ]);
+
+        $report = Report::create([
+            'name'       => $request->name,
+            'type'       => $request->type,
+            'filters'    => $request->filters ?? null,
+            'created_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('reports.download', $report);
+    }
+
+    public function download(Report $report)
+    {
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . str_replace('"', '', $report->name) . '.csv"',
+        ];
+
+        $callback = function () use ($report) {
+            $h = fopen('php://output', 'w');
+
+            fputcsv($h, ['Report: ' . $report->name, 'Generated: ' . now()->toDateTimeString()]);
+            fputcsv($h, []);
+
+            switch ($report->type) {
+                case 'user_activity':
+                    fputcsv($h, ['Name', 'Email', 'Role', 'Partner', 'Status', 'Last Login']);
+                    foreach (User::with('roles')->get() as $u) {
+                        fputcsv($h, [
+                            $u->full_name,
+                            $u->email,
+                            $u->getRoleNames()->first() ?? '—',
+                            $u->partner ?? '—',
+                            $u->is_active ? 'Active' : 'Inactive',
+                            $u->last_login_at?->format('Y-m-d H:i') ?? 'Never',
+                        ]);
+                    }
+                    break;
+
+                case 'assessment_status':
+                    fputcsv($h, ['Name', 'Framework', 'Status', 'Completion %', 'Start Date', 'End Date', 'Created By']);
+                    foreach (Assessment::with(['framework', 'creator'])->get() as $a) {
+                        fputcsv($h, [
+                            $a->name,
+                            $a->framework->name,
+                            ucfirst($a->status),
+                            $a->completion_percentage . '%',
+                            $a->start_date?->format('Y-m-d') ?? '—',
+                            $a->end_date?->format('Y-m-d') ?? '—',
+                            $a->creator->full_name ?? '—',
+                        ]);
+                    }
+                    break;
+
+                case 'compliance_dashboard':
+                    fputcsv($h, ['Framework', 'Version', 'Status', 'Control Families', 'Total Controls', 'Assessments', 'Avg Completion %']);
+                    foreach (Framework::withCount(['apps', 'assessments'])->get() as $fw) {
+                        $subcontrolCount = $fw->apps()->withCount('subcontrols')->get()->sum('subcontrols_count');
+                        $avgCompletion   = $fw->assessments()->avg('completion_percentage') ?? 0;
+                        fputcsv($h, [
+                            $fw->name,
+                            $fw->version ?? '—',
+                            ucfirst($fw->status),
+                            $fw->apps_count,
+                            $subcontrolCount,
+                            $fw->assessments_count,
+                            round($avgCompletion, 1) . '%',
+                        ]);
+                    }
+                    break;
+
+                case 'document_inventory':
+                    fputcsv($h, ['Name', 'Type', 'File Type', 'Size', 'Categories', 'Linked Controls', 'Uploaded By', 'Uploaded At']);
+                    foreach (Document::with(['uploader', 'subcontrols'])->get() as $doc) {
+                        fputcsv($h, [
+                            $doc->name,
+                            ucfirst($doc->type),
+                            strtoupper($doc->file_type ?? '—'),
+                            $doc->file_size_formatted,
+                            implode(', ', $doc->categories ?? []),
+                            $doc->subcontrols->pluck('control_id')->implode(', '),
+                            $doc->uploader->full_name ?? '—',
+                            $doc->created_at->format('Y-m-d'),
+                        ]);
+                    }
+                    break;
+
+                case 'control_activities':
+                    fputcsv($h, ['Name', 'Frequency', 'Action', 'Linked Controls', 'Linked Risks']);
+                    foreach (ControlActivity::with(['subcontrols', 'risks'])->get() as $ca) {
+                        fputcsv($h, [
+                            $ca->name,
+                            ucfirst($ca->frequency ?? '—'),
+                            $ca->action ?? '—',
+                            $ca->subcontrols->pluck('control_id')->implode(', '),
+                            $ca->risks->pluck('title')->implode(', '),
+                        ]);
+                    }
+                    break;
+
+                case 'risk_register':
+                    fputcsv($h, ['Title', 'Category', 'Status', 'Inherent Severity', 'Residual Severity', 'Response Type', 'Owner', 'Response Due Date']);
+                    foreach (Risk::with('owner')->get() as $r) {
+                        fputcsv($h, [
+                            $r->title,
+                            ucfirst($r->category ?? '—'),
+                            ucfirst($r->status),
+                            ucfirst($r->inherent_severity),
+                            $r->residual_severity ? ucfirst($r->residual_severity) : '—',
+                            ucfirst(str_replace('_', ' ', $r->risk_response_type ?? '—')),
+                            $r->owner->full_name ?? '—',
+                            $r->response_due_date?->format('Y-m-d') ?? '—',
+                        ]);
+                    }
+                    break;
+            }
+
+            fclose($h);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function destroy(Report $report)
+    {
+        $report->delete();
+        return redirect()->route('reports.index')->with('success', 'Report deleted.');
+    }
+}

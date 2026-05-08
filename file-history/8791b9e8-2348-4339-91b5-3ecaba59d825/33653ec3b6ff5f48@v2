@@ -1,0 +1,12 @@
+# -*- coding: utf-8 -*-
+
+from odoo import models, fields
+
+
+class ProjectProject(models.Model):
+    _inherit = 'project.project'
+
+    # This model inheritance ensures all custom fields from project_custom_fields
+    # and other project modules are accessible in the accounting views.
+    # No additional fields are needed as we're just providing read-only access
+    # to existing project data.

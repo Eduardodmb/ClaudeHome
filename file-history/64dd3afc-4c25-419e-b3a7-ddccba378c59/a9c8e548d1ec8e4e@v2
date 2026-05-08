@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+set -e
+
+echo "=== VCard Manager — First Time Setup ==="
+
+# Copy env
+if [ ! -f .env ]; then
+  cp .env.example .env
+  echo "✓ .env created from .env.example"
+fi
+
+# Start MySQL
+echo "Starting MySQL..."
+docker compose up -d mysql
+echo "Waiting for MySQL to be ready (up to 60s)..."
+timeout=60
+until docker compose exec mysql mysqladmin ping -h localhost -u root -prootsecret --silent 2>/dev/null || [ $timeout -le 0 ]; do
+  sleep 2
+  timeout=$((timeout - 2))
+done
+
+# Scaffold Laravel (skip files that already exist)
+echo "Creating Laravel scaffold (this may take a minute)..."
+docker compose run --rm --no-deps app sh -c "
+  cd /tmp && composer create-project laravel/laravel scaffold --prefer-dist --no-scripts -q 2>/dev/null
+  for item in /tmp/scaffold/.[!.]* /tmp/scaffold/*; do
+    [ -e \"\$item\" ] || continue
+    name=\$(basename \"\$item\")
+    [ -e \"/var/www/html/\$name\" ] || cp -r \"\$item\" \"/var/www/html/\$name\"
+  done
+  echo '✓ Laravel scaffold done'
+"
+
+# Install Composer deps
+echo "Installing PHP dependencies..."
+docker compose run --rm --no-deps app composer install --no-interaction
+
+# Generate app key
+docker compose run --rm --no-deps app php artisan key:generate
+
+# Fix storage permissions
+docker compose run --rm --no-deps app sh -c "
+  mkdir -p storage/app/public/avatars storage/app/public/logos storage/app/public/portfolio
+  chmod -R 777 storage bootstrap/cache
+"
+
+# Migrate and seed
+echo "Running migrations and seeds..."
+docker compose run --rm app php artisan migrate --seed --force
+
+# Storage symlink
+docker compose run --rm app php artisan storage:link 2>/dev/null || true
+
+# Node deps + Tailwind
+echo "Installing Node dependencies..."
+docker compose run --rm --no-deps -e HOME=/tmp node sh -c "
+  npm install &&
+  npm install alpinejs &&
+  npm install -D tailwindcss @tailwindcss/forms autoprefixer
+"
+
+# Build assets (creates public/build for production-style serving)
+echo "Building frontend assets..."
+docker compose run --rm --no-deps -e HOME=/tmp node sh -c "npm run build"
+
+echo ""
+echo "=== Setup complete! ==="
+echo ""
+echo "  Production-style:  docker compose up"
+echo "  With HMR (dev):    docker compose --profile dev up"
+echo "  Open:              http://localhost:8080"
+echo ""
+echo "  Accounts:"
+echo "    super@vcardapp.com   / password  (super admin)"
+echo "    admin1@vcardapp.com  / password  (5 seats)"
+echo "    admin2@vcardapp.com  / password  (3 seats)"
+echo "    admin3@vcardapp.com  / password  (3 seats)"

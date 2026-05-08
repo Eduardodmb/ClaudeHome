@@ -1,0 +1,76 @@
+from odoo import models, fields
+
+class CrmLeadSubcontractor(models.Model):
+    _name = "crm.lead.subcontractor"
+    _description = "CRM Lead Subcontractor"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _order = "sequence, id"
+
+    sequence = fields.Integer(default=10)
+
+    lead_id = fields.Many2one(
+        "crm.lead",
+        required=True,
+        ondelete="cascade",
+        index=True,
+        tracking=True,
+    )
+
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Subcontractor",
+        required=True,
+        domain=[("is_company", "=", True)],
+        tracking=True,
+    )
+
+    trade = fields.Char(string="Trade / Scope", tracking=True)
+
+    status = fields.Selection(
+        [
+            ("requested", "Requested"),
+            ("bidding", "Bidding"),
+            ("received", "Quote Received"),
+            ("selected", "Selected"),
+            ("rejected", "Rejected"),
+        ],
+        default="requested",
+        required=True,
+        tracking=True,
+        string="Status"
+    )
+
+    package_status = fields.Selection(
+        [
+            ("requested", "Requested"),
+            ("received", "Received"),
+            ("rejected", "Rejected"),
+        ],
+        default="requested",
+        required=True,
+        tracking=True,
+        string="Package"
+    )
+
+    amount = fields.Monetary(string="Quoted Amount", tracking=True)
+    currency_id = fields.Many2one(
+        "res.currency",
+        related="lead_id.company_id.currency_id",
+        readonly=True,
+        store=False,
+    )
+
+    quote_date = fields.Date(tracking=True)
+
+    po = fields.Char(string="PO", tracking=True)
+
+    notes = fields.Text()
+    
+    extra_attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'lead_subcontractor_attachment_rel',   #defined name
+        'lead_subcontractor_id',               # name for column here
+        'attachment_id',                  # attachment column
+        string='Extra Attachments',
+        help="Upload unlimited attachments."
+    )

@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Customer;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
+class CustomerController extends Controller
+{
+    public function index()
+    {
+        $customers = Customer::withCount(['users', 'frameworks', 'assessments', 'risks'])
+            ->latest()
+            ->paginate(25);
+
+        return view('customers.index', compact('customers'));
+    }
+
+    public function create()
+    {
+        return view('customers.create');
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name'          => 'required|string|max:255',
+            'slug'          => 'nullable|string|max:255|unique:customers,slug',
+            'contact_name'  => 'nullable|string|max:255',
+            'contact_email' => 'nullable|email|max:255',
+            'contact_phone' => 'nullable|string|max:50',
+            'status'        => 'required|in:active,trial,inactive,suspended',
+            'plan'          => 'required|in:starter,professional,enterprise',
+            'notes'         => 'nullable|string',
+        ]);
+
+        if (empty($data['slug'])) {
+            $data['slug'] = Str::slug($data['name']);
+        }
+
+        $customer = Customer::create($data);
+
+        return redirect()->route('customers.show', $customer)
+            ->with('success', "Customer \"{$customer->name}\" created.");
+    }
+
+    public function show(Customer $customer)
+    {
+        $customer->loadCount(['users', 'frameworks', 'assessments', 'risks', 'vendors', 'audits']);
+        $recentUsers = $customer->users()->with('roles')->latest()->limit(5)->get();
+
+        return view('customers.show', compact('customer', 'recentUsers'));
+    }
+
+    public function edit(Customer $customer)
+    {
+        return view('customers.edit', compact('customer'));
+    }
+
+    public function update(Request $request, Customer $customer)
+    {
+        $data = $request->validate([
+            'name'          => 'required|string|max:255',
+            'slug'          => 'nullable|string|max:255|unique:customers,slug,' . $customer->id,
+            'contact_name'  => 'nullable|string|max:255',
+            'contact_email' => 'nullable|email|max:255',
+            'contact_phone' => 'nullable|string|max:50',
+            'status'        => 'required|in:active,trial,inactive,suspended',
+            'plan'          => 'required|in:starter,professional,enterprise',
+            'notes'         => 'nullable|string',
+        ]);
+
+        $customer->update($data);
+
+        return redirect()->route('customers.show', $customer)
+            ->with('success', 'Customer updated.');
+    }
+
+    public function destroy(Customer $customer)
+    {
+        $customer->delete();
+        return redirect()->route('customers.index')
+            ->with('success', "Customer \"{$customer->name}\" deleted.");
+    }
+}

@@ -1,0 +1,179 @@
+import logging
+
+from odoo import models, api
+
+_logger = logging.getLogger(__name__)
+
+
+class RecruitmentInterviewInvitePortal(models.Model):
+    _inherit = 'recruitment.interview.invite'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Automatically generate portal access when interview is created."""
+        records = super().create(vals_list)
+
+        # Auto-generate portal tokens for all new interviews with applicants
+        for record in records:
+            if record.applicant_id:
+                try:
+                    token_rec = self.env['hr.applicant.portal.token'].generate_for_applicant(
+                        record.applicant_id
+                    )
+                    if token_rec:
+                        _logger.info(
+                            "Auto-generated portal access for applicant %s when interview %s was created.",
+                            record.applicant_id.id, record.id
+                        )
+                        record.message_post(
+                            body=self.env._(
+                                "Portal access automatically created. "
+                                "Magic link will be included in interview invitation email."
+                            ),
+                            subtype_xmlid="mail.mt_note",
+                        )
+                    else:
+                        _logger.warning(
+                            "Could not auto-generate portal access for applicant %s (interview %s). "
+                            "Applicant may lack email or be an internal user.",
+                            record.applicant_id.id, record.id
+                        )
+                except Exception as exc:
+                    _logger.error(
+                        "Failed to auto-generate portal access for applicant %s (interview %s): %s",
+                        record.applicant_id.id, record.id, exc,
+                        exc_info=True,
+                    )
+
+        return records
+
+    def write(self, vals):
+        """Auto-generate portal access when applicant is added to an existing interview."""
+        res = super().write(vals)
+
+        # If applicant_id is being set/changed, generate portal access
+        if 'applicant_id' in vals and vals['applicant_id']:
+            for record in self:
+                if record.applicant_id:
+                    # Check if token already exists and is still valid
+                    existing_token = self.env['hr.applicant.portal.token'].sudo().search([
+                        ('applicant_id', '=', record.applicant_id.id),
+                        ('is_expired', '=', False),
+                    ], limit=1)
+
+                    if existing_token:
+                        _logger.info(
+                            "Applicant %s already has valid portal access (token %s). Skipping auto-generation.",
+                            record.applicant_id.id, existing_token.id
+                        )
+                        continue
+
+                    try:
+                        token_rec = self.env['hr.applicant.portal.token'].generate_for_applicant(
+                            record.applicant_id
+                        )
+                        if token_rec:
+                            _logger.info(
+                                "Auto-generated portal access for applicant %s when added to interview %s.",
+                                record.applicant_id.id, record.id
+                            )
+                            record.message_post(
+                                body=self.env._(
+                                    "Portal access automatically created for new applicant."
+                                ),
+                                subtype_xmlid="mail.mt_note",
+                            )
+                    except Exception as exc:
+                        _logger.error(
+                            "Failed to auto-generate portal access for applicant %s: %s",
+                            record.applicant_id.id, exc,
+                            exc_info=True,
+                        )
+
+        return res
+
+    def _get_portal_credentials_html(self):
+        """Return an HTML block with temporary portal credentials for the candidate email.
+
+        Called by _get_email_templates in the base module. Returns empty string if no
+        applicant is linked or if token generation fails.
+        """
+        if not self.applicant_id:
+            return ""
+        email = (self.applicant_id.email_from or '').strip()
+        if not email:
+            return ""
+
+        # Check if a valid token already exists (from auto-generation or previous invite)
+        token_rec = self.env['hr.applicant.portal.token'].sudo().search([
+            ('applicant_id', '=', self.applicant_id.id),
+            ('is_expired', '=', False),
+        ], order='create_date desc', limit=1)
+
+        # If no valid token exists, generate a new one
+        if not token_rec:
+            try:
+                token_rec = self.env['hr.applicant.portal.token'].generate_for_applicant(
+                    self.applicant_id
+                )
+            except Exception as exc:
+                _logger.warning(
+                    "Could not generate portal token for applicant %s: %s",
+                    self.applicant_id.id, exc,
+                )
+                return ""
+            if not token_rec:
+                return ""
+        else:
+            _logger.info(
+                "Reusing existing valid portal token %s for applicant %s in interview email.",
+                token_rec.id, self.applicant_id.id
+            )
+
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        login_url = f"{base_url}/web/login"
+        detail_url = f"{base_url}/my/applications"
+        expiry_str = (
+            token_rec.expiry.strftime('%B %d, %Y %I:%M %p UTC')
+            if token_rec.expiry
+            else 'N/A'
+        )
+
+        return f"""
+            <div style="background:#f4f8ff;border:1px solid #c0d4ef;border-radius:6px;
+                        padding:16px 20px;margin:20px 0;">
+                <p style="margin:0 0 10px;font-weight:bold;color:#1a3a6c;font-size:13pt;">
+                    📋 Candidate Portal Access
+                </p>
+                <p style="margin:0 0 12px;">
+                    Access your application portal to view status and upload required documents.
+                </p>
+                <p style="margin:0 0 8px;font-weight:bold;color:#1a3a6c;">
+                    🔐 Login Credentials:
+                </p>
+                <table style="margin:0 0 16px;border:1px solid #ddd;border-collapse:collapse;width:100%;">
+                    <tr style="background:#f8f9fa;">
+                        <td style="padding:8px 12px;border:1px solid #ddd;width:30%;"><strong>Login URL:</strong></td>
+                        <td style="padding:8px 12px;border:1px solid #ddd;">
+                            <a href="{login_url}" style="color:#0056b3;font-weight:bold;">{login_url}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px 12px;border:1px solid #ddd;"><strong>Username:</strong></td>
+                        <td style="padding:8px 12px;border:1px solid #ddd;font-family:monospace;">{email}</td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td style="padding:8px 12px;border:1px solid #ddd;"><strong>Password:</strong></td>
+                        <td style="padding:8px 12px;border:1px solid #ddd;font-family:monospace;font-weight:bold;color:#d9534f;">{token_rec.temp_password}</td>
+                    </tr>
+                </table>
+                <p style="margin:0 0 8px;background:#fff3cd;padding:8px 12px;border-left:3px solid #ffc107;">
+                    <strong>📌 Important:</strong> After logging in, you'll be automatically directed to
+                    <a href="{detail_url}" style="color:#0056b3;">your applications page</a>.
+                </p>
+                <p style="margin:0;font-size:10pt;color:#777;">
+                    ⏰ These credentials expire on <strong>{expiry_str}</strong>.
+                    Contact HR if you need assistance.
+                </p>
+            </div>
+        """

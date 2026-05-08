@@ -1,0 +1,8 @@
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+state/
+*.pdf
+*.docx
+*.pptx

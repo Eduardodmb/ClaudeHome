@@ -1,0 +1,66 @@
+<odoo>
+    <record id="view_hr_department_notes_form_inherit" model="ir.ui.view">
+        <field name="name">hr.department.form.inherit.notes</field>
+        <field name="model">hr.department</field>
+        <field name="inherit_id" ref="hr.view_department_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//page[@name='activities_table_tab']" position="before">
+                <page string="Library">
+                    <field name="library_item_ids"
+                            mode="list,form"
+                            nolabel="1">
+                        <list>
+                        <field name="sequence" widget="handle"/>
+                        <field name="name"/>
+                        <field name="sharepoint_path"/>
+                        <field name="doc_type"/>
+                        <field name="tag_ids" widget="many2many_tags"/>
+                        <field name="owner_id"/>
+                        <field name="status"/>
+                        <button name="action_open_sharepoint"
+                            type="object"
+                            string="Open"
+                            icon="fa-external-link"
+                            class="btn-link"/>
+                        </list>
+                    </field>
+                </page>
+
+                <page string="Notes" name="department_notes_tab" >
+                    <field name="department_notes_ids" context="{'default_department_id': id}">
+                        <list editable="bottom">
+                            <field name="note_taken_date"/>
+                            <field name="note_taken_by" widget="many2one_avatar_user"/>
+                            <field name="notes" widget="html" options="{'collaborative': True}"/>
+                        </list>
+                        
+                        <form string="Department Note">
+                            <sheet>
+                                <group>
+                                    <group>
+                                        <field name="note_taken_date"/>
+                                        <field name="note_taken_by" widget="many2one_avatar_user"/>
+                                    </group>
+                                </group>
+                                <label for="notes" string="Note Content"/>
+                                <field name="notes" widget="html" nolabel="1" options="{'style-inline': true}"/>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+    <record id="view_department_form_inherit_email" model="ir.ui.view">
+        <field name="name">hr.department.form.inherit.email</field>
+        <field name="model">hr.department</field>
+        <field name="inherit_id" ref="hr.view_department_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="dept_email" widget="email"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

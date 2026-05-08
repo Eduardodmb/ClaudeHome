@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
+class Risk extends Model
+{
+    use SoftDeletes, LogsActivity;
+
+    protected $fillable = [
+        'subcontrol_id', 'title', 'description', 'risk_owner_id', 'status', 'category',
+        'date_identified', 'response_due_date', 'response_plan',
+        'inherent_likelihood', 'inherent_impact', 'residual_likelihood', 'residual_impact',
+        'is_key_risk', 'risk_response_type', 'notes',
+        'annual_loss_expectancy', 'budget_allocated', 'tags',
+    ];
+
+    protected $casts = [
+        'date_identified'      => 'date',
+        'response_due_date'    => 'date',
+        'is_key_risk'          => 'boolean',
+        'tags'                 => 'array',
+        'annual_loss_expectancy' => 'decimal:2',
+        'budget_allocated'     => 'decimal:2',
+    ];
+
+    protected static array $likelihoodValues = [
+        'rare' => 1, 'unlikely' => 2, 'possible' => 3, 'likely' => 4, 'almost_certain' => 5,
+    ];
+
+    protected static array $impactValues = [
+        'negligible' => 1, 'minor' => 2, 'moderate' => 3, 'significant' => 4, 'severe' => 5,
+    ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly(['title', 'status', 'category'])->logOnlyDirty();
+    }
+
+    public function subcontrol()
+    {
+        return $this->belongsTo(Subcontrol::class);
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'risk_owner_id');
+    }
+
+    public function controlActivities()
+    {
+        return $this->belongsToMany(ControlActivity::class, 'risk_control_activities');
+    }
+
+    public function documents()
+    {
+        return $this->belongsToMany(Document::class, 'risk_attachments');
+    }
+
+    public function getInherentScoreAttribute(): int
+    {
+        return (self::$likelihoodValues[$this->inherent_likelihood] ?? 1)
+             * (self::$impactValues[$this->inherent_impact] ?? 1);
+    }
+
+    public function getResidualScoreAttribute(): ?int
+    {
+        if (!$this->residual_likelihood || !$this->residual_impact) return null;
+        return (self::$likelihoodValues[$this->residual_likelihood] ?? 1)
+             * (self::$impactValues[$this->residual_impact] ?? 1);
+    }
+
+    public function getInherentSeverityAttribute(): string
+    {
+        return self::scoreToSeverity($this->inherent_score);
+    }
+
+    public function getResidualSeverityAttribute(): ?string
+    {
+        $score = $this->residual_score;
+        return $score ? self::scoreToSeverity($score) : null;
+    }
+
+    public static function scoreToSeverity(int $score): string
+    {
+        if ($score <= 4)  return 'low';
+        if ($score <= 9)  return 'medium';
+        if ($score <= 14) return 'high';
+        return 'critical';
+    }
+}

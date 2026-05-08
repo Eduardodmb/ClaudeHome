@@ -1,0 +1,26 @@
+<?php
+namespace App\Http\Controllers;
+use App\Models\Connector;
+use App\Models\ConnectorConfiguration;
+use Illuminate\Http\Request;
+
+class ConnectorController extends Controller {
+    public function index() {
+        $connectors=\Illuminate\Support\Facades\DB::table('connectors')->get();
+        return view('connectors.index',compact('connectors'));
+    }
+    public function connect(Request $request, int $connector) {
+        $c=\Illuminate\Support\Facades\DB::table('connectors')->find($connector);
+        // Store encrypted config
+        ConnectorConfiguration::updateOrCreate(['connector_id'=>$connector],['credentials'=>encrypt(json_encode($request->except('_token'))),'settings'=>[]]);
+        \Illuminate\Support\Facades\DB::table('connectors')->where('id',$connector)->update(['status'=>'connected']);
+        return back()->with('success','Connector configured.');
+    }
+    public function disconnect(int $connector) {
+        \Illuminate\Support\Facades\DB::table('connectors')->where('id',$connector)->update(['status'=>'available']);
+        ConnectorConfiguration::where('connector_id',$connector)->delete();
+        return back()->with('success','Connector disconnected.');
+    }
+    public function test(int $connector) { return response()->json(['status'=>'ok','message'=>'Connection test successful (simulated).']); }
+    public function sync(int $connector) { return back()->with('success','Sync queued.'); }
+}

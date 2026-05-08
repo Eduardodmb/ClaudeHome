@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_activity_schedule_view_form_inherit_targets_doc" model="ir.ui.view">
+        <field name="name">mail.activity.schedule.view.form.inherit.targets.doc</field>
+        <field name="model">mail.activity.schedule</field>
+        <field name="inherit_id" ref="mail.mail_activity_schedule_view_form"/>
+        <field name="arch" type="xml">
+            
+
+
+            <xpath expr="//field[@name='activity_type_id']" position="after">
+                <label for="target_document_item_id" string="Target Document"/>
+                <field name="target_document_item_id"
+                       nolabel="1"
+                       placeholder="Select Document..."/>
+                <label for="additional_document_ids" string="Additional Documents"/>
+                <field name="additional_document_ids"
+                       widget="many2many_tags"
+                       nolabel="1"
+                       placeholder="Select documents..."/>
+                <label for="activity_tag_ids" string="Tags"/>
+                <field name="activity_tag_ids"
+                       widget="many2many_tags"
+                       nolabel="1"
+                       placeholder="Select tags..."/>
+                <label for="certification_name_id" string="Certificates"/>
+                <field name="certification_name_id"
+                       widget="many2many_tags"
+                       nolabel="1"
+                       placeholder="Select Certificates"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='summary']" position="attributes">
+                <attribute name="nolabel">0</attribute>
+                <attribute name="string">Summary</attribute>
+            </xpath>
+            <xpath expr="//field[@name='summary']" position="after">
+                <field name="is_email_activity_type" column_invisible="1"/>
+                <field name="graph_custom_subject_line_wizard_ids" mode="list"
+                       invisible="not is_email_activity_type">
+                    <list string="Graph / mail match" editable="bottom" create="1" default_order="sequence, id">
+                        <field name="sequence" widget="handle"/>
+                        <field name="name" string="Subject / fragment"/>
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_form_inherit_daily" model="ir.ui.view">
+        <field name="name">project.project.form.inherit.daily</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Technician Daily Reports" name="technician_daily_reports" sequence="1300">
+                    <group>
+                        <field name="daily_count" invisible="1"/>
+                        <button name="%(action_project_daily)d" type="action"
+                                string="View All Daily Reports"
+                                class="oe_stat_button"
+                                icon="fa-calendar"
+                                context="{'search_default_project_id': id}"/>
+                    </group>
+                    <field name="daily_ids" context="{'default_project_id': id}">
+                        <list>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="employee_id"/>
+                            <field name="location"/>
+                            <field name="hours_spent" sum="Total Hours"/>
+                            <field name="image_count"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

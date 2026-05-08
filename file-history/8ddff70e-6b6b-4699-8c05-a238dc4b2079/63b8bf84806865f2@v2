@@ -1,0 +1,92 @@
+<x-layouts.app title="Connectors">
+    <div class="space-y-6">
+        <div>
+            <h1 class="page-title">Connectors</h1>
+            <p class="page-subtitle">Integrate with third-party tools for automated evidence collection.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            @foreach($connectors as $connector)
+            @php $config = $connector->config_fields; @endphp
+            <div class="card" x-data="{ configOpen: false }">
+                <div class="card-body">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
+                                @include('components.icon', ['name' => 'connector', 'class' => 'w-5 h-5'])
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900">{{ $connector->name }}</p>
+                                <span class="@if($connector->status === 'connected') badge-green @elseif($connector->status === 'error') badge-red @else badge-gray @endif">
+                                    {{ ucfirst($connector->status) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-3">{{ $connector->description }}</p>
+                    @if($connector->configuration && $connector->configuration->last_sync_at)
+                    <p class="text-xs text-gray-400 mt-2">
+                        Last sync: {{ $connector->configuration->last_sync_at->diffForHumans() }}
+                        @if($connector->configuration->sync_status === 'failed')
+                            <span class="badge-red ml-1">Failed</span>
+                        @elseif($connector->configuration->sync_status === 'in_progress')
+                            <span class="badge-yellow ml-1">In progress</span>
+                        @else
+                            <span class="badge-green ml-1">OK</span>
+                        @endif
+                    </p>
+                    @endif
+                </div>
+                <div class="card-footer flex items-center gap-2">
+                    @if($connector->status === 'connected')
+                        <form method="POST" action="{{ route('connectors.sync', $connector->id) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="btn-secondary btn-sm">Sync Now</button>
+                        </form>
+                        <form method="POST" action="{{ route('connectors.disconnect', $connector->id) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="btn-ghost btn-sm text-red-500">Disconnect</button>
+                        </form>
+                    @else
+                        <button @click="configOpen = !configOpen" class="btn-primary btn-sm">Configure</button>
+                    @endif
+                </div>
+
+                {{-- Config form --}}
+                <div x-show="configOpen" x-transition class="border-t border-gray-200 p-4 bg-gray-50 rounded-b-xl">
+                    <form method="POST" action="{{ route('connectors.connect', $connector->id) }}">
+                        @csrf
+                        <div class="space-y-3">
+                            @foreach($config as $field)
+                            <div>
+                                <label class="form-label text-xs">{{ $field['label'] }}</label>
+                                @if($field['type'] === 'select')
+                                    <select name="{{ $field['key'] }}" class="form-select text-sm">
+                                        @foreach($field['options'] as $opt)
+                                            <option value="{{ $opt }}">{{ ucfirst($opt) }}</option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <input type="{{ $field['type'] }}" name="{{ $field['key'] }}"
+                                           class="form-input text-sm"
+                                           {{ ($field['required'] ?? false) ? 'required' : '' }}>
+                                @endif
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="flex items-center gap-2 mt-4">
+                            <button type="submit" class="btn-primary btn-sm">Save & Connect</button>
+                            <button type="button" @click="configOpen = false" class="btn-ghost btn-sm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        <div class="card card-body text-center">
+            <p class="text-sm text-gray-600">Don't see your connector?</p>
+            <p class="text-xs text-gray-400 mt-1">Contact us at <a href="mailto:integrations@cmmcunlock.com" class="text-blue-600 hover:underline">integrations@cmmcunlock.com</a> to request a new connector.</p>
+        </div>
+    </div>
+</x-layouts.app>

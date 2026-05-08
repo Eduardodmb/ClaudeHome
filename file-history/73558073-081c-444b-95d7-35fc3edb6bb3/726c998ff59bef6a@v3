@@ -1,0 +1,205 @@
+from odoo import api, models, fields, _
+from odoo.exceptions import ValidationError
+
+
+class ProjectBonding(models.Model):
+    _name = 'project.bonding'
+    _description = 'Project Bonding'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'date_requested desc, id desc'
+
+    name = fields.Char(string='Bond Reference', required=True, tracking=True)
+
+    bonding_type_id = fields.Many2one(
+        'project.bonding.type',
+        string='Bonding Type',
+        required=True,
+        tracking=True,
+        ondelete='restrict'
+    )
+
+    project_id = fields.Many2one('project.project', string='Project', tracking=True)
+    lead_id = fields.Many2one('crm.lead', string='CRM Lead/Opportunity', tracking=True)
+
+    state = fields.Selection([
+        ('pending', 'Pending'),
+        ('in_use', 'In Use'),
+        ('to_be_closed', 'To Be Closed'),
+        ('closed', 'Closed'),
+    ], string='Status', default='pending', required=True, tracking=True)
+
+    amount = fields.Monetary(
+        string='Bond Amount',
+        currency_field='currency_id',
+        tracking=True,
+        help='Total amount of the bond'
+    )
+    cost = fields.Monetary(
+        string='Bond Cost',
+        currency_field='currency_id',
+        tracking=True,
+        help='Cost to obtain the bond (premium/fee)'
+    )
+    currency_id = fields.Many2one(
+        'res.currency',
+        string='Currency',
+        default=lambda self: self.env.company.currency_id
+    )
+
+    owner_id = fields.Many2one('hr.employee', string='Owner', tracking=True)
+    date_requested = fields.Date(string='Date Requested', tracking=True, default=fields.Date.context_today)
+    date_issued = fields.Date(string='Date Issued', tracking=True)
+    due_date = fields.Date(string='Due Date', tracking=True, help='Date when the bond is due or needs to be submitted')
+    expiry_date = fields.Date(string='Expiry Date', tracking=True)
+
+    bonding_company = fields.Char(string='Bonding Company', tracking=True)
+    bond_number = fields.Char(string='Bond Number', tracking=True)
+
+    notes = fields.Html(string='Notes')
+
+    def action_view_bonding(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'project.bonding',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    def action_set_in_use(self):
+        self.write({'state': 'in_use'})
+
+    def action_set_to_be_closed(self):
+        self.write({'state': 'to_be_closed'})
+
+    def action_close(self):
+        self.write({'state': 'closed'})
+
+    def action_reopen(self):
+        self.write({'state': 'pending'})
+
+    @api.constrains('project_id', 'lead_id')
+    def _check_project_or_lead(self):
+        for record in self:
+            if not record.project_id and not record.lead_id:
+                raise ValidationError(_('A bond must be linked to either a Project or a CRM Lead/Opportunity.'))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Override create to log bond creation in project or CRM lead"""
+        records = super(ProjectBonding, self).create(vals_list)
+        for record in records:
+            message_body = _('Bond created: <b>%s</b> (%s) - Amount: %s %s') % (
+                record.name,
+                record.bonding_type_id.name,
+                record.amount or 0,
+                record.currency_id.symbol
+            )
+            message_subject = _('Bond Created: %s') % record.name
+
+            # Log to project if linked
+            if record.project_id:
+                record.project_id.message_post(
+                    body=message_body,
+                    subject=message_subject,
+                    message_type='notification',
+                    subtype_xmlid='mail.mt_note'
+                )
+
+            # Log to CRM lead if linked
+            if record.lead_id:
+                record.lead_id.message_post(
+                    body=message_body,
+                    subject=message_subject,
+                    message_type='notification',
+                    subtype_xmlid='mail.mt_note'
+                )
+        return records
+
+    def write(self, vals):
+        """Override write to log bond modifications in project or CRM lead"""
+        result = super(ProjectBonding, self).write(vals)
+        for record in self:
+            # Build message for changed fields
+            changes = []
+            if 'state' in vals:
+                changes.append(_('Status changed to <b>%s</b>') % dict(record._fields['state'].selection).get(record.state))
+            if 'amount' in vals:
+                changes.append(_('Amount updated to <b>%s %s</b>') % (record.amount, record.currency_id.symbol))
+            if 'due_date' in vals:
+                changes.append(_('Due date set to <b>%s</b>') % (record.due_date or 'Not set'))
+            if 'expiry_date' in vals:
+                changes.append(_('Expiry date set to <b>%s</b>') % (record.expiry_date or 'Not set'))
+            if 'date_issued' in vals:
+                changes.append(_('Issue date set to <b>%s</b>') % (record.date_issued or 'Not set'))
+
+            if changes:
+                message_body = _('Bond <b>%s</b> updated:<br/>%s') % (record.name, '<br/>'.join(changes))
+                message_subject = _('Bond Updated: %s') % record.name
+
+                # Log to project if linked
+                if record.project_id:
+                    record.project_id.message_post(
+                        body=message_body,
+                        subject=message_subject,
+                        message_type='notification',
+                        subtype_xmlid='mail.mt_note'
+                    )
+
+                # Log to CRM lead if linked
+                if record.lead_id:
+                    record.lead_id.message_post(
+                        body=message_body,
+                        subject=message_subject,
+                        message_type='notification',
+                        subtype_xmlid='mail.mt_note'
+                    )
+        return result
+
+    def unlink(self):
+        """Override unlink to log bond deletion in project or CRM lead"""
+        # Store project and lead info before deletion
+        deletion_logs = []
+        for record in self:
+            log_data = {
+                'name': record.name,
+                'bonding_type': record.bonding_type_id.name,
+                'amount': record.amount,
+                'currency': record.currency_id.symbol,
+                'project': record.project_id,
+                'lead': record.lead_id
+            }
+            deletion_logs.append(log_data)
+
+        result = super(ProjectBonding, self).unlink()
+
+        # Log after deletion
+        for log in deletion_logs:
+            message_body = _('Bond deleted: <b>%s</b> (%s) - Amount: %s %s') % (
+                log['name'],
+                log['bonding_type'],
+                log['amount'] or 0,
+                log['currency']
+            )
+            message_subject = _('Bond Deleted: %s') % log['name']
+
+            # Log to project if was linked
+            if log['project']:
+                log['project'].message_post(
+                    body=message_body,
+                    subject=message_subject,
+                    message_type='notification',
+                    subtype_xmlid='mail.mt_note'
+                )
+
+            # Log to CRM lead if was linked
+            if log['lead']:
+                log['lead'].message_post(
+                    body=message_body,
+                    subject=message_subject,
+                    message_type='notification',
+                    subtype_xmlid='mail.mt_note'
+                )
+
+        return result

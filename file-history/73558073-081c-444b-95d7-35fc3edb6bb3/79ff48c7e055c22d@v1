@@ -1,0 +1,81 @@
+from odoo import models, fields
+class ProjectProject(models.Model):
+    _inherit = "project.project"
+
+    subcontractor_line_ids = fields.One2many(
+        "project.project.subcontractor", 
+        "project_id", 
+        string="Subcontractors"
+        
+    )
+class ProjectLeadSubcontractor(models.Model):
+    _name = "project.project.subcontractor"
+    _description = "Project Subcontractor"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _order = "sequence, id"
+
+    sequence = fields.Integer(default=10)
+
+    project_id = fields.Many2one(
+        "project.project",
+        required=True,
+        ondelete="cascade",
+        index=True,
+        tracking=True,
+    )
+
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Subcontractor",
+        required=True,
+        domain=[("is_company", "=", True)],
+        tracking=True,
+    )
+
+    trade = fields.Char(string="Trade / Scope", tracking=True)
+
+    status = fields.Selection(
+        [
+            ("requested", "Requested"),
+            ("bidding", "Bidding"),
+            ("received", "Quote Received"),
+            ("selected", "Selected"),
+            ("rejected", "Rejected"),
+        ],
+        default="requested",
+        required=True,
+        tracking=True,
+        string="Status"
+    )
+
+    package_status = fields.Selection(
+        [
+            ("requested", "Requested"),
+            ("received", "Received"),
+            ("rejected", "Rejected"),
+        ],
+        default="requested",
+        required=True,
+        tracking=True,
+        string="Package"
+    )
+
+    amount = fields.Monetary(string="Quoted Amount", tracking=True)
+    currency_id = fields.Many2one(
+        "res.currency",
+        related="project_id.company_id.currency_id",
+        readonly=True,
+        store=False,
+    )
+
+    quote_date = fields.Date(tracking=True)
+
+    po = fields.Char(string="PO", tracking=True)
+
+    notes = fields.Text()
+    
+    extra_attachment_ids = fields.Many2many(
+        'ir.attachment',
+        string='Extra Attachments',
+        help="Upload unlimited attachments."
+    )

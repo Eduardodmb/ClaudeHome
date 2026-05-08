@@ -1,0 +1,144 @@
+<x-layouts.app title="{{ $questionnaire->name }}">
+<div class="space-y-6">
+
+    {{-- Header --}}
+    <div class="flex items-start justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-3">
+                <h1 class="page-title">{{ $questionnaire->name }}</h1>
+                @php $sc=['draft'=>'badge-gray','sent'=>'badge-blue','in_progress'=>'badge-yellow','completed'=>'badge-green']; @endphp
+                <span class="{{ $sc[$questionnaire->status] ?? 'badge-gray' }}">{{ ucfirst(str_replace('_',' ',$questionnaire->status)) }}</span>
+            </div>
+            <p class="page-subtitle">{{ $questionnaire->vendor->name }} &mdash; {{ $questionnaire->template->name }}</p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+            @if($questionnaire->status !== 'completed')
+            <form method="POST" action="{{ route('questionnaires.' . ($questionnaire->status === 'draft' ? 'send' : 'resend'), $questionnaire) }}">
+                @csrf
+                <button class="btn-primary btn-sm">
+                    @include('components.icon', ['name' => 'upload'])
+                    {{ $questionnaire->status === 'draft' ? 'Send to Vendor' : 'Resend' }}
+                </button>
+            </form>
+            @endif
+            <a href="{{ route('questionnaires.edit', $questionnaire) }}" class="btn-ghost btn-sm">
+                @include('components.icon', ['name' => 'edit'])
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {{-- Left: Meta --}}
+        <div class="space-y-4">
+            <div class="card">
+                <div class="card-header"><h2 class="text-sm font-semibold text-gray-900">Details</h2></div>
+                <div class="card-body space-y-3 text-sm">
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Vendor</p>
+                        <a href="{{ route('vendors.show', $questionnaire->vendor) }}" class="text-blue-600 hover:underline font-medium">{{ $questionnaire->vendor->name }}</a>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Template</p>
+                        <p class="text-gray-700">{{ $questionnaire->template->name }}</p>
+                    </div>
+                    @if($questionnaire->due_date)
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Due Date</p>
+                        <p class="text-gray-700 {{ $questionnaire->due_date->isPast() && $questionnaire->status !== 'completed' ? 'text-red-600 font-semibold' : '' }}">
+                            {{ $questionnaire->due_date->format('M j, Y') }}
+                            @if($questionnaire->due_date->isPast() && $questionnaire->status !== 'completed')
+                                <span class="badge-red ml-1 text-xs">Overdue</span>
+                            @endif
+                        </p>
+                    </div>
+                    @endif
+                    @if($questionnaire->sent_date)
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Sent</p>
+                        <p class="text-gray-700">{{ $questionnaire->sent_date->format('M j, Y') }}</p>
+                    </div>
+                    @endif
+                    @if($questionnaire->completed_date)
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Completed</p>
+                        <p class="text-gray-700">{{ $questionnaire->completed_date->format('M j, Y') }}</p>
+                    </div>
+                    @endif
+                    @if($questionnaire->score !== null)
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Score</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ number_format($questionnaire->score, 1) }}<span class="text-sm font-normal text-gray-400">%</span></p>
+                    </div>
+                    @endif
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Response Link</p>
+                        <div class="flex items-center gap-1">
+                            <input type="text" readonly
+                                   value="{{ route('questionnaires.public', $questionnaire->response_token) }}"
+                                   class="form-input text-xs py-1 text-gray-500 bg-gray-50 flex-1"
+                                   onclick="this.select()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Right: Responses --}}
+        <div class="lg:col-span-2">
+            @if($questionnaire->status === 'draft')
+            <div class="card">
+                <div class="card-body text-center py-12">
+                    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                        @include('components.icon', ['name' => 'upload', 'class' => 'w-6 h-6 text-gray-400'])
+                    </div>
+                    <p class="text-sm font-medium text-gray-700">Not sent yet</p>
+                    <p class="text-xs text-gray-400 mt-1">Send this questionnaire to the vendor to collect responses.</p>
+                </div>
+            </div>
+            @elseif(empty($questionnaire->responses))
+            <div class="card">
+                <div class="card-body text-center py-12">
+                    <div class="w-12 h-12 rounded-full bg-yellow-50 flex items-center justify-center mx-auto mb-3">
+                        @include('components.icon', ['name' => 'clock', 'class' => 'w-6 h-6 text-yellow-500'])
+                    </div>
+                    <p class="text-sm font-medium text-gray-700">Awaiting vendor response</p>
+                    <p class="text-xs text-gray-400 mt-1">The questionnaire has been sent. Responses will appear here once submitted.</p>
+                </div>
+            </div>
+            @else
+            <div class="space-y-4">
+                @php $structure = $questionnaire->template->structure ?? []; $responses = $questionnaire->responses ?? []; @endphp
+                @foreach($structure as $group)
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-sm font-semibold text-gray-900">{{ $group['group'] }}</h3>
+                    </div>
+                    <div class="divide-y divide-gray-100">
+                        @foreach($group['questions'] as $q)
+                        @php $answer = $responses[$q['id']] ?? null; @endphp
+                        <div class="px-5 py-4">
+                            <p class="text-sm text-gray-700 mb-2">{{ $q['question'] }}</p>
+                            @if($answer !== null)
+                                @if($q['type'] === 'yes_no')
+                                    <span class="{{ $answer === 'yes' ? 'badge-green' : ($answer === 'partial' ? 'badge-yellow' : 'badge-red') }}">
+                                        {{ ucfirst($answer) }}
+                                    </span>
+                                @else
+                                    <p class="text-sm text-gray-900 bg-gray-50 rounded-lg p-3">{{ $answer }}</p>
+                                @endif
+                            @else
+                                <span class="badge-gray text-xs">No response</span>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @endif
+        </div>
+
+    </div>
+</div>
+</x-layouts.app>

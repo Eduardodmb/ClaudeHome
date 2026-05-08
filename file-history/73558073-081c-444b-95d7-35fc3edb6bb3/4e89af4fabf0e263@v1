@@ -1,0 +1,218 @@
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+from odoo.tools.translate import _lt
+
+# Shown when the user toggles “Proposal sent” (dialog); same message as in the wizard form.
+_PROPOSAL_SENT_DISCLAIMER_TEXT = _lt(
+    "This will mark the proposal as sent and put the opportunity in read-only mode for most users."
+)
+
+
+class CrmLead(models.Model):
+    _inherit = 'crm.lead'
+
+    x_form_editable = fields.Boolean(
+        string="Form editable for current user",
+        compute="_compute_x_form_editable",
+        help="False while the opportunity is locked (proposal sent and allow-editing not enabled).",
+    )
+
+    x_allow_post_proposal_editing = fields.Boolean(
+        string="Allow editing after proposal sent",
+        default=False,
+        help="When enabled, users with normal CRM access can edit again after the proposal was sent. "
+        "Who may change this value is enforced in write(); the checkbox is only shown in the form to the unlock group.",
+    )
+    x_post_proposal_lock_active = fields.Boolean(
+        string="Post-proposal read-only (display)",
+        compute="_compute_x_post_proposal_lock_active",
+        help="True when proposal is sent and per-record editing is not enabled — shown to all users on form/kanban.",
+    )
+
+    # Labels match estimating pipeline / stage gate names (see :meth:`_check_stage_gate_logic`).
+    x_checklist = fields.Boolean(
+        string="0. Initial Checklist",
+        help="Required before 1. Scope Review - Estimator. Editable only via data import; "
+        "moves in the normal UI auto-fill this list when the stage changes.",
+    )
+    x_scope_debrief = fields.Boolean(
+        string="1. Scope Review (Scope Debrief done)",
+    )
+    x_bom_review = fields.Boolean(
+        string="2. Cost Estimate (BOM Review done)",
+    )
+    x_final_proposal = fields.Boolean(
+        string="3. Proposal (Final Proposal done)",
+    )
+    x_final_review = fields.Boolean(
+        string="4. Final Review",
+    )
+    x_sent_proposal = fields.Boolean(
+        string="5. Follow-up (Proposal sent)",
+    )
+
+    @api.depends("type", "x_sent_proposal", "x_allow_post_proposal_editing")
+    def _compute_x_form_editable(self):
+        for lead in self:
+            lead.x_form_editable = not lead._crm_post_proposal_is_locked()
+
+    @api.depends("type", "x_sent_proposal", "x_allow_post_proposal_editing")
+    def _compute_x_post_proposal_lock_active(self):
+        for lead in self:
+            lead.x_post_proposal_lock_active = bool(
+                lead.type == "opportunity"
+                and lead.x_sent_proposal
+                and not lead.x_allow_post_proposal_editing
+            )
+
+    @api.onchange("x_sent_proposal")
+    def _onchange_x_sent_proposal(self):
+        """Reminder when enabling the checkbox: proposal sent locks editing until an unlock user allows it."""
+        if not self.x_sent_proposal:
+            return
+        if self._origin and self._origin.x_sent_proposal:
+            return
+        if self.type != "opportunity":
+            return
+        return {
+            "warning": {
+                "type": "dialog",
+                "title": _("Mark proposal as sent"),
+                "message": _PROPOSAL_SENT_DISCLAIMER_TEXT,
+            },
+        }
+
+    def action_open_mark_proposal_sent_wizard(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Mark proposal as sent"),
+            "res_model": "crm.lead.proposal.sent.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_lead_id": self.id},
+        }
+
+    def _crm_post_proposal_is_locked(self):
+        self.ensure_one()
+        return (
+            self.type == "opportunity"
+            and self.x_sent_proposal
+            and not self.x_allow_post_proposal_editing
+        )
+
+    def _crm_post_proposal_locked_field_violation(self, vals):
+        """Return list of keys in vals that are not allowed while the record is locked.
+
+        When locked, no business fields may be written by anyone until
+        ``x_allow_post_proposal_editing`` is enabled — including users in the unlock group.
+        The only extra key allowed for unlock-group users is ``x_allow_post_proposal_editing`` itself
+        (so they can turn on editing). Chatter-style keys ``message_*`` / ``activity_*`` stay allowed.
+        """
+        self.ensure_one()
+        if not self._crm_post_proposal_is_locked():
+            return []
+        allowed_prefixes = ("message_", "activity_")
+        unlock = self.env.user.has_group("crm_custom_fields.group_crm_post_proposal_unlock")
+        bad = []
+        for key in vals:
+            if key.startswith(allowed_prefixes):
+                continue
+            if key == "x_allow_post_proposal_editing" and unlock:
+                continue
+            bad.append(key)
+        return bad
+
+    @api.constrains('stage_id', 'x_checklist', 'x_scope_debrief', 'x_bom_review', 'x_final_proposal', 'x_final_review', 'x_sent_proposal')
+    def _check_stage_gate_logic(self):
+        for record in self:
+            if not record.active or record.type == 'lead':
+                continue
+
+            # old_stage = record.env.cr.execute(
+            #     "SELECT stage_id FROM crm_lead WHERE id=%s", (record.id,)
+            # )
+            
+            stage_name = record.stage_id.name
+
+            if record.stage_id and not record.stage_id.x_estimating_pipeline_allowed:
+                raise ValidationError(
+                    _(
+                        "Pipeline stage '%s' is not allowed for estimating opportunities. "
+                        "Ask a Sales Administrator to enable it on the stage (Pipeline Stages), or move the opportunity to an allowed stage."
+                    )
+                    % (stage_name or record.stage_id.display_name)
+                )
+
+            if stage_name == "1. Scope Review - Estimator" and not record.x_checklist:
+                raise ValidationError(_("Step 0 (Checklist) must be completed first."))
+
+            if stage_name == "2. Cost Estimate - Estimator" and not record.x_scope_debrief:
+                raise ValidationError(_("Step 1 (Scope Debrief) must be completed before the BOM stage."))
+
+            if stage_name == "3. Proposal - Estimator" and not record.x_bom_review:
+                raise ValidationError(_("Step 2 (BOM Review) must be completed before Compilation."))
+
+            if stage_name == "4. Final Review" and not record.x_final_proposal:
+                raise ValidationError(_("Step 3 (Final Proposal) must be checked before Final Review."))
+
+            if stage_name == "5. Completed (Sent) Proposals - Follow Up" and not record.x_final_review:
+                raise ValidationError(_("Step 4 (Final Review) must be checked before moving to Follow Up."))
+
+            if stage_name == "Won" and not record.x_sent_proposal:
+                raise ValidationError(_("Step 5 (Proposal Sent) must be checked before marking as Won."))
+
+    @api.model
+    def _pipeline_booleans_true_for_stage_name(self, stage_name):
+        """Booleans that are implied True when the opportunity is in the given stage (ordered gates)."""
+        name = (stage_name or "").strip()
+        ordered = {
+            "0. Initial Checklist": (),
+            "1. Scope Review - Estimator": ("x_checklist",),
+            "2. Cost Estimate - Estimator": (
+                "x_checklist",
+                "x_scope_debrief",
+            ),
+            "3. Proposal - Estimator": (
+                "x_checklist",
+                "x_scope_debrief",
+                "x_bom_review",
+            ),
+            "4. Final Review": (
+                "x_checklist",
+                "x_scope_debrief",
+                "x_bom_review",
+                "x_final_proposal",
+            ),
+            "5. Completed (Sent) Proposals - Follow Up": (
+                "x_checklist",
+                "x_scope_debrief",
+                "x_bom_review",
+                "x_final_proposal",
+                "x_final_review",
+            ),
+            "Won": (
+                "x_checklist",
+                "x_scope_debrief",
+                "x_bom_review",
+                "x_final_proposal",
+                "x_final_review",
+                "x_sent_proposal",
+            ),
+        }
+        return ordered.get(name, ())
+
+    def write(self, vals):
+        if (
+            self.env.context.get("crm_skip_pipeline_autofill")
+            or "stage_id" not in vals
+        ):
+            return super().write(vals)
+        if self and not all(r.type == "opportunity" for r in self):
+            return super().write(vals)
+        stage = self.env["crm.stage"].browse(vals["stage_id"])
+        implied = {f: True for f in self._pipeline_booleans_true_for_stage_name(stage.name)}
+        if implied:
+            vals = {**vals, **implied}
+        return super().write(vals)
+

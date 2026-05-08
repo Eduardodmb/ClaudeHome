@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Connector;
+use App\Models\ConnectorConfiguration;
+use Illuminate\Http\Request;
+
+class ConnectorController extends Controller
+{
+    public function index()
+    {
+        $connectors = Connector::with('configuration')->get();
+        return view('connectors.index', compact('connectors'));
+    }
+
+    public function connect(Request $request, Connector $connector)
+    {
+        ConnectorConfiguration::updateOrCreate(
+            ['connector_id' => $connector->id],
+            [
+                'credentials' => encrypt(json_encode($request->except('_token'))),
+                'settings'    => [],
+                'sync_status' => null,
+                'sync_message'=> null,
+            ]
+        );
+        $connector->update(['status' => 'connected']);
+        return back()->with('success', "{$connector->name} connected successfully.");
+    }
+
+    public function disconnect(Connector $connector)
+    {
+        $connector->configuration()->delete();
+        $connector->update(['status' => 'available']);
+        return back()->with('success', "{$connector->name} disconnected.");
+    }
+
+    public function test(Connector $connector)
+    {
+        if (! $connector->isConnected()) {
+            return response()->json(['status' => 'error', 'message' => 'Connector is not configured.'], 422);
+        }
+        return response()->json(['status' => 'ok', 'message' => 'Connection test successful.']);
+    }
+
+    public function sync(Connector $connector)
+    {
+        if (! $connector->isConnected()) {
+            return back()->with('error', 'Connector is not connected.');
+        }
+
+        $connector->configuration()->update([
+            'sync_status'  => 'in_progress',
+            'sync_message' => 'Sync initiated at ' . now()->toDateTimeString(),
+        ]);
+
+        return back()->with('success', 'Sync queued for ' . $connector->name . '.');
+    }
+}

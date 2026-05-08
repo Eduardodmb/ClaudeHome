@@ -1,0 +1,209 @@
+import base64
+
+from odoo import http
+from odoo.http import request
+from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
+from odoo.exceptions import AccessError, MissingError
+from odoo.tools.translate import _
+
+
+class ApplicantPortal(CustomerPortal):
+
+    def _prepare_home_portal_values(self, counters):
+        values = super()._prepare_home_portal_values(counters)
+        if 'applicant_count' in counters:
+            # ir.model.access gives portal users read on hr.applicant;
+            # ir.rule (portal_security.xml) restricts them to their own partner.
+            applicant_count = request.env['hr.applicant'].search_count([
+                ('partner_id', '=', request.env.user.partner_id.id)
+            ]) if request.env.user.partner_id else 0
+            values['applicant_count'] = applicant_count
+        return values
+
+    @http.route(['/my/applications', '/my/applications/page/<int:page>'], type='http', auth="user", website=True)
+    def portal_my_applications(self, page=1, sortby=None, filterby=None, **kw):
+        # ir.rule already restricts results to the current user's partner — no sudo needed.
+        Applicant = request.env['hr.applicant']
+
+        domain = [('partner_id', '=', request.env.user.partner_id.id)] if request.env.user.partner_id else [('id', '=', 0)]
+
+        searchbar_sortings = {
+            'date': {'label': _('Newest'), 'order': 'create_date desc'},
+            'name': {'label': _('Name'), 'order': 'partner_name'},
+            'job': {'label': _('Job Position'), 'order': 'job_id'},
+            'stage': {'label': _('Stage'), 'order': 'stage_id'},
+        }
+        if not sortby:
+            sortby = 'date'
+        order = searchbar_sortings[sortby]['order']
+
+        applicant_count = Applicant.search_count(domain)
+
+        pager = portal_pager(
+            url="/my/applications",
+            total=applicant_count,
+            page=page,
+            step=self._items_per_page,
+            url_args={'sortby': sortby, 'filterby': filterby},
+        )
+
+        applicants = Applicant.search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
+        request.session['my_applications_history'] = applicants.ids[:100]
+
+        values = {
+            'applicants': applicants,
+            'page_name': 'application',
+            'pager': pager,
+            'default_url': '/my/applications',
+            'searchbar_sortings': searchbar_sortings,
+            'sortby': sortby,
+        }
+        return request.render("hr_recruitment_enhanced.portal_my_applications", values)
+
+    @http.route(['/my/application/<int:applicant_id>'], type='http', auth="user", website=True)
+    def portal_my_application_detail(self, applicant_id, **kw):
+        try:
+            # Browse without sudo: the ir.rule restricts portal users to their own record.
+            # If the id doesn't belong to them, browse returns an empty record.
+            applicant = request.env['hr.applicant'].browse(applicant_id)
+            if not applicant.exists():
+                raise MissingError(_("Application not found"))
+
+            # Checklist items: ir.rule on checklist item also restricts by partner.
+            candidate_items = applicant.checklist_item_ids.filtered(
+                lambda i: i.upload_by in ('candidate', 'both')
+            )
+
+            values = {
+                'applicant': applicant,
+                'candidate_items': candidate_items,
+                'page_name': 'application',
+            }
+            return request.render("hr_recruitment_enhanced.portal_my_application_detail", values)
+        except (AccessError, MissingError):
+            return request.redirect('/my')
+
+    @http.route(['/my/application/<int:applicant_id>/upload'], type='http', auth="user", methods=['POST'], website=True, csrf=True)
+    def portal_my_application_upload(self, applicant_id, **post):
+        try:
+            # Read without sudo — ir.rule ensures the record belongs to the current user.
+            applicant = request.env['hr.applicant'].browse(applicant_id)
+            if not applicant.exists():
+                raise MissingError(_("Application not found"))
+
+            if 'document' in request.httprequest.files:
+                uploaded_file = request.httprequest.files['document']
+                if uploaded_file.filename:
+                    filename_lower = uploaded_file.filename.lower()
+                    if not filename_lower.endswith('.pdf'):
+                        return request.redirect('/my/application/%s?upload=error&msg=only_pdf' % applicant_id)
+
+                    file_content = uploaded_file.read()
+
+                    if len(file_content) > 10 * 1024 * 1024:
+                        return request.redirect('/my/application/%s?upload=error&msg=file_too_large' % applicant_id)
+
+                    if not file_content.startswith(b'%PDF'):
+                        return request.redirect('/my/application/%s?upload=error&msg=invalid_pdf' % applicant_id)
+
+                    # Write ops use sudo — portal users have read-only ir.model.access.
+                    attachment = request.env['ir.attachment'].sudo().create({
+                        'name': uploaded_file.filename,
+                        'datas': base64.b64encode(file_content),
+                        'res_model': 'hr.applicant',
+                        'res_id': applicant.id,
+                        'public': False,
+                    })
+                    applicant.sudo().message_post(
+                        body=_('Document uploaded by applicant: %s') % uploaded_file.filename,
+                        attachment_ids=[attachment.id],
+                    )
+
+            return request.redirect('/my/application/%s?upload=success' % applicant_id)
+        except (AccessError, MissingError):
+            return request.redirect('/my')
+
+    @http.route(
+        '/my/application/<int:applicant_id>/checklist/<int:item_id>/upload',
+        type='http', auth="user", methods=['POST'], website=True, csrf=True,
+    )
+    def portal_checklist_item_upload(self, applicant_id, item_id, **post):
+        """Upload a document for a specific candidate-facing checklist item."""
+        try:
+            # Read without sudo — ir.rules enforce ownership.
+            applicant = request.env['hr.applicant'].browse(applicant_id)
+            if not applicant.exists():
+                raise MissingError(_("Application not found"))
+
+            item = request.env['hr.applicant.checklist.item'].browse(item_id)
+            if not item.exists() or item.applicant_id.id != applicant_id:
+                raise AccessError(_("Invalid checklist item"))
+
+            if item.upload_by not in ('candidate', 'both'):
+                raise AccessError(_("This item cannot be uploaded by the candidate"))
+
+            upload_error = None
+            if 'document' not in request.httprequest.files:
+                upload_error = 'no_file'
+            else:
+                uploaded_file = request.httprequest.files['document']
+                if not uploaded_file.filename:
+                    upload_error = 'no_file'
+                else:
+                    file_content = uploaded_file.read()
+                    if len(file_content) > 20 * 1024 * 1024:
+                        upload_error = 'file_too_large'
+                    else:
+                        # Write ops use sudo.
+                        attachment = request.env['ir.attachment'].sudo().create({
+                            'name': uploaded_file.filename,
+                            'datas': base64.b64encode(file_content),
+                            'res_model': 'hr.applicant.checklist.item',
+                            'res_id': item.id,
+                            'public': False,
+                        })
+                        item.sudo().write({
+                            'result_attachment_ids': [(4, attachment.id)],
+                        })
+                        applicant.sudo().message_post(
+                            body=_('Candidate uploaded document for checklist item "%s": %s')
+                            % (item.name, uploaded_file.filename),
+                            attachment_ids=[attachment.id],
+                        )
+
+            if upload_error:
+                return request.redirect(
+                    '/my/application/%s?item_upload=error&msg=%s&item_id=%s'
+                    % (applicant_id, upload_error, item_id)
+                )
+            return request.redirect(
+                '/my/application/%s?item_upload=success&item_id=%s' % (applicant_id, item_id)
+            )
+        except (AccessError, MissingError):
+            return request.redirect('/my')
+
+    # ---- Magic-link login ----
+
+    @http.route('/recruitment/portal/login/<string:token>', type='http', auth='public', website=True)
+    def portal_magic_link_login(self, token, **kw):
+        """Authenticate the candidate from a one-click magic link and redirect to their application."""
+        Token = request.env['hr.applicant.portal.token'].sudo()
+        token_rec = Token.search([('token', '=', token)], limit=1)
+
+        if not token_rec or token_rec.is_expired or not token_rec.portal_user_id:
+            return request.render('hr_recruitment_enhanced.portal_token_invalid', {})
+
+        user = token_rec.portal_user_id
+        temp_password = token_rec.temp_password
+
+        if not temp_password:
+            return request.render('hr_recruitment_enhanced.portal_token_invalid', {})
+
+        try:
+            uid = request.session.authenticate(request.db, user.login, temp_password)
+            if not uid:
+                return request.render('hr_recruitment_enhanced.portal_token_invalid', {})
+        except Exception:
+            return request.render('hr_recruitment_enhanced.portal_token_invalid', {})
+
+        return request.redirect('/my/application/%s' % token_rec.applicant_id.id)

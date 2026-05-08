@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Bulk Upload Wizard Form View -->
+    <record id="view_ticket_bulk_upload_form" model="ir.ui.view">
+        <field name="name">ticket.bulk.upload.form</field>
+        <field name="model">ticket.bulk.upload</field>
+        <field name="arch" type="xml">
+            <form string="Bulk Upload Tickets">
+                <field name="state" invisible="1"/>
+
+                <sheet>
+                    <!-- Step 1: Upload File -->
+                    <div class="oe_title" invisible="state != 'upload'">
+                        <h1>Bulk Upload Tickets from Excel</h1>
+                    </div>
+
+                    <group invisible="state != 'upload'">
+                        <group string="Step 1: Download Template">
+                            <field name="template_filename" invisible="1"/>
+                            <button name="action_download_template"
+                                    string="Download Excel Template"
+                                    type="object"
+                                    class="btn-primary"
+                                    icon="fa-download"/>
+                            <div class="text-muted">
+                                <p>Download the Excel template with proper columns and sample data.</p>
+                                <p>Fill in your ticket information and save the file.</p>
+                            </div>
+                        </group>
+
+                        <group string="Step 2: Upload Filled Template">
+                            <field name="upload_file"
+                                   filename="upload_filename"
+                                   widget="binary"/>
+                            <field name="upload_filename" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Step 2: Map Abbreviations -->
+                    <div class="oe_title" invisible="state != 'map_abbreviations'">
+                        <h1>Map User Abbreviations</h1>
+                        <p class="text-muted">The following abbreviations were found in your file but are not mapped to users. Please select the corresponding user for each abbreviation.</p>
+                    </div>
+
+                    <group invisible="state != 'map_abbreviations'">
+                        <field name="abbreviation_line_ids" nolabel="1">
+                            <list editable="bottom" create="0" delete="0">
+                                <field name="abbreviation" readonly="1"/>
+                                <field name="user_id" options="{'no_create': True}"/>
+                            </list>
+                        </field>
+                    </group>
+
+                    <!-- Step 3: Import Results -->
+                    <div class="oe_title" invisible="state != 'import'">
+                        <h1>Import Results</h1>
+                    </div>
+
+                    <group invisible="state != 'import'">
+                        <field name="import_summary" nolabel="1" widget="html"/>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <!-- Upload state buttons -->
+                    <button string="Validate &amp; Continue"
+                            name="action_validate_file"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'upload' or not upload_file"/>
+
+                    <!-- Map abbreviations state buttons -->
+                    <button string="Save Mappings &amp; Import"
+                            name="action_save_abbreviations"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'map_abbreviations'"/>
+
+                    <button string="Back"
+                            special="cancel"
+                            class="btn-secondary"
+                            invisible="state != 'map_abbreviations'"/>
+
+                    <!-- Import complete buttons -->
+                    <button string="Close"
+                            special="cancel"
+                            class="btn-secondary"
+                            invisible="state != 'import'"/>
+
+                    <!-- Upload state cancel -->
+                    <button string="Cancel"
+                            special="cancel"
+                            class="btn-secondary"
+                            invisible="state != 'upload'"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_ticket_bulk_upload" model="ir.actions.act_window">
+        <field name="name">Bulk Upload Tickets</field>
+        <field name="res_model">ticket.bulk.upload</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="mail.model_mail_activity"/>
+        <field name="binding_view_types">list</field>
+    </record>
+</odoo>

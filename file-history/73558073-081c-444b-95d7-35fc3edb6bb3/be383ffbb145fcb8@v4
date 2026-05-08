@@ -1,0 +1,85 @@
+# Copyright (C) 2015 Salton Massally (<smassally@idtlabs.sl>).
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+{
+    "name": "CRM Custom Fields",
+    "version": "18.0.1.0.12",
+    "license": "AGPL-3",
+    "author": "Rogelio Gomez <rxgerg@hotmail.com>, "
+    "Rogelio E. Gomez",
+    "category": "Sales",
+    "summary": "Add custom fields to CRM module: Winning Amount, Site Visit Date, Site Visit Date, Q&A Date, Job Category",
+    "depends": ["web", "crm", "contacts", "calendar", "mail", "ticket_system", "activity_modification", "common_logging"],
+    "post_init_hook": "hooks.post_init_hook",
+    #replace employees_department_custom_fields just with ticket/activity module when activity logic is moved from emp_dept to activity modification
+    "external_dependencies": {
+        "python": ["requests"],
+    },
+    "data": [
+             "security/crm_security.xml",
+             "security/ir.model.access.csv",
+             "views/crm_stage_views.xml",
+             "data/checklist_base_tasks_db.xml",
+             "views/menu_rename.xml",
+             "views/res_config_settings_views.xml",
+             "views/crm_bd_email_config_menu.xml",
+             "views/views.xml",
+             "views/crm_lead_opportunity_tree_dates.xml",
+             "views/templates.xml",
+             "views/secondary_notebook.xml",
+             "views/crm_lead_post_proposal_lock.xml",
+             "views/crm_lead_report_tab.xml",
+             "wizard/crm_lead_proposal_sent_wizard_views.xml",
+             #"views/reminders_view.xml",
+             "views/appointment_view.xml",
+             "views/crm_cert_view.xml",
+             "views/checklist_view.xml",
+             "views/disclaimer_views.xml",
+             "views/partner_rel_views.xml",
+             "views/contacts_views.xml",
+
+             
+             #"views/bom_division_view.xml",
+             "views/bom_division_config.xml",
+             #"views/labor_title_bom.xml",
+             #"views/labor_type_bom_view.xml",
+            #"views/labor_bom_view.xml",
+            #"views/irs_mile_view.xml",
+            #"views/travel_expense_view.xml",
+            "views/product_views.xml",
+            #"views/item_bom_view.xml",
+
+
+            "views/bom_division_view.xml",
+            "views/item_bom_view.xml",
+            "views/labor_title_bom.xml",
+            "views/labor_type_bom_view.xml",
+            "views/labor_bom_view.xml",
+            "views/irs_mile_view.xml",
+            "views/travel_expense_view.xml",
+
+            "views/checklist_menu_view.xml",
+            "data/crm_certification_cron.xml",
+            "views/hide_stages.xml",
+            "views/activity_view.xml",
+            "views/bom_summary_view.xml",
+            "views/bom_summary_adjustment.xml",
+            "views/stage.xml",
+            "data/crm_appointment_type_data.xml",
+            "views/division_view.xml",
+            "views/division_menu_view.xml",
+            "views/setaside.xml",
+            "views/notes.xml",
+            "views/lead_subcontractor.xml",
+            "views/job_category_config.xml",
+            "views/search.xml",
+            "views/kanban_view.xml",
+    ],
+    "assets": {
+        "web.assets_backend": [
+            "crm_custom_fields/static/src/js/kanban_header_crm_lead.js",
+            "crm_custom_fields/static/src/xml/kanban_header_column_count.xml",
+        ],
+    },
+    "installable": True,
+}

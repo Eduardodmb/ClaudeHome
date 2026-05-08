@@ -1,0 +1,63 @@
+2026-05-04 04:28:20,518 1 INFO odoo18 werkzeug: 172.18.0.1 - - [04/May/2026 04:28:20] "POST /web/dataset/call_kw/ticket.bulk.upload/web_save HTTP/1.1" 200 - 9 0.003 0.010
+
+2026-05-04 04:28:20,589 1 ERROR odoo18 odoo.addons.ticket_system.wizards.ticket_bulk_upload: Error processing row 3 
+
+Traceback (most recent call last):
+
+  File "/mnt/extra-addons/ticket_system/wizards/ticket_bulk_upload.py", line 406, in action_import_tickets
+
+    self.env['mail.activity'].create(vals)
+
+  File "<decorator-gen-245>", line 2, in create
+
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 497, in _model_create_multi
+
+    return create(self, [arg])
+
+           ^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/extra-addons/ticket_system/models/activity_modify.py", line 119, in create
+
+    )).create(vals_list)
+
+       ^^^^^^^^^^^^^^^^^
+
+  File "<decorator-gen-244>", line 2, in create
+
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 498, in _model_create_multi
+
+    return create(self, arg)
+
+           ^^^^^^^^^^^^^^^^^
+
+  File "/mnt/extra-addons/ticket_system/models/ticket.py", line 184, in create
+
+    activities = super(MailActivity, self).create(vals_list)
+
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "<decorator-gen-103>", line 2, in create
+
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 498, in _model_create_multi
+
+    return create(self, arg)
+
+           ^^^^^^^^^^^^^^^^^
+
+  File "/mnt/extra-addons/activity_modification/models/activity.py", line 151, in create
+
+    recs = super().create(cleaned)
+
+           ^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "<decorator-gen-56>", line 2, in create
+
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 498, in _model_create_multi
+
+    return create(self, arg)
+
+           ^^^^^^^^^^^^^^^^^
+
+  File "/usr/lib/python3/dist-packages/odoo/addons/mail/models/mail_activity.py", line 296, in create
+
+    self.env[model].browse(res_ids).message_subscribe(partner_ids=pids)

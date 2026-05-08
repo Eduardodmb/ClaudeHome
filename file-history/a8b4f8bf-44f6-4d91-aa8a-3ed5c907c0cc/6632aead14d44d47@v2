@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Subcontrol extends Model
+{
+    protected $fillable = [
+        'framework_app_id', 'parent_subcontrol_id', 'name',
+        'overview', 'action_items', 'related_documents', 'additional_guidance',
+        'level_1', 'level_2', 'level_3', 'level_4', 'level_5', 'sort_order',
+    ];
+
+    public function frameworkApp()
+    {
+        return $this->belongsTo(FrameworkApp::class);
+    }
+
+    public function parentSubcontrol()
+    {
+        return $this->belongsTo(ParentSubcontrol::class);
+    }
+
+    public function controlActivities()
+    {
+        return $this->belongsToMany(ControlActivity::class, 'control_activity_subcontrol');
+    }
+
+    public function documents()
+    {
+        return $this->belongsToMany(Document::class, 'document_subcontrol');
+    }
+
+    public function assessmentFindings()
+    {
+        return $this->hasMany(AssessmentFinding::class);
+    }
+
+    public function risks()
+    {
+        return $this->hasMany(Risk::class);
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function vendors()
+    {
+        return $this->belongsToMany(Vendor::class, 'vendor_subcontrol');
+    }
+}

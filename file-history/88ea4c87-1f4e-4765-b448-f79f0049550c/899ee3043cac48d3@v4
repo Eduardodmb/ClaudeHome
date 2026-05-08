@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Cron job for Weekly Performance Dashboard - runs every hour -->
+        <record id="ir_cron_weekly_performance_update" model="ir.cron">
+            <field name="name">Update Weekly Performance Dashboard</field>
+            <field name="model_id" ref="model_mail_activity_weekly_performance"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_create_current_week()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron job for Activity KPI Dashboard - runs weekly -->
+        <record id="ir_cron_activity_kpi_weekly" model="ir.cron">
+            <field name="name">Update Activity KPI Dashboard (Weekly)</field>
+            <field name="model_id" ref="model_mail_activity_kpi_dashboard"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_create_weekly_dashboard()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron job for Department KPI Dashboard - runs weekly -->
+        <record id="ir_cron_department_kpi_weekly" model="ir.cron">
+            <field name="name">Update Department KPI Dashboard (Weekly)</field>
+            <field name="model_id" ref="model_mail_activity_department_kpi"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_create_weekly_dashboard()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron job for Employee KPI Dashboard - runs weekly -->
+        <record id="ir_cron_employee_kpi_weekly" model="ir.cron">
+            <field name="name">Update Employee KPI Dashboard (Weekly)</field>
+            <field name="model_id" ref="model_mail_activity_employee_kpi"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_create_weekly_dashboard()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

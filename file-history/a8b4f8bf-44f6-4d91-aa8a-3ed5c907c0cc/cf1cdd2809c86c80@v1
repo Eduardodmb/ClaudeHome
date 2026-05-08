@@ -1,0 +1,191 @@
+<x-layouts.app title="Risk Register">
+    <div class="space-y-6">
+
+        {{-- Header --}}
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="page-title">Risk Register</h1>
+                <p class="page-subtitle">Track, assess, and manage organizational risks.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('risks.dashboard') }}" class="btn-outline btn-sm">
+                    @include('components.icon', ['name' => 'chart-bar'])
+                    Risk Dashboard
+                </a>
+                @can('risks.create')
+                <a href="{{ route('risks.create') }}" class="btn-primary">
+                    @include('components.icon', ['name' => 'plus'])
+                    Add Risk
+                </a>
+                @endcan
+            </div>
+        </div>
+
+        {{-- Filters --}}
+        <div class="card">
+            <div class="card-body py-3">
+                <form method="GET" action="{{ route('risks.index') }}" class="flex items-center gap-3 flex-wrap">
+                    <div class="relative flex-1 min-w-[200px]">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            @include('components.icon', ['name' => 'search', 'class' => 'w-4 h-4 text-gray-400'])
+                        </div>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                               class="form-input pl-9" placeholder="Search risks…">
+                    </div>
+                    <select name="severity" class="form-select w-auto">
+                        <option value="">All Severities</option>
+                        <option value="critical" {{ request('severity') === 'critical' ? 'selected' : '' }}>Critical</option>
+                        <option value="high"     {{ request('severity') === 'high'     ? 'selected' : '' }}>High</option>
+                        <option value="medium"   {{ request('severity') === 'medium'   ? 'selected' : '' }}>Medium</option>
+                        <option value="low"      {{ request('severity') === 'low'      ? 'selected' : '' }}>Low</option>
+                    </select>
+                    <select name="category" class="form-select w-auto">
+                        <option value="">All Categories</option>
+                        <option value="operational"  {{ request('category') === 'operational'  ? 'selected' : '' }}>Operational</option>
+                        <option value="technical"    {{ request('category') === 'technical'    ? 'selected' : '' }}>Technical</option>
+                        <option value="compliance"   {{ request('category') === 'compliance'   ? 'selected' : '' }}>Compliance</option>
+                        <option value="financial"    {{ request('category') === 'financial'    ? 'selected' : '' }}>Financial</option>
+                        <option value="reputational" {{ request('category') === 'reputational' ? 'selected' : '' }}>Reputational</option>
+                        <option value="third_party"  {{ request('category') === 'third_party'  ? 'selected' : '' }}>Third Party</option>
+                    </select>
+                    <select name="status" class="form-select w-auto">
+                        <option value="">All Statuses</option>
+                        <option value="open"        {{ request('status') === 'open'        ? 'selected' : '' }}>Open</option>
+                        <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="mitigated"   {{ request('status') === 'mitigated'   ? 'selected' : '' }}>Mitigated</option>
+                        <option value="accepted"    {{ request('status') === 'accepted'    ? 'selected' : '' }}>Accepted</option>
+                        <option value="closed"      {{ request('status') === 'closed'      ? 'selected' : '' }}>Closed</option>
+                    </select>
+                    <button type="submit" class="btn-outline btn-sm">
+                        @include('components.icon', ['name' => 'filter'])
+                        Filter
+                    </button>
+                    @if(request()->hasAny(['search','severity','category','status']))
+                        <a href="{{ route('risks.index') }}" class="btn-ghost btn-sm">Clear</a>
+                    @endif
+                </form>
+            </div>
+        </div>
+
+        @if($risks->isEmpty())
+            <div class="card">
+                <div class="empty-state py-20">
+                    @include('components.icon', ['name' => 'risk', 'class' => 'empty-state-icon'])
+                    <p class="empty-state-title">No risks found</p>
+                    <p class="empty-state-text">
+                        @if(request()->hasAny(['search','severity','category','status']))
+                            Try adjusting your filters.
+                        @else
+                            Begin by adding risks to the register.
+                        @endif
+                    </p>
+                    @can('risks.create')
+                    <a href="{{ route('risks.create') }}" class="btn-primary btn-sm mt-4">
+                        @include('components.icon', ['name' => 'plus'])
+                        Add Risk
+                    </a>
+                    @endcan
+                </div>
+            </div>
+        @else
+            <div class="card">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Risk Title</th>
+                                <th>Category</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Owner</th>
+                                <th>Date Identified</th>
+                                <th>Response Due</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            @foreach($risks as $risk)
+                            @php
+                                $severityBadge = ['critical'=>'risk-critical','high'=>'risk-high','medium'=>'risk-medium','low'=>'risk-low'];
+                                $categoryBadge = ['operational'=>'badge-blue','technical'=>'badge-purple','compliance'=>'badge-orange','financial'=>'badge-red','reputational'=>'badge-yellow','third_party'=>'badge-gray'];
+                                $statusBadge   = ['open'=>'badge-red','in_progress'=>'badge-yellow','mitigated'=>'badge-green','accepted'=>'badge-blue','closed'=>'badge-gray'];
+                                $statusLabel   = ['open'=>'Open','in_progress'=>'In Progress','mitigated'=>'Mitigated','accepted'=>'Accepted','closed'=>'Closed'];
+                            @endphp
+                            <tr>
+                                <td>
+                                    <a href="{{ route('risks.show', $risk) }}"
+                                       class="font-medium text-gray-900 hover:text-blue-600 block">
+                                        {{ $risk->title }}
+                                    </a>
+                                    @if($risk->is_key_risk)
+                                        <span class="badge-red text-xs mt-0.5">Key Risk</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class="{{ $categoryBadge[$risk->category] ?? 'badge-gray' }}">
+                                        {{ ucfirst(str_replace('_', ' ', $risk->category ?? '')) ?: '—' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if($risk->inherent_severity)
+                                        <span class="{{ $severityBadge[$risk->inherent_severity] ?? 'badge-gray' }}">
+                                            {{ ucfirst($risk->inherent_severity) }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-400">—</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class="{{ $statusBadge[$risk->status] ?? 'badge-gray' }}">
+                                        {{ $statusLabel[$risk->status] ?? ucfirst($risk->status) }}
+                                    </span>
+                                </td>
+                                <td class="text-sm text-gray-700">
+                                    {{ $risk->owner?->full_name ?? '—' }}
+                                </td>
+                                <td class="text-sm text-gray-600">
+                                    {{ $risk->date_identified ? \Carbon\Carbon::parse($risk->date_identified)->format('M d, Y') : '—' }}
+                                </td>
+                                <td>
+                                    @if($risk->response_due_date)
+                                        @php $due = \Carbon\Carbon::parse($risk->response_due_date); @endphp
+                                        <span class="text-sm {{ $due->isPast() && !in_array($risk->status, ['mitigated','closed']) ? 'text-red-600 font-medium' : 'text-gray-600' }}">
+                                            {{ $due->format('M d, Y') }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-400">—</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="flex items-center justify-end gap-1">
+                                        <a href="{{ route('risks.show', $risk) }}" class="btn-ghost btn-sm" title="View">
+                                            @include('components.icon', ['name' => 'eye'])
+                                        </a>
+                                        @can('risks.edit')
+                                        <a href="{{ route('risks.edit', $risk) }}" class="btn-ghost btn-sm" title="Edit">
+                                            @include('components.icon', ['name' => 'edit'])
+                                        </a>
+                                        @endcan
+                                        @can('risks.delete')
+                                        <form method="POST" action="{{ route('risks.destroy', $risk) }}"
+                                              onsubmit="return confirm('Delete this risk?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn-ghost btn-sm text-red-500 hover:text-red-700" title="Delete">
+                                                @include('components.icon', ['name' => 'trash'])
+                                            </button>
+                                        </form>
+                                        @endcan
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @if($risks->hasPages())
+                <div class="card-footer">{{ $risks->links() }}</div>
+                @endif
+            </div>
+        @endif
+    </div>
+</x-layouts.app>

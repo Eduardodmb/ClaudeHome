@@ -1,0 +1,33 @@
+2026-05-04 02:29:16,710 1 INFO odoo18 odoo: [document_library][SUMMARY] Processing 1 folders from sync queue 
+
+2026-05-04 02:29:17,147 1 ERROR odoo18 odoo: [document_library] Failed to process queue item  
+
+Traceback (most recent call last):
+
+  File "/mnt/extra-addons/document_library/models/graph_sync.py", line 622, in action_process_sync_queue
+
+    fc, fu, sq, sk = self._process_single_folder_with_queue(
+
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/extra-addons/document_library/models/graph_sync.py", line 483, in _process_single_folder_with_queue
+
+    children = self._list_drive_children(token, drive_id, folder_item_id=folder_item_id)
+
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/extra-addons/document_library/models/graph_sync.py", line 243, in _list_drive_children
+
+    data = self._graph_get(token, url, params=params)
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/extra-addons/document_library/models/graph_sync.py", line 171, in _graph_get
+
+    raise UserError(_("Graph GET failed (%s): %s") % (r.status_code, r.text))
+
+odoo.exceptions.UserError: Graph GET failed (400): {"error":{"code":"invalidRequest","message":"Invalid request"}}
+
+2026-05-04 02:29:17,158 1 INFO odoo18 odoo: [document_library][SUMMARY] Queue processing complete: processed=0, failed=1, files_created=0, files_updated=0, subfolders_queued=0 
+
+2026-05-04 02:29:17,158 1 INFO odoo18 werkzeug: 172.18.0.1 - - [04/May/2026 02:29:17] "POST /web/action/run HTTP/1.1" 200 - 10 0.004 1.090

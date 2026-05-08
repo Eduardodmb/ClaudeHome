@@ -1,0 +1,20 @@
+/* Hide EMAIL, SMS, and SNOOZE action buttons in CRM list view */
+.o_list_table.o_list_table_ungrouped tbody tr td.o_list_button {
+    display: none !important;
+}
+
+/* Hide activity snooze and other action cells */
+.o_list_view[data-model="crm.lead"] .o_list_table tbody tr td.o_list_button,
+.o_list_view[data-model="crm.lead"] .o_list_table tbody tr td.w-print-0.p-print-0.cursor-pointer {
+    display: none !important;
+}
+
+/* Hide activity widget action buttons */
+.o_list_view[data-model="crm.lead"] .o_activity_cell .o_activity_action {
+    display: none !important;
+}
+
+/* Hide all action button cells in CRM */
+.o_list_view[data-model="crm.lead"] .o_data_cell.o_list_button {
+    display: none !important;
+}

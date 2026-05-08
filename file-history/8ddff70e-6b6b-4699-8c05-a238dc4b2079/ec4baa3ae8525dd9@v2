@@ -1,0 +1,56 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
+
+class Customer extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'name', 'slug', 'contact_name', 'contact_email',
+        'contact_phone', 'status', 'plan', 'notes',
+    ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Customer $customer) {
+            if (empty($customer->slug)) {
+                $customer->slug = Str::slug($customer->name);
+            }
+        });
+    }
+
+    public function users()        { return $this->hasMany(User::class); }
+    public function frameworks()   { return $this->hasMany(Framework::class); }
+    public function assessments()  { return $this->hasMany(Assessment::class); }
+    public function risks()        { return $this->hasMany(Risk::class); }
+    public function tasks()        { return $this->hasMany(Task::class); }
+    public function vendors()      { return $this->hasMany(Vendor::class); }
+    public function audits()       { return $this->hasMany(Audit::class); }
+    public function documents()    { return $this->hasMany(Document::class); }
+    public function questionnaires() { return $this->hasMany(Questionnaire::class); }
+
+    public function getStatusColorAttribute(): string
+    {
+        return match($this->status) {
+            'active'    => 'badge-green',
+            'trial'     => 'badge-blue',
+            'inactive'  => 'badge-gray',
+            'suspended' => 'badge-red',
+            default     => 'badge-gray',
+        };
+    }
+
+    public function getPlanColorAttribute(): string
+    {
+        return match($this->plan) {
+            'enterprise'   => 'badge-purple',
+            'professional' => 'badge-blue',
+            default        => 'badge-gray',
+        };
+    }
+}

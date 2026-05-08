@@ -1,0 +1,80 @@
+@extends('layouts.admin')
+@section('title', 'Employees — '.$customer->name)
+@section('header', $customer->name.' — Employees')
+@section('header-action')
+    <a href="{{ route('admin.customers.employees.create', $customer) }}"
+       class="bg-amber-500 hover:bg-amber-400 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+        + New Employee
+    </a>
+@endsection
+
+@section('content')
+<div class="mb-4">
+    <a href="{{ route('admin.customers.index') }}" class="text-sm text-gray-500 hover:text-amber-600">← Back to Customers</a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <table class="w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+                <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">vCard URL</th>
+                <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3"></th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            @forelse($employees as $employee)
+            <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        @if($employee->avatar)
+                        <img src="{{ Storage::url($employee->avatar) }}" class="w-9 h-9 rounded-full object-cover">
+                        @else
+                        <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 font-bold text-sm">
+                            {{ substr($employee->name, 0, 1) }}
+                        </div>
+                        @endif
+                        <span class="font-medium text-gray-800">{{ $employee->name }}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-gray-600">{{ $employee->title ?: '—' }}</td>
+                <td class="px-6 py-4">
+                    <a href="/{{ $customer->slug }}/{{ $employee->slug }}" target="_blank"
+                       class="text-amber-600 hover:underline font-mono text-xs">
+                        /{{ $customer->slug }}/{{ $employee->slug }}
+                    </a>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $employee->active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                        {{ $employee->active ? 'Active' : 'Inactive' }}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3 justify-end">
+                        <a href="{{ route('admin.customers.employees.edit', [$customer, $employee]) }}"
+                           class="text-xs text-gray-600 hover:underline">Edit</a>
+                        <form method="POST" action="{{ route('admin.customers.employees.destroy', [$customer, $employee]) }}"
+                              onsubmit="return confirm('Delete this employee?')">
+                            @csrf @method('DELETE')
+                            <button class="text-xs text-red-500 hover:underline">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-gray-400">
+                    No employees yet.
+                    <a href="{{ route('admin.customers.employees.create', $customer) }}" class="text-amber-600 hover:underline ml-1">Add one</a>
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+    @if($employees->hasPages())
+    <div class="px-6 py-4 border-t border-gray-200">{{ $employees->links() }}</div>
+    @endif
+</div>
+@endsection

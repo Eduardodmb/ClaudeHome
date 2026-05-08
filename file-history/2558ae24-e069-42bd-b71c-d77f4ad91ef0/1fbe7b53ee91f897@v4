@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Kanban Schedule Interview: see recruitment_interview_manager (hr_applicant_kanban.xml) -->
+
+    <!-- Add Portal Access button to applicant form -->
+    <record id="hr_applicant_view_form_portal_button" model="ir.ui.view">
+        <field name="name">hr.applicant.form.portal.button</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_grant_portal_access"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-user"
+                        invisible="has_portal_access">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Grant Portal</span>
+                        <span class="o_stat_text">Access</span>
+                    </div>
+                </button>
+                <button name="toggle_active"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-check-circle"
+                        invisible="not has_portal_access">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text text-success">Portal</span>
+                        <span class="o_stat_text text-success">Active</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Applicant Form: Add Phone Screen and Quiz tabs -->
+    <record id="hr_applicant_view_form_inherit" model="ir.ui.view">
+        <field name="name">hr.applicant.form.inherit</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Recruitment Checklist before notebook -->
+            <xpath expr="//sheet/notebook" position="before">
+                <separator string="Recruitment Checklist" invisible="not job_id"/>
+                <group invisible="not job_id">
+                    <button name="action_populate_checklist_items"
+                            string="Load Recruitment Checklist"
+                            type="object"
+                            class="btn-primary"
+                            invisible="checklist_item_ids"
+                            help="Populate checklist items from the job position"/>
+                </group>
+                <field name="checklist_item_ids" context="{'default_applicant_id': id}" invisible="not job_id" nolabel="1">
+                    <list class="o_list_view_compact">
+                        <field name="sequence" widget="handle"/>
+                        <field name="name"/>
+                        <field name="upload_by" optional="hide"/>
+                        <field name="auto_completed_by_candidate" optional="hide" readonly="1" string="Auto-Completed"/>
+                        <field name="rating" optional="show" string="Rating"/>
+                        <field name="rating_notes"/>
+                        <field name="template_attachment_filename" optional="hide" string="Template Doc"/>
+                        <field name="result_attachment_filename" optional="show" string="Result Doc"/>
+                        <field name="sharepoint_url" widget="url" optional="hide"/>
+                        <field name="template_attachment_count" optional="hide" string="Template Files"/>
+                        <field name="result_attachment_count" optional="hide" string="Result Files"/>
+                        <field name="completed" widget="boolean_toggle"/>
+                        <field name="completed_by" readonly="1" optional="show"/>
+                        <field name="completed_date" readonly="1" optional="show"/>
+                        <field name="result_url" widget="url" optional="hide"/>
+                        <field name="notes" optional="show"/>
+                    </list>
+                    <form>
+                        <sheet>
+                            <div class="oe_button_box" name="button_box">
+                                <button name="action_view_template_attachments"
+                                        type="object"
+                                        class="oe_stat_button"
+                                        icon="fa-download"
+                                        invisible="template_attachment_count == 0">
+                                    <field name="template_attachment_count" widget="statinfo" string="Template Files"/>
+                                </button>
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="sequence"/>
+                                    <field name="upload_by"/>
+                                    <field name="completed"/>
+                                </group>
+                                <group>
+                                    <field name="completed_by" readonly="1"/>
+                                    <field name="completed_date" readonly="1"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="Template">
+                                    <field name="sharepoint_url" widget="url"/>
+                                    <field name="template_attachment_filename" invisible="1"/>
+                                    <field name="template_attachment" string="Template Document" filename="template_attachment_filename" readonly="1"/>
+                                </group>
+                                <group string="Result">
+                                    <field name="result_url" widget="url"/>
+                                    <field name="result_attachment_filename" invisible="1"/>
+                                    <field name="result_attachment" string="Result Document" filename="result_attachment_filename"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="notes" placeholder="Additional notes or comments..."/>
+                            </group>
+                            <notebook>
+                                <page string="Template Attachments" name="template_attachments" invisible="template_attachment_count == 0">
+                                    <field name="template_attachment_ids" widget="many2many_binary" readonly="1" nolabel="1"/>
+                                </page>
+                                <page string="Multiple Result Attachments" name="result_attachments">
+                                    <field name="result_attachment_ids" widget="many2many_binary" nolabel="1"/>
+                                </page>
+                            </notebook>
+                        </sheet>
+                    </form>
+                </field>
+            </xpath>
+
+            <!-- Add Phone Screen Answers tab -->
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Phone Screen" name="phone_screen" invisible="not job_id">
+                    <group col="2">
+                        <button name="action_populate_phone_screen_questions"
+                                string="Sync Questions"
+                                type="object"
+                                class="btn-primary"
+                                invisible="not job_id"
+                                help="Add missing phone screen answer lines from the job position"/>
+                        <button name="action_print_phone_screen"
+                                string="Print"
+                                type="object"
+                                class="btn-secondary"
+                                icon="fa-print"
+                                invisible="not phone_screen_answer_ids"/>
+                    </group>
+                    <field name="phone_screen_answer_ids" context="{'default_applicant_id': id}">
+                        <list editable="bottom" create="0" delete="1">
+                            <field name="question_id" column_invisible="1"/>
+                            <field name="question_type" column_invisible="1"/>
+                            <field name="question_text" readonly="1" string="Question"/>
+                            <field name="answer"
+                                   optional="show"
+                                   placeholder="Type answer here..."/>
+                            <field name="yes_no_answer" optional="show"/>
+                            <field name="rating" optional="show" widget="priority"/>
+                            <field name="notes" optional="show" placeholder="Add notes..."/>
+                        </list>
+                        <form>
+                            <group>
+                                <field name="question_id"
+                                       domain="[('job_id', '=', parent.job_id)]"
+                                       options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="question_text"/>
+                            </group>
+                            <group>
+                                <field name="answer"
+                                       invisible="question_id.question_type != 'open_ended'"
+                                       placeholder="Enter answer..."/>
+                                <field name="yes_no_answer"
+                                       invisible="question_id.question_type != 'yes_no'"/>
+                                <field name="rating"
+                                       invisible="question_id.question_type != 'rating'"/>
+                            </group>
+                            <group>
+                                <field name="notes" placeholder="Add interviewer notes..."/>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+
+                <!-- Add Quiz Answers tab -->
+                <page string="Quiz" name="quiz" invisible="not job_id">
+                    <group>
+                        <group>
+                            <field name="quiz_token" readonly="1"/>
+                            <field name="quiz_completed"/>
+                        </group>
+                        <group>
+                            <button name="action_sync_quiz_questions"
+                                    string="Sync Quiz Questions"
+                                    type="object"
+                                    class="btn-secondary"
+                                    icon="fa-refresh"
+                                    help="Sync quiz questions with the job position. Adds new questions and removes obsolete answers."/>
+                            <button name="action_generate_quiz_link"
+                                    string="Generate Quiz Link"
+                                    type="object"
+                                    class="btn-primary"
+                                    help="Generate a secure link for the applicant to take the quiz"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="quiz_answer_ids" nolabel="1" context="{'default_applicant_id': id}">
+                            <list editable="bottom">
+                                <field name="question_id"
+                                       domain="[('job_id', '=', parent.job_id)]"
+                                       options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="question_text" column_invisible="True"/>
+                                <field name="question_type" column_invisible="True"/>
+                                <field name="selected_answer"
+                                       invisible="question_type != 'multiple_choice'"/>
+                                <field name="true_false_answer"
+                                       invisible="question_type != 'true_false'"/>
+                                <field name="text_answer"
+                                       invisible="question_type not in ['short_answer', 'essay']"/>
+                                <field name="is_correct"
+                                       invisible="question_type in ['short_answer', 'essay']"
+                                       decoration-success="is_correct == True"
+                                       decoration-danger="is_correct == False"/>
+                                <field name="points_earned" sum="Total Points"/>
+                            </list>
+                            <form>
+                                <group>
+                                    <field name="question_id"
+                                           domain="[('job_id', '=', parent.job_id)]"
+                                           options="{'no_create': True, 'no_create_edit': True}"/>
+                                    <field name="question_text"/>
+                                    <field name="question_type"/>
+                                </group>
+                                <group>
+                                    <field name="selected_answer"
+                                           invisible="question_type != 'multiple_choice'"/>
+                                    <field name="true_false_answer"
+                                           invisible="question_type != 'true_false'"/>
+                                    <field name="text_answer"
+                                           invisible="question_type not in ['short_answer', 'essay']"
+                                           widget="text"/>
+                                </group>
+                                <group invisible="question_type in ['short_answer', 'essay']">
+                                    <field name="is_correct"/>
+                                    <field name="points_earned"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+
+
+                <!-- Portal Access tab: credentials for the candidate -->
+                <page string="Portal Access" name="portal_access">
+                    <group>
+                        <group string="Portal User">
+                            <field name="portal_user_id" readonly="1"/>
+                            <field name="has_portal_access" readonly="1"/>
+                        </group>
+                        <group>
+                            <button name="action_generate_portal_credentials"
+                                    string="Generate / Refresh Credentials"
+                                    type="object"
+                                    class="btn-primary"
+                                    help="Create or refresh temporary login credentials for this candidate"/>
+                            <button name="action_grant_portal_access"
+                                    string="Grant Portal Access (wizard)"
+                                    type="object"
+                                    class="btn-secondary"
+                                    invisible="has_portal_access"/>
+                        </group>
+                    </group>
+                    <separator string="Access Tokens (most recent first)"/>
+                    <field name="portal_token_ids" readonly="1" nolabel="1">
+                        <list create="0" edit="0" delete="0" decoration-muted="is_expired">
+                            <field name="magic_link" widget="url" string="Magic Link (one-click login)"/>
+                            <field name="temp_password" string="Temporary Password"/>
+                            <field name="expiry" string="Expires"/>
+                            <field name="is_expired" string="Expired" widget="boolean"/>
+                        </list>
+                    </field>
+                </page>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>

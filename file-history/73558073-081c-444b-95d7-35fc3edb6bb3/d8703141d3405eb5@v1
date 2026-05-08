@@ -1,0 +1,68 @@
+"""Per-partner checklist line; created only via sync from template (not manual create on form)."""
+
+from odoo import api, fields, models
+
+
+class PartnerSubcontractorRequirementLine(models.Model):
+    _name = "partner.subcontractor.requirement.line"
+    _description = "Partner subcontractor requirement line"
+    _order = "sequence, id"
+
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Contact",
+        required=True,
+        ondelete="cascade",
+        index=True,
+    )
+    template_item_id = fields.Many2one(
+        "subcontractor.requirement.template.item",
+        string="Template item",
+        required=True,
+        ondelete="cascade",
+        index=True,
+    )
+    sequence = fields.Integer(default=10)
+    done = fields.Boolean(string="Done", default=False)
+    not_applicable = fields.Boolean(string="N/A", default=False)
+
+    name = fields.Char(related="template_item_id.name", string="Requirement", readonly=True)
+    description = fields.Text(
+        related="template_item_id.description", string="Notes", readonly=True
+    )
+    is_optional = fields.Boolean(
+        related="template_item_id.optional",
+        string="Optional",
+        readonly=True,
+    )
+    is_active = fields.Boolean(
+        related="template_item_id.active",
+        string="Active template",
+        readonly=True,
+    )
+
+    _sql_constraints = [
+        (
+            "partner_template_unique",
+            "unique(partner_id, template_item_id)",
+            "Each requirement line must be unique per contact and template item.",
+        )
+    ]
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        lines.partner_id._compute_subcontractor_requirements_state()
+        return lines
+
+    def write(self, vals):
+        res = super().write(vals)
+        if any(k in vals for k in ("done", "not_applicable", "template_item_id", "partner_id")):
+            self.partner_id._compute_subcontractor_requirements_state()
+        return res
+
+    def unlink(self):
+        partners = self.partner_id
+        res = super().unlink()
+        partners._compute_subcontractor_requirements_state()
+        return res

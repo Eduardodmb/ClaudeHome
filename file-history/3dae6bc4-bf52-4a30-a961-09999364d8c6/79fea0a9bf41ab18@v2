@@ -1,0 +1,91 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Commands
+
+```bash
+npm run electron:dev   # Dev: starts Vite (port 5173) then Electron with hot reload
+npm run dev            # Vite renderer only (no Electron)
+npm run build          # Vite production build → dist/
+npm run electron:build # Package Windows installer (NSIS) via electron-builder
+```
+
+No test suite is configured. No linter config present.
+
+## Architecture
+
+**Clockhelp** is a time-tracking desktop app built with Electron 28 + React 18 (Vite) + sql.js (pure-JS SQLite).
+
+### Process boundary
+
+Two OS windows are created, both loading the same React app from Vite dev server or `dist/index.html`:
+- **Main window** — full UI with tabs
+- **Floating widget** — frameless, always-on-top, 350×200 — identified by `window.location.hash === '#/widget'` in `src/App.jsx`
+
+The React renderer never touches Node.js directly. `electron/preload.cjs` uses `contextBridge` to expose `window.electronAPI`, which wraps `ipcRenderer.invoke`/`ipcRenderer.on` calls.
+
+### IPC pattern
+
+```
+Renderer → window.electronAPI.xxx()
+         → ipcMain.handle / ipcMain.on  (electron/main.js registers all handlers)
+         → main-process logic (timer.js, database.js, etc.)
+
+Main process → BrowserWindow.send('event:name', payload)
+             → window.electronAPI.onXxx(cb) listener
+             → Zustand store update
+```
+
+### Timer (electron/timer.js)
+
+State machine tracking `{isActive, isPaused, taskId, startTime, elapsedSeconds, entryId}`. Elapsed time is always **calculated** from `startTime` (not accumulated) to avoid drift. Ticks every 1 s via `setInterval`, broadcasts `timer:tick` to all windows. Active timer is persisted to the `settings` table (key `active_timer`) as JSON and restored on startup by scanning for `time_entries` rows with `end_time IS NULL`.
+
+### Database (electron/database.js)
+
+- sql.js loaded with WASM from `node_modules/sql.js/dist/sql-wasm.wasm`
+- DB file at `%APPDATA%\clockhelp\clockhelp.db`
+- Auto-saves every 30 s + debounced 1 s save after every mutation
+- Atomic writes: export → `.tmp` → verify SQLite header → rotate 3 backups → rename
+- Helper API: `query(sql, params)`, `run(sql, params)`, `get(sql, params)`, `all(sql, params)`
+
+**Schema tables:** `customers`, `projects`, `tasks`, `time_entries` (task_id nullable for lunch breaks), `settings` (key/value), `scheduled_tasks`
+
+### State management (src/stores/)
+
+Four Zustand stores mirror main-process state:
+- `timerStore.js` — registers `timer:tick` / `timer:state` IPC listeners on init
+- `dataStore.js` — CRUD via `dbAll`/`dbRun`/`dbGet`, `loadAll()` runs fetches in parallel
+- `settingsStore.js` / `scheduleStore.js` — same IPC pattern
+
+### App startup sequence
+
+`electron/main.js` `app.whenReady()`:
+1. `initDatabase()` → schema migration
+2. `createFloatingWidget()` (always visible)
+3. `createTray()`
+4. `restoreTimer()` (reopens active entries from DB)
+5. `startIdleDetection()` (polls `powerMonitor` every 10 s)
+6. `startReminderEngine()` (scheduled-task alerts)
+7. Register global shortcuts: Ctrl+Shift+T (start/stop), Ctrl+Shift+L (lunch), Ctrl+Shift+W (toggle widget)
+
+### Key files
+
+| Path | Role |
+|---|---|
+| `electron/main.js` | App lifecycle, all IPC handlers, global shortcuts |
+| `electron/preload.cjs` | Context bridge — defines the full `electronAPI` surface |
+| `electron/database.js` | sql.js init, schema, atomic save, CRUD helpers |
+| `electron/timer.js` | Timer state machine + tick broadcast |
+| `electron/windows.js` | Window creation (main + widget) |
+| `electron/idle.js` | Idle detection via `powerMonitor` |
+| `src/App.jsx` | Routes main window vs widget by `window.location.hash` |
+| `src/stores/timerStore.js` | Timer UI state + IPC event listeners |
+| `src/stores/dataStore.js` | Entity CRUD + loading state |
+| `src/components/Dashboard.jsx` | Timer controls, task picker, daily progress |
+| `src/components/FloatingWidget.jsx` | Compact always-on-top timer UI |
+| `vite.config.js` | `@` alias → `src/`, dev server port 5173 |
+
+### Styling
+
+TailwindCSS 3 with a custom palette (`blue-*` accents, dark backgrounds). All class names are in JSX; no CSS modules. The `@` import alias resolves to `src/`.

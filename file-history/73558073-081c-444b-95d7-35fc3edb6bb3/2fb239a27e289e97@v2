@@ -1,0 +1,61 @@
+"""Requirements badge + open partner checklist from CRM subcontractor rows."""
+
+from odoo import api, fields, models
+
+
+class CrmLeadSubcontractor(models.Model):
+    _inherit = "crm.lead.subcontractor"
+
+    partner_subcontractor_requirements_state = fields.Selection(
+        related="partner_id.subcontractor_requirements_state",
+        string="Requirements",
+        store=True,
+        readonly=True,
+    )
+
+    requirement_line_ids = fields.One2many(
+        "crm.lead.subcontractor.requirement.line",
+        "lead_subcontractor_id",
+        string="Requirements Checklist"
+    )
+
+    def action_open_partner_subcontractor_checklist(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.partner_id.display_name,
+            "res_model": "res.partner",
+            "res_id": self.partner_id.id,
+            "view_mode": "form",
+            "target": "current",
+            "context": {"mail_create_nosubscribe": True},
+        }
+
+    def _sync_requirement_lines(self):
+        """Create lead-specific requirement lines from partner checklist."""
+        Line = self.env["crm.lead.subcontractor.requirement.line"]
+        for record in self:
+            if not record.partner_id:
+                continue
+
+            partner_requirements = record.partner_id.subcontractor_requirement_line_ids
+            existing = set(record.requirement_line_ids.mapped("partner_requirement_line_id").ids)
+
+            for partner_req in partner_requirements:
+                if partner_req.id not in existing:
+                    Line.create({
+                        "lead_subcontractor_id": record.id,
+                        "partner_requirement_line_id": partner_req.id,
+                    })
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._sync_requirement_lines()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "partner_id" in vals:
+            self._sync_requirement_lines()
+        return res

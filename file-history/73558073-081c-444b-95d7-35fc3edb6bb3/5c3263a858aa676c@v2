@@ -1,0 +1,57 @@
+from odoo import fields, models
+
+class MailActivityPlanTemplate(models.Model):
+    """
+    Activity Plan Template Mapping logic
+    -----------------------------------
+    This class handles the transfer of custom ticket data from the 
+    configuration/template level (called activity plans on odoo) to the actual records created when a 
+    plan (like a Growth Plan) is launched.
+    """
+    _inherit = 'mail.activity.plan.template'
+    # --- CUSTOM DATA FIELDS ---
+    # These fields allow admins to pre-define the requirements for a task 
+    # before it is ever assigned to an employee. They need to be defined in the template AND the activity model
+    target_document_item_id = fields.Many2one(
+        'document.library.item',
+        string="Target Document"
+    )
+
+    additional_document_ids = fields.Many2many(
+        'document.library.item',
+        'mail_activity_plan_document_rel',
+        'plan_id',
+        'document_id',
+        string="Additional Documents",
+        help="Select multiple documents related to this activity"
+    )
+
+    certification_name_ids = fields.Many2many(
+        'hr.certification.name',
+        string="Certification Names"
+    )
+    
+    group_id = fields.Many2one(
+        "acg.activity.group",
+        string="Group Name",
+        index=True,
+    )
+
+    def _determine_template_values(self):
+        """ 
+        The Core Mapping Method:
+        This method is called by Odoo when converting a Template into a real Activity.
+        We override it to 'inject' our custom fields into the creation dictionary (vals).
+        """
+        # 1. Get the standard values from Odoo (Summary, Note, Activity Type, etc.)
+        vals = super(MailActivityPlanTemplate, self)._determine_template_values()
+        vals.update({
+            # Storing the template ID on the activity allows us to track
+            # which template generated which live ticket.
+            'plan_template_id': self.id,  # <-- add this
+            'target_document_item_id': self.target_document_item_id.id or False,
+            'additional_document_ids': [(6, 0, self.additional_document_ids.ids)],
+            'certification_name_ids': [(6, 0, self.certification_name_ids.ids)],
+            'group_id': self.group_id.id or False,  # <-- use template field
+        })
+        return vals

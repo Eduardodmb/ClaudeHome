@@ -1,0 +1,42 @@
+# Copyright (C) 2015 Salton Massally (<smassally@idtlabs.sl>).
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+{
+    "name": "Project Custom Fields",
+    "version": "18.0.1.0.3",
+    "license": "AGPL-3",
+    "author": "Rogelio Gomez <rxgerg@hotmail.com>, Prayas Thapa <itengineer@acglp.com>, "
+    "Rogelio E. Gomez",
+    "category": "Project",
+    "summary": "Add custom fields for Project Manager, Project Engineer, and Project Field Supervisor.",
+    "depends": ["project", "contacts", "hr_employee_certifications", "mail", "ticket_system", "activity_modification", "common_logging"],
+
+    #replace employees_department_custom_fields just with ticket/activity module when activity logic is moved from emp_dept to activity modification
+
+    "external_dependencies": {
+        "python": ["requests"],
+    },
+    "data": [
+             "security/ir.model.access.csv",
+             "data/partner_employment_type_data.xml",
+             "data/project_deliverable_template_data.xml",
+             "views/menu_buttons.xml",
+             "views/project_type_view.xml",
+             "views/project_award_type_view.xml",
+             "views/templates.xml",
+             'views/project_partner_rel_view.xml', 
+             "views/project_contacts_view.xml",
+             "views/project_asana_view.xml",
+             "views/search.xml",
+             "views/views.xml",
+             "views/appointment_view.xml",
+             "views/proj_cert_view.xml",
+             "data/ir_cron_certification.xml",
+             "data/ir_config_parameter.xml",
+             "views/activity_view.xml",
+             "views/project_subcontractor.xml",
+             "views/meeting.xml",
+             "views/project_deliverable_view.xml",
+             ],
+    "post_init_hook": "post_init_hook",
+    "installable": True,
+}

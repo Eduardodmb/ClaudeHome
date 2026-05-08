@@ -1,0 +1,198 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Assessment;
+use App\Models\AssessmentFinding;
+use App\Models\Document;
+use App\Models\Framework;
+use App\Models\Subcontrol;
+use App\Models\User;
+use App\Services\AssessmentService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class AssessmentController extends Controller
+{
+    public function __construct(private AssessmentService $service) {}
+
+    public function index()
+    {
+        $assessments = Assessment::with(['framework', 'creator'])
+            ->latest()
+            ->paginate(20);
+
+        return view('assessments.index', compact('assessments'));
+    }
+
+    public function create()
+    {
+        $frameworks = Framework::where('status', 'active')->get();
+        $assessors  = User::where('is_active', true)->get();
+        return view('assessments.create', compact('frameworks', 'assessors'));
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'framework_id'=> 'required|exists:frameworks,id',
+            'start_date'  => 'nullable|date',
+            'end_date'    => 'nullable|date|after_or_equal:start_date',
+            'assessor_ids'=> 'nullable|array',
+            'assessor_ids.*' => 'exists:users,id',
+        ]);
+
+        $assessment = Assessment::create([
+            ...$data,
+            'status'     => 'not_started',
+            'created_by' => Auth::id(),
+        ]);
+
+        if ($data['assessor_ids'] ?? null) {
+            $assessment->assessors()->sync($data['assessor_ids']);
+        }
+
+        $this->service->initializeFindings($assessment);
+
+        return redirect()->route('assessments.findings', $assessment)
+            ->with('success', 'Assessment created. Start reviewing controls below.');
+    }
+
+    public function show(Assessment $assessment)
+    {
+        $assessment->load(['framework', 'creator', 'assessors', 'findings.subcontrol.frameworkApp']);
+        return view('assessments.show', compact('assessment'));
+    }
+
+    public function edit(Assessment $assessment)
+    {
+        $frameworks = Framework::where('status', 'active')->get();
+        $assessors  = User::where('is_active', true)->get();
+        return view('assessments.edit', compact('assessment', 'frameworks', 'assessors'));
+    }
+
+    public function update(Request $request, Assessment $assessment)
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status'      => 'required|in:not_started,in_progress,under_review,completed',
+            'start_date'  => 'nullable|date',
+            'end_date'    => 'nullable|date',
+            'assessor_ids'=> 'nullable|array',
+        ]);
+
+        $assessment->update($data);
+        if (isset($data['assessor_ids'])) {
+            $assessment->assessors()->sync($data['assessor_ids'] ?? []);
+        }
+
+        return redirect()->route('assessments.show', $assessment)
+            ->with('success', 'Assessment updated.');
+    }
+
+    public function destroy(Assessment $assessment)
+    {
+        $assessment->delete();
+        return redirect()->route('assessments.index')
+            ->with('success', 'Assessment deleted.');
+    }
+
+    public function findings(Assessment $assessment)
+    {
+        $assessment->load([
+            'framework.apps.subcontrols.frameworkApp',
+            'findings.subcontrol',
+            'findings.documents',
+        ]);
+
+        $findingsBySubcontrol = $assessment->findings->keyBy('subcontrol_id');
+
+        return view('assessments.findings', compact('assessment', 'findingsBySubcontrol'));
+    }
+
+    public function updateFinding(Request $request, Assessment $assessment)
+    {
+        $data = $request->validate([
+            'subcontrol_id'          => 'required|exists:subcontrols,id',
+            'status'                 => 'nullable|in:met,partially_met,not_met,not_applicable',
+            'implementation_details' => 'nullable|string',
+            'notes'                  => 'nullable|string',
+            'recommendations'        => 'nullable|string',
+        ]);
+
+        $finding = $assessment->findings()->updateOrCreate(
+            ['subcontrol_id' => $data['subcontrol_id']],
+            [
+                'status'                 => $data['status'] ?? null,
+                'implementation_details' => $data['implementation_details'] ?? null,
+                'notes'                  => $data['notes'] ?? null,
+                'recommendations'        => $data['recommendations'] ?? null,
+                'assessed_by'            => Auth::id(),
+                'assessed_at'            => now(),
+            ]
+        );
+
+        $assessment->recalculateCompletion();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'finding'    => $finding,
+                'completion' => $assessment->fresh()->completion_percentage,
+            ]);
+        }
+
+        return back()->with('success', 'Finding updated.');
+    }
+
+    public function generateAIRecommendations(Request $request, Assessment $assessment)
+    {
+        $request->validate(['subcontrol_id' => 'required|exists:subcontrols,id']);
+
+        $finding = $assessment->findings()->where('subcontrol_id', $request->subcontrol_id)->firstOrFail();
+        $subcontrol = $finding->subcontrol;
+
+        try {
+            $recommendation = $this->service->generateAIRecommendation($subcontrol, $finding->status);
+
+            $finding->update([
+                'recommendations'            => $recommendation,
+                'ai_generated_recommendations'=> true,
+                'ai_generated_at'            => now(),
+            ]);
+
+            return response()->json(['recommendation' => $recommendation, 'generated_at' => $finding->fresh()->ai_generated_at]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function exportXlsx(Assessment $assessment)
+    {
+        $assessment->load(['framework', 'findings.subcontrol.frameworkApp', 'findings.documents']);
+        return $this->service->exportXlsx($assessment);
+    }
+
+    public function generateSSP(Assessment $assessment)
+    {
+        $assessment->load(['framework', 'findings.subcontrol', 'creator', 'assessors']);
+        return $this->service->generateSSP($assessment);
+    }
+
+    public function clone(Assessment $assessment)
+    {
+        $clone = $assessment->replicate(['completion_percentage', 'status']);
+        $clone->name   = $assessment->name . ' (Copy)';
+        $clone->status = 'not_started';
+        $clone->completion_percentage = 0;
+        $clone->created_by = Auth::id();
+        $clone->save();
+
+        $this->service->initializeFindings($clone);
+
+        return redirect()->route('assessments.findings', $clone)
+            ->with('success', 'Assessment cloned.');
+    }
+}

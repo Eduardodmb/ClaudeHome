@@ -1,0 +1,267 @@
+# Export Installed Odoo Modules from Docker
+# This script connects to your Docker Postgres instance and exports installed modules
+# Usage: .\export_modules.ps1 [database_name]
+
+param(
+    [string]$DatabaseName = "odoo"
+)
+
+$ErrorActionPreference = "Stop"
+
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host "  Odoo Modules Export Tool" -ForegroundColor Cyan
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Configuration from docker-compose.yml
+$DB_CONTAINER = "odoo_docker-db-1"  # Adjust if your container name is different
+$DB_USER = "odoo"
+$DB_PASSWORD = "myodoo"
+$OUTPUT_DIR = ".\module_exports"
+$TIMESTAMP = Get-Date -Format "yyyyMMdd_HHmmss"
+$OUTPUT_FILE = "$OUTPUT_DIR\installed_modules_$TIMESTAMP.txt"
+$INSTALL_SCRIPT = "$OUTPUT_DIR\install_modules_$TIMESTAMP.ps1"
+
+# Create output directory
+if (-not (Test-Path $OUTPUT_DIR)) {
+    New-Item -ItemType Directory -Path $OUTPUT_DIR | Out-Null
+    Write-Host "✓ Created output directory: $OUTPUT_DIR" -ForegroundColor Green
+}
+
+Write-Host "Database: $DatabaseName" -ForegroundColor Yellow
+Write-Host "Container: $DB_CONTAINER" -ForegroundColor Yellow
+Write-Host ""
+
+# SQL query to get installed modules
+$SQL_QUERY = @"
+SELECT name
+FROM ir_module_module
+WHERE state = 'installed'
+ORDER BY name;
+"@
+
+Write-Host "Connecting to database and exporting modules..." -ForegroundColor Cyan
+
+# Export modules list
+try {
+    $env:PGPASSWORD = $DB_PASSWORD
+    $modules = docker exec -i $DB_CONTAINER psql -U $DB_USER -d $DatabaseName -t -A -c $SQL_QUERY
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to connect to database"
+    }
+
+    # Save to file
+    $modules | Out-File -FilePath $OUTPUT_FILE -Encoding UTF8
+
+    $moduleCount = ($modules | Measure-Object -Line).Lines
+
+    Write-Host ""
+    Write-Host "✅ SUCCESS!" -ForegroundColor Green
+    Write-Host "=====================================================" -ForegroundColor Green
+    Write-Host "Exported $moduleCount modules to:" -ForegroundColor Green
+    Write-Host "  $OUTPUT_FILE" -ForegroundColor Yellow
+    Write-Host ""
+
+    # Show preview
+    Write-Host "Preview (first 20 modules):" -ForegroundColor Cyan
+    Write-Host "-----------------------------------------------------" -ForegroundColor Gray
+    ($modules -split "`n" | Select-Object -First 20) | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
+    if ($moduleCount -gt 20) {
+        Write-Host "  ... and $($moduleCount - 20) more" -ForegroundColor Gray
+    }
+    Write-Host ""
+
+} catch {
+    Write-Host "❌ ERROR: $_" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Troubleshooting:" -ForegroundColor Yellow
+    Write-Host "1. Make sure Docker containers are running:" -ForegroundColor Yellow
+    Write-Host "   docker-compose ps" -ForegroundColor Gray
+    Write-Host "2. Check container name:" -ForegroundColor Yellow
+    Write-Host "   docker ps" -ForegroundColor Gray
+    Write-Host "3. Verify database name:" -ForegroundColor Yellow
+    Write-Host "   docker exec -it $DB_CONTAINER psql -U $DB_USER -l" -ForegroundColor Gray
+    exit 1
+}
+
+# Generate installation script
+Write-Host "Generating installation script..." -ForegroundColor Cyan
+
+$INSTALL_SCRIPT_CONTENT = @"
+# Odoo Modules Installation Script
+# Generated: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+# Source Database: $DatabaseName
+# Total Modules: $moduleCount
+
+param(
+    [Parameter(Mandatory=`$true)]
+    [string]`$DatabaseName,
+
+    [string]`$ContainerName = "odoo_docker-web-1"
+)
+
+`$ErrorActionPreference = "Stop"
+
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host "  Odoo Modules Installation" -ForegroundColor Cyan
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Target Database: `$DatabaseName" -ForegroundColor Yellow
+Write-Host "Container: `$ContainerName" -ForegroundColor Yellow
+Write-Host "Modules to install: $moduleCount" -ForegroundColor Yellow
+Write-Host ""
+
+# Read modules from file
+`$modulesFile = "`$(Split-Path `$PSCommandPath)\installed_modules_$TIMESTAMP.txt"
+
+if (-not (Test-Path `$modulesFile)) {
+    Write-Host "❌ ERROR: Modules file not found: `$modulesFile" -ForegroundColor Red
+    exit 1
+}
+
+`$modules = Get-Content `$modulesFile | Where-Object { `$_.Trim() -ne "" }
+`$moduleList = `$modules -join ","
+
+Write-Host "⚠️  WARNING: This will install $moduleCount modules!" -ForegroundColor Yellow
+Write-Host "This process may take 10-30 minutes depending on your system." -ForegroundColor Yellow
+Write-Host ""
+`$confirm = Read-Host "Continue? (yes/no)"
+
+if (`$confirm -ne "yes") {
+    Write-Host "Installation cancelled." -ForegroundColor Yellow
+    exit 0
+}
+
+Write-Host ""
+Write-Host "Step 1/2: Updating module list..." -ForegroundColor Cyan
+docker exec -it `$ContainerName odoo -d `$DatabaseName -u base --stop-after-init --no-http
+
+if (`$LASTEXITCODE -ne 0) {
+    Write-Host "❌ ERROR: Failed to update module list" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "✓ Module list updated" -ForegroundColor Green
+Write-Host ""
+Write-Host "Step 2/2: Installing modules..." -ForegroundColor Cyan
+Write-Host "This may take a while..." -ForegroundColor Gray
+
+docker exec -it `$ContainerName odoo -d `$DatabaseName -i `$moduleList --stop-after-init --no-http
+
+if (`$LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host "❌ ERROR: Installation failed" -ForegroundColor Red
+    Write-Host "Check the Odoo logs for details" -ForegroundColor Yellow
+    exit 1
+}
+
+Write-Host ""
+Write-Host "=====================================================" -ForegroundColor Green
+Write-Host "✅ SUCCESS! All modules installed!" -ForegroundColor Green
+Write-Host "=====================================================" -ForegroundColor Green
+Write-Host ""
+Write-Host "Next steps:" -ForegroundColor Cyan
+Write-Host "1. Restart your Odoo containers:" -ForegroundColor White
+Write-Host "   docker-compose restart" -ForegroundColor Gray
+Write-Host "2. Access Odoo and verify modules are installed" -ForegroundColor White
+Write-Host ""
+"@
+
+$INSTALL_SCRIPT_CONTENT | Out-File -FilePath $INSTALL_SCRIPT -Encoding UTF8
+
+Write-Host "✓ Installation script created: $INSTALL_SCRIPT" -ForegroundColor Green
+Write-Host ""
+
+# Generate README
+$README_FILE = "$OUTPUT_DIR\README_$TIMESTAMP.txt"
+$README_CONTENT = @"
+====================================================
+Odoo Modules Export - Instructions
+====================================================
+
+Generated: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+Source Database: $DatabaseName
+Total Modules: $moduleCount
+
+FILES IN THIS EXPORT:
+----------------------------------------------------
+1. installed_modules_$TIMESTAMP.txt
+   - List of all installed modules (one per line)
+
+2. install_modules_$TIMESTAMP.ps1
+   - PowerShell script to install modules on another computer
+
+3. README_$TIMESTAMP.txt
+   - This file
+
+INSTALLATION ON ANOTHER COMPUTER:
+----------------------------------------------------
+
+Step 1: Copy these files to the other computer
+   Copy the entire 'module_exports' folder to the other computer's
+   Odoo_Docker directory
+
+Step 2: Navigate to the folder
+   cd X:\03_ACG\Odoo_Docker\module_exports
+
+Step 3: Run the installation script
+   .\install_modules_$TIMESTAMP.ps1 -DatabaseName "your_database_name"
+
+   Replace "your_database_name" with your actual database name
+   (e.g., "odoo", "production", etc.)
+
+IMPORTANT NOTES:
+----------------------------------------------------
+- Make sure Docker is running on the target computer
+- The target Odoo instance should be the same version
+- Installation may take 10-30 minutes
+- You'll need to restart containers after installation
+
+TROUBLESHOOTING:
+----------------------------------------------------
+If the installation fails:
+
+1. Check Docker container names:
+   docker ps
+
+2. Update container name in script if needed:
+   Edit install_modules_$TIMESTAMP.ps1
+   Change the `$ContainerName parameter
+
+3. Verify database exists:
+   docker exec -it odoo_docker-db-1 psql -U odoo -l
+
+4. Check Odoo logs:
+   docker-compose logs web
+
+====================================================
+"@
+
+$README_CONTENT | Out-File -FilePath $README_FILE -Encoding UTF8
+
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host "  Export Complete!" -ForegroundColor Green
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Files created in: $OUTPUT_DIR" -ForegroundColor White
+Write-Host ""
+Write-Host "  1. installed_modules_$TIMESTAMP.txt" -ForegroundColor Yellow
+Write-Host "     (Module list - $moduleCount modules)" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  2. install_modules_$TIMESTAMP.ps1" -ForegroundColor Yellow
+Write-Host "     (Installation script for other computer)" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  3. README_$TIMESTAMP.txt" -ForegroundColor Yellow
+Write-Host "     (Installation instructions)" -ForegroundColor Gray
+Write-Host ""
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host "Next Steps:" -ForegroundColor White
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "To install on another computer:" -ForegroundColor White
+Write-Host "  1. Copy the 'module_exports' folder" -ForegroundColor Gray
+Write-Host "  2. Run: .\install_modules_$TIMESTAMP.ps1 -DatabaseName 'odoo'" -ForegroundColor Gray
+Write-Host ""
+Write-Host "For more details, see: $README_FILE" -ForegroundColor Yellow
+Write-Host ""

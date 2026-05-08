@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Weekly Performance List View -->
+    <record id="view_mail_activity_weekly_performance_list" model="ir.ui.view">
+        <field name="name">mail.activity.weekly.performance.list</field>
+        <field name="model">mail.activity.weekly.performance</field>
+        <field name="arch" type="xml">
+            <list string="Weekly Performance Dashboard">
+                <field name="name"/>
+                <field name="week_start"/>
+                <field name="week_end"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Weekly Performance Form View -->
+    <record id="view_mail_activity_weekly_performance_form" model="ir.ui.view">
+        <field name="name">mail.activity.weekly.performance.form</field>
+        <field name="model">mail.activity.weekly.performance</field>
+        <field name="arch" type="xml">
+            <form string="Weekly Performance Dashboard">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Week Period">
+                            <field name="week_start" required="1"/>
+                            <field name="week_end" readonly="1"/>
+                        </group>
+                        <group string="Filters">
+                            <field name="employee_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Employee Performance" name="employees">
+                            <field name="weekly_line_ids" nolabel="1">
+                                <list string="Employee Weekly Metrics">
+                                    <field name="employee_id"/>
+                                    <field name="prior_week_open_vs_completed" string="Prior Week O/C %"/>
+                                    <field name="prior_week_p1_strikes" string="Prior P1"/>
+                                    <field name="week_open_total" string="Open"/>
+                                    <field name="week_completed_total" string="Completed"/>
+                                    <field name="week_progress_percent" string="Progress %"/>
+                                    <field name="week_p1_strikes" string="P1 Strikes"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_mail_activity_weekly_performance" model="ir.actions.act_window">
+        <field name="name">Weekly Performance Dashboard</field>
+        <field name="res_model">mail.activity.weekly.performance</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_mail_activity_weekly_performance"
+              name="Weekly Performance Dashboard"
+              parent="customization_left_menu.custom_menu_activity_root"
+              action="action_mail_activity_weekly_performance"
+              sequence="104"/>
+
+</odoo>

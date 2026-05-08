@@ -1,0 +1,22 @@
+ File "/usr/lib/python3/dist-packages/odoo/tools/convert.py", line 601, in _tag_root
+    raise ParseError(msg) from None  # Restart with "--log-handler odoo.tools.convert:DEBUG" for complete traceback
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+odoo.tools.convert.ParseError: while parsing /mnt/extra-addons/project_kickoff_checklist/views/contract_info.xml:3
+Error while validating view near:
+
+                    <header>
+                        <button name="action_open_share_project_wizard" string="Share Project" type="object" class="oe_highlight" groups="project.group_project_manager" invisible="privacy_visibility != 'portal'" context="{'default_access_mode': 'read'}" data-hotkey="r"/>
+                        <field name="stage_id" widget="statusbar_duration" options="{'clickable': '1', 'fold_field': 'fold'}" groups="project.group_project_stages" domain="[('company_id', 'in', (company_id, False))]"/>
+                <field name="has_any_so_to_invoice" invisible="1"/>
+                <field name="has_any_so_with_nothing_to_invoice" invisible="1"/>
+
+Invalid xmlid False for button of type action.
+
+View error context:
+{'file': '/mnt/extra-addons/project_kickoff_checklist/views/contract_info.xml',
+ 'line': 5,
+ 'name': 'project.project.contract.info.form',
+ 'view': ir.ui.view(3682,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'edit_project_inherit_contract_info'}

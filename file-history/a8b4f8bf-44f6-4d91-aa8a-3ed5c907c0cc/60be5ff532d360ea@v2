@@ -1,0 +1,140 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class ConnectorSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $connectors = [
+            [
+                'name'         => 'Azure AD Evidence Collection',
+                'slug'         => 'azure-ad',
+                'description'  => 'Facilitate evidence collection from Azure Active Directory accounts.',
+                'logo_icon'    => 'azure-ad.svg',
+                'status'       => 'available',
+                'config_fields' => json_encode([
+                    ['key' => 'username',    'label' => 'Username',    'type' => 'text',     'required' => true],
+                    ['key' => 'password',    'label' => 'Password',    'type' => 'password', 'required' => true],
+                    ['key' => 'tenant_id',   'label' => 'Tenant ID',   'type' => 'text',     'required' => true],
+                    ['key' => 'schedule',    'label' => 'Sync Schedule', 'type' => 'select', 'options' => ['daily','weekly','monthly'], 'required' => false],
+                ]),
+            ],
+            [
+                'name'         => 'Curricula by Huntress',
+                'slug'         => 'curricula',
+                'description'  => 'Retrieve cyber security training evidence (CIS v8 Control 14).',
+                'logo_icon'    => 'curricula.svg',
+                'status'       => 'available',
+                'config_fields' => json_encode([
+                    ['key' => 'api_key', 'label' => 'API Key', 'type' => 'password', 'required' => true],
+                    ['key' => 'schedule', 'label' => 'Sync Schedule', 'type' => 'select', 'options' => ['daily','weekly','monthly'], 'required' => false],
+                ]),
+            ],
+            [
+                'name'         => 'SentinelOne',
+                'slug'         => 'sentinelone',
+                'description'  => 'Evidence that SentinelOne EDR is deployed across endpoints.',
+                'logo_icon'    => 'sentinelone.svg',
+                'status'       => 'available',
+                'config_fields' => json_encode([
+                    ['key' => 'api_key',        'label' => 'API Key',        'type' => 'password', 'required' => true],
+                    ['key' => 'environment_id', 'label' => 'Environment ID', 'type' => 'text',     'required' => true],
+                    ['key' => 'schedule',       'label' => 'Sync Schedule',  'type' => 'select',   'options' => ['daily','weekly','monthly'], 'required' => false],
+                ]),
+            ],
+            [
+                'name'         => 'Asana',
+                'slug'         => 'asana',
+                'description'  => 'Two-way task synchronization with Asana workspaces.',
+                'logo_icon'    => 'asana.svg',
+                'status'       => 'available',
+                'config_fields' => json_encode([
+                    ['key' => 'api_token',  'label' => 'API Token',  'type' => 'password', 'required' => true],
+                    ['key' => 'workspace',  'label' => 'Workspace',  'type' => 'text',     'required' => true],
+                ]),
+            ],
+            [
+                'name'         => 'Jira Cloud',
+                'slug'         => 'jira-cloud',
+                'description'  => 'Issue tracking and two-way task synchronization with Jira.',
+                'logo_icon'    => 'jira.svg',
+                'status'       => 'available',
+                'config_fields' => json_encode([
+                    ['key' => 'jira_url',    'label' => 'Jira URL',    'type' => 'text',     'required' => true],
+                    ['key' => 'api_token',   'label' => 'API Token',   'type' => 'password', 'required' => true],
+                    ['key' => 'project_keys','label' => 'Project Keys','type' => 'text',     'required' => false],
+                ]),
+            ],
+            [
+                'name'         => 'Microsoft Defender for Cloud',
+                'slug'         => 'ms-defender',
+                'description'  => 'Auto-sync compliance evidence from Microsoft Defender for Cloud.',
+                'logo_icon'    => 'defender.svg',
+                'status'       => 'available',
+                'config_fields' => json_encode([
+                    ['key' => 'tenant_id',       'label' => 'Tenant ID',       'type' => 'text',     'required' => true],
+                    ['key' => 'subscription_id', 'label' => 'Subscription ID', 'type' => 'text',     'required' => true],
+                    ['key' => 'schedule',        'label' => 'Sync Frequency',  'type' => 'select',   'options' => ['daily','weekly'], 'required' => false],
+                ]),
+            ],
+            [
+                'name'         => 'Qualys',
+                'slug'         => 'qualys',
+                'description'  => 'Associate vulnerability scans to subcontrols.',
+                'logo_icon'    => 'qualys.svg',
+                'status'       => 'available',
+                'config_fields' => json_encode([
+                    ['key' => 'api_url',  'label' => 'API URL',  'type' => 'text',     'required' => true],
+                    ['key' => 'username', 'label' => 'Username', 'type' => 'text',     'required' => true],
+                    ['key' => 'password', 'label' => 'Password', 'type' => 'password', 'required' => true],
+                ]),
+            ],
+            [
+                'name'         => 'HacWare',
+                'slug'         => 'hacware',
+                'description'  => 'Evidence collection for security awareness training.',
+                'logo_icon'    => 'hacware.svg',
+                'status'       => 'available',
+                'config_fields' => json_encode([
+                    ['key' => 'api_key', 'label' => 'API Key', 'type' => 'password', 'required' => true],
+                ]),
+            ],
+            [
+                'name'         => 'AWS Security Hub',
+                'slug'         => 'aws-security-hub',
+                'description'  => 'Integration with AWS Security Hub findings.',
+                'logo_icon'    => 'aws.svg',
+                'status'       => 'available',
+                'config_fields' => json_encode([
+                    ['key' => 'access_key',    'label' => 'AWS Access Key',    'type' => 'text',     'required' => true],
+                    ['key' => 'secret_key',    'label' => 'AWS Secret Key',    'type' => 'password', 'required' => true],
+                    ['key' => 'region',        'label' => 'AWS Region',        'type' => 'text',     'required' => true],
+                ]),
+            ],
+            [
+                'name'         => 'ConnectWise',
+                'slug'         => 'connectwise',
+                'description'  => 'Two-way task sync with ConnectWise Manage.',
+                'logo_icon'    => 'connectwise.svg',
+                'status'       => 'available',
+                'config_fields' => json_encode([
+                    ['key' => 'company_id',   'label' => 'Company ID',   'type' => 'text',     'required' => true],
+                    ['key' => 'public_key',   'label' => 'Public Key',   'type' => 'text',     'required' => true],
+                    ['key' => 'private_key',  'label' => 'Private Key',  'type' => 'password', 'required' => true],
+                    ['key' => 'client_id',    'label' => 'Client ID',    'type' => 'text',     'required' => true],
+                ]),
+            ],
+        ];
+
+        foreach ($connectors as $connector) {
+            DB::table('connectors')->updateOrInsert(
+                ['slug' => $connector['slug']],
+                array_merge($connector, ['created_at' => now(), 'updated_at' => now()])
+            );
+        }
+    }
+}

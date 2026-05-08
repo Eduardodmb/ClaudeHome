@@ -1,0 +1,6 @@
+# Models for global template, partner lines, and subcontractor line badges/actions.
+from . import subcontractor_requirement_template_item
+from . import partner_subcontractor_requirement_line
+from . import res_partner
+from . import project_subcontractor
+from . import crm_lead_subcontractor

@@ -1,0 +1,187 @@
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api, _
+
+
+class SubcontractorEvaluationMixin(models.AbstractModel):
+    """
+    Mixin to add subcontractor evaluation capabilities to any model.
+
+    Usage:
+    ------
+    Inherit this mixin in your subcontractor model (e.g., project.project.subcontractor,
+    crm.lead.subcontractor) to add rating and evaluation fields.
+
+    Required field in inheriting model:
+    - partner_id: Many2one to res.partner
+
+    Example:
+    --------
+    class ProjectSubcontractor(models.Model):
+        _name = 'project.project.subcontractor'
+        _inherit = ['subcontractor.evaluation.mixin']
+
+        partner_id = fields.Many2one('res.partner', required=True)
+    """
+    _name = 'subcontractor.evaluation.mixin'
+    _description = 'Subcontractor Evaluation Mixin'
+
+    # Rating Fields (1-5 stars)
+    performance_rating = fields.Selection(
+        [('1', '⭐ Poor'),
+         ('2', '⭐⭐ Below Average'),
+         ('3', '⭐⭐⭐ Average'),
+         ('4', '⭐⭐⭐⭐ Good'),
+         ('5', '⭐⭐⭐⭐⭐ Excellent')],
+        string="Performance Rating",
+        tracking=True,
+        help="Overall work performance quality"
+    )
+
+    quality_rating = fields.Selection(
+        [('1', '⭐ Poor'),
+         ('2', '⭐⭐ Below Average'),
+         ('3', '⭐⭐⭐ Average'),
+         ('4', '⭐⭐⭐⭐ Good'),
+         ('5', '⭐⭐⭐⭐⭐ Excellent')],
+        string="Quality Rating",
+        tracking=True,
+        help="Quality of work delivered"
+    )
+
+    communication_rating = fields.Selection(
+        [('1', '⭐ Poor'),
+         ('2', '⭐⭐ Below Average'),
+         ('3', '⭐⭐⭐ Average'),
+         ('4', '⭐⭐⭐⭐ Good'),
+         ('5', '⭐⭐⭐⭐⭐ Excellent')],
+        string="Communication Rating",
+        tracking=True,
+        help="Responsiveness and communication quality"
+    )
+
+    timeliness_rating = fields.Selection(
+        [('1', '⭐ Poor'),
+         ('2', '⭐⭐ Below Average'),
+         ('3', '⭐⭐⭐ Average'),
+         ('4', '⭐⭐⭐⭐ Good'),
+         ('5', '⭐⭐⭐⭐⭐ Excellent')],
+        string="Timeliness Rating",
+        tracking=True,
+        help="Adherence to deadlines and schedules"
+    )
+
+    overall_rating = fields.Float(
+        string="Overall Rating",
+        compute="_compute_overall_rating",
+        store=True,
+        help="Average of all ratings"
+    )
+
+    evaluation_notes = fields.Text(
+        string="Evaluation Notes",
+        tracking=True,
+        help="Additional comments about subcontractor performance"
+    )
+
+    evaluation_date = fields.Date(
+        string="Evaluation Date",
+        tracking=True
+    )
+
+    evaluated_by = fields.Many2one(
+        'res.users',
+        string="Evaluated By",
+        tracking=True
+    )
+
+    is_evaluated = fields.Boolean(
+        string="Evaluated",
+        compute="_compute_is_evaluated",
+        store=True
+    )
+
+    @api.depends('performance_rating', 'quality_rating', 'communication_rating', 'timeliness_rating')
+    def _compute_overall_rating(self):
+        """Calculate average rating from all categories"""
+        for record in self:
+            ratings = []
+            if record.performance_rating:
+                ratings.append(int(record.performance_rating))
+            if record.quality_rating:
+                ratings.append(int(record.quality_rating))
+            if record.communication_rating:
+                ratings.append(int(record.communication_rating))
+            if record.timeliness_rating:
+                ratings.append(int(record.timeliness_rating))
+
+            if ratings:
+                record.overall_rating = sum(ratings) / len(ratings)
+            else:
+                record.overall_rating = 0.0
+
+    @api.depends('performance_rating', 'quality_rating', 'communication_rating', 'timeliness_rating')
+    def _compute_is_evaluated(self):
+        """Check if subcontractor has been evaluated"""
+        for record in self:
+            record.is_evaluated = bool(
+                record.performance_rating or
+                record.quality_rating or
+                record.communication_rating or
+                record.timeliness_rating
+            )
+
+    def _get_partner_rating_warning(self, partner):
+        """
+        Generate rating warning message for a partner.
+
+        Call this method in your onchange methods to show rating info
+        when selecting a subcontractor.
+
+        Args:
+            partner: res.partner recordset
+
+        Returns:
+            dict: Odoo warning dict or None
+        """
+        if not partner:
+            return None
+
+        avg_rating = partner.subcontractor_avg_rating
+        total_projects = partner.subcontractor_total_evaluations
+
+        if total_projects == 0:
+            return None
+
+        # Convert rating to stars for display
+        stars = '⭐' * int(avg_rating) if avg_rating > 0 else 'No rating'
+
+        message_parts = [
+            f"Subcontractor History:",
+            f"• Average Rating: {avg_rating:.1f}/5 {stars}",
+            f"• Total Evaluations: {total_projects}",
+        ]
+
+        # Return appropriate warning based on rating
+        if avg_rating > 0 and avg_rating < 3:
+            return {
+                'warning': {
+                    'title': _('⚠️ Low Rating Alert'),
+                    'message': '\n'.join(message_parts) + '\n\n⚠️ This subcontractor has a below-average rating. Please review their history before proceeding.',
+                }
+            }
+        elif avg_rating >= 4:
+            return {
+                'warning': {
+                    'title': _('✓ Highly Rated Subcontractor'),
+                    'message': '\n'.join(message_parts) + '\n\n✓ This subcontractor has excellent ratings!',
+                }
+            }
+        elif total_projects > 0:
+            return {
+                'warning': {
+                    'title': _('Subcontractor Information'),
+                    'message': '\n'.join(message_parts),
+                }
+            }
+
+        return None

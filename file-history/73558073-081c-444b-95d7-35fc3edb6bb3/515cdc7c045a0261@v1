@@ -1,0 +1,71 @@
+<odoo>
+    <record id="view_project_project_subcontractor_list" model="ir.ui.view">
+        <field name="name">project.project.subcontractor.list</field>
+        <field name="model">project.project.subcontractor</field>
+        <field name="arch" type="xml">
+            <list string="Subcontractors">
+                <field name="sequence" widget="handle"/>
+                <field name="partner_id"/>
+                <field name="trade"/>
+                <field name="status"/>
+                <field name="amount"/>
+                <field name="quote_date"/>
+                <field name="po"/>
+                <field name="package_status"/>
+                <field name="extra_attachment_ids" widget="many2many_binary"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_project_project_subcontractor_form" model="ir.ui.view">
+        <field name="name">project.project.subcontractor.form</field>
+        <field name="model">project.project.subcontractor</field>
+        <field name="arch" type="xml">
+            <form string="Subcontractor">
+                <sheet>
+                    <group>
+                        <field name="project_id" readonly="1"/>
+                        <field name="partner_id"/>
+                        <field name="trade"/>
+                        <field name="status"/>
+                        <field name="amount"/>
+                        <field name="quote_date"/>
+                        <field name="po"/>
+                        <field name="package_status"/>
+                        <field name="extra_attachment_ids" widget="many2many_binary"/>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="project_project_form_inherit_subcontractors" model="ir.ui.view">
+        <field name="name">project.project.form.inherit.subcontractors</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Subcontractors" name="subcontractors_tab">
+                    <field name="subcontractor_line_ids"
+                           context="{'default_project_id': id}"
+                           mode="list,form">
+                        <list editable="bottom" string="Subcontractors">
+                            <field name="sequence" widget="handle"/>
+                            <field name="partner_id"/>
+                            <field name="trade"/>
+                            <field name="status"/>
+                            <field name="amount"/>
+                            <field name="quote_date"/>
+                            <field name="po"/>
+                            <field name="package_status"/>
+                            <field name="extra_attachment_ids" widget="many2many_binary"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

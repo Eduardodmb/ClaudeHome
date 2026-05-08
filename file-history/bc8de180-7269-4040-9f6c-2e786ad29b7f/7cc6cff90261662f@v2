@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mail_activity_tag,mail.activity.tag,model_mail_activity_tag,base.group_user,1,1,1,1
+access_mail_activity_update,access_mail_activity_update,model_mail_activity_update,base.group_user,1,1,1,1
+access_mail_activity_schedule_update,access_mail_activity_schedule_update,model_mail_activity_schedule_update,base.group_user,1,1,1,1
+access_mail_activity_schedule_custom_subject_line,mail.activity.schedule.custom.subject.line,model_mail_activity_schedule_custom_subject_line,base.group_user,1,1,1,1
+access_mail_activity_plan_group,access_mail_activity_plan_group,model_acg_activity_group,base.group_user,1,1,1,1
+access_mail_activity_bulk_edit,access_mail_activity_bulk_edit,model_mail_activity_bulk_edit,base.group_user,1,1,1,1
+access_hr_department_ticket_submitter,hr.department department ticket submitter,hr.model_hr_department,ticket_system.group_department_ticket_submitter,1,1,0,0
+access_ticket_bulk_upload,ticket.bulk.upload,model_ticket_bulk_upload,base.group_user,1,1,1,1

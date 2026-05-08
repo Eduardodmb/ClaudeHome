@@ -1,0 +1,215 @@
+# Odoo Module Export & Import Guide
+
+## Quick Start
+
+### Export Modules from Current Computer
+
+**Option 1: Double-click the batch file**
+```
+export_modules.bat
+```
+
+**Option 2: Run PowerShell script**
+```powershell
+.\export_modules.ps1 -DatabaseName "odoo"
+```
+
+**Option 3: Specify different database**
+```powershell
+.\export_modules.ps1 -DatabaseName "production"
+```
+
+---
+
+## What Gets Created
+
+After running the export, you'll find a `module_exports` folder with:
+
+1. **installed_modules_TIMESTAMP.txt**
+   - Plain text list of all installed modules
+   - One module per line
+
+2. **install_modules_TIMESTAMP.ps1**
+   - PowerShell script to install modules on another computer
+   - Fully automated installation
+
+3. **README_TIMESTAMP.txt**
+   - Detailed instructions for the target computer
+
+---
+
+## Installing on Another Computer
+
+### Step 1: Copy Files
+Copy the entire `module_exports` folder to the other computer:
+```
+X:\03_ACG\Odoo_Docker\module_exports\
+```
+
+### Step 2: Run Installation Script
+```powershell
+cd X:\03_ACG\Odoo_Docker\module_exports
+.\install_modules_20260501_123456.ps1 -DatabaseName "odoo"
+```
+
+Replace the timestamp in the filename with your actual file.
+
+---
+
+## Important Notes
+
+### Before Installation
+
+1. **Docker must be running** on target computer
+   ```powershell
+   docker-compose ps
+   ```
+
+2. **Same Odoo version** recommended
+   - Check version: `docker exec odoo_docker-web-1 odoo --version`
+
+3. **Database must exist**
+   ```powershell
+   docker exec -it odoo_docker-db-1 psql -U odoo -l
+   ```
+
+### During Installation
+
+- Installation takes **10-30 minutes** depending on:
+  - Number of modules (you'll see the count)
+  - Your computer's speed
+  - Network connection (for downloading dependencies)
+
+- You'll see progress in the console
+- Don't interrupt the process
+
+### After Installation
+
+1. **Restart Odoo containers**
+   ```powershell
+   docker-compose restart
+   ```
+
+2. **Verify installation**
+   - Go to Apps menu in Odoo
+   - Check that modules are installed
+
+---
+
+## Troubleshooting
+
+### Error: "Cannot connect to database"
+
+**Check container names:**
+```powershell
+docker ps
+```
+
+**Expected containers:**
+- `odoo_docker-web-1` (Odoo)
+- `odoo_docker-db-1` (PostgreSQL)
+
+**If names are different**, update the script:
+- Edit `export_modules.ps1` (line with `$DB_CONTAINER`)
+- Or edit `install_modules_*.ps1` (when running installation)
+
+### Error: "Database does not exist"
+
+**List available databases:**
+```powershell
+docker exec -it odoo_docker-db-1 psql -U odoo -l
+```
+
+**Create database if needed:**
+```powershell
+docker exec -it odoo_docker-db-1 psql -U odoo -c "CREATE DATABASE your_db_name;"
+```
+
+### Installation Fails Midway
+
+**Check Odoo logs:**
+```powershell
+docker-compose logs web
+```
+
+**Common issues:**
+- Missing dependencies
+- Incompatible module versions
+- Database permissions
+
+**Solution:**
+- Fix the issue
+- Run the installation script again (it will skip already installed modules)
+
+---
+
+## Advanced Usage
+
+### Export Specific Database
+```powershell
+.\export_modules.ps1 -DatabaseName "production"
+```
+
+### Install to Different Container
+```powershell
+.\install_modules_*.ps1 -DatabaseName "odoo" -ContainerName "my-custom-odoo-container"
+```
+
+### Manual Installation (if scripts fail)
+
+1. Get the module list:
+   ```powershell
+   $modules = Get-Content .\installed_modules_*.txt
+   $moduleList = $modules -join ","
+   ```
+
+2. Update module list:
+   ```powershell
+   docker exec -it odoo_docker-web-1 odoo -d odoo -u base --stop-after-init --no-http
+   ```
+
+3. Install modules:
+   ```powershell
+   docker exec -it odoo_docker-web-1 odoo -d odoo -i $moduleList --stop-after-init --no-http
+   ```
+
+---
+
+## Container Name Reference
+
+Based on your `docker-compose.yml`:
+
+| Service | Default Container Name      |
+|---------|----------------------------|
+| Web     | `odoo_docker-web-1`        |
+| DB      | `odoo_docker-db-1`         |
+| Nginx   | `odoo_docker-nginx-1`      |
+
+**To verify:**
+```powershell
+docker-compose ps
+```
+
+---
+
+## File Structure
+
+```
+Odoo_Docker/
+├── export_modules.bat          # Quick launcher
+├── export_modules.ps1          # Export script
+├── docker-compose.yml
+└── module_exports/
+    ├── installed_modules_20260501_123456.txt
+    ├── install_modules_20260501_123456.ps1
+    └── README_20260501_123456.txt
+```
+
+---
+
+## Questions?
+
+- Check `README_*.txt` in the export folder
+- Review Docker logs: `docker-compose logs`
+- List containers: `docker ps`
+- Check Odoo version: `docker exec odoo_docker-web-1 odoo --version`

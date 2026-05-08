@@ -1,0 +1,30 @@
+#!/bin/sh
+set -e
+
+cd /var/www
+
+# Install composer dependencies if vendor doesn't exist
+if [ ! -d "vendor" ]; then
+    composer install --no-interaction --prefer-dist
+fi
+
+# Generate app key if not set
+if grep -q "APP_KEY=$" .env 2>/dev/null || ! grep -q "APP_KEY=" .env 2>/dev/null; then
+    php artisan key:generate --force
+fi
+
+# Wait for DB and run migrations
+php artisan migrate --force
+
+# Seed if fresh (only if tables are empty)
+php artisan db:seed --force 2>/dev/null || true
+
+# Build assets if node_modules exists
+if [ -d "node_modules" ]; then
+    npm run build 2>/dev/null || true
+fi
+
+# Fix storage permissions
+php artisan storage:link 2>/dev/null || true
+
+exec php-fpm

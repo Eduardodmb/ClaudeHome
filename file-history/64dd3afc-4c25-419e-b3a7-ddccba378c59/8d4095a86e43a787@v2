@@ -1,0 +1,16 @@
+@props(['label', 'value', 'color' => 'blue'])
+
+@php
+$colors = [
+    'blue'   => 'bg-blue-50 text-blue-600',
+    'green'  => 'bg-green-50 text-green-600',
+    'amber'  => 'bg-amber-50 text-amber-600',
+    'purple' => 'bg-purple-50 text-purple-600',
+];
+$cls = $colors[$color] ?? $colors['blue'];
+@endphp
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+    <div class="text-2xl font-bold text-gray-800">{{ $value }}</div>
+    <div class="text-sm text-gray-500 mt-1">{{ $label }}</div>
+</div>

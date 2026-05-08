@@ -1,0 +1,128 @@
+"""search_leads install/upgrade hooks (menus + main.menu.priority pins)."""
+
+import logging
+
+from odoo import SUPERUSER_ID, api
+
+_logger = logging.getLogger(__name__)
+
+
+def _main_menu_priority_model(env):
+    return "main.menu.priority" in env
+
+
+def _main_menu_reorder_installed(env):
+    return bool(
+        env["ir.module.module"]
+        .sudo()
+        .search(
+            [("name", "=", "main_menu_reorder"), ("state", "=", "installed")],
+            limit=1,
+        )
+    )
+
+
+def _api_sources_was_pinned(env):
+    if not _main_menu_priority_model(env):
+        return False
+    api_root = env.ref("api_source.menu_api_root", raise_if_not_found=False)
+    if not api_root:
+        return False
+    return bool(
+        env["main.menu.priority"]
+        .sudo()
+        .search([("menu_id", "=", api_root.id)], limit=1)
+    )
+
+
+def _migrate_api_sources_quick_link_to_daily_search(env):
+    """Repoint main.menu.priority rows from API Sources root to Daily Search root."""
+    if not _main_menu_priority_model(env):
+        return
+    api_root = env.ref("api_source.menu_api_root", raise_if_not_found=False)
+    daily = env.ref("search_leads.menu_daily_search_root", raise_if_not_found=False)
+    if not api_root or not daily:
+        return
+    Priority = env["main.menu.priority"].sudo()
+    api_pins = Priority.search([("menu_id", "=", api_root.id)])
+    if not api_pins:
+        return
+    daily_pins = Priority.search([("menu_id", "=", daily.id)])
+    if daily_pins:
+        api_pins.unlink()
+        _logger.info(
+            "Removed %s main.menu.priority pin(s) for API Sources; Daily Search already pinned.",
+            len(api_pins),
+        )
+        return
+    api_pins.write({"menu_id": daily.id, "name": daily.name or "Daily Search"})
+    _logger.info(
+        "Migrated %s main.menu.priority pin(s) from API Sources to Daily Search.",
+        len(api_pins),
+    )
+
+
+def _default_daily_search_priority_if_needed(env, api_sources_was_pinned):
+    """
+    Greenfield: main_menu_reorder installed, API Sources was not pinned, Daily Search not pinned.
+    Adds a default pin (sequence 15) so Daily Search can appear in the quick-link strip.
+    """
+    if not _main_menu_priority_model(env) or not _main_menu_reorder_installed(env):
+        return
+    if api_sources_was_pinned:
+        return
+    daily = env.ref("search_leads.menu_daily_search_root", raise_if_not_found=False)
+    if not daily:
+        return
+    Priority = env["main.menu.priority"].sudo()
+    if Priority.search([("menu_id", "=", daily.id)], limit=1):
+        return
+    Priority.create(
+        {
+            "name": daily.name or "Daily Search",
+            "menu_id": daily.id,
+            "sequence": 15,
+        }
+    )
+    _logger.info("Created default main.menu.priority pin for Daily Search (sequence=15).")
+
+
+def _reorder_main_menus_if_available(env):
+    if not _main_menu_priority_model(env):
+        return
+    try:
+        env["main.menu.priority"].sudo().action_reorder_main_menus()
+    except Exception:
+        _logger.exception("main.menu.priority action_reorder_main_menus failed; menus may need manual Apply Reorder.")
+
+
+def _unlink_api_sources_root_menu(env):
+    """Remove legacy top-level API Sources app menu if it still exists (pre–API Source XML cleanup)."""
+    menu = env.ref("api_source.menu_api_root", raise_if_not_found=False)
+    if menu and menu.exists():
+        menu.unlink()
+        _logger.info("Removed legacy ir.ui.menu api_source.menu_api_root (API Sources app).")
+
+
+def _migrate_docling_serve_icp(env):
+    """Copy legacy ``rag_api_base_url`` into ``docling_serve_base_url`` when the new key is unset."""
+    icp = env["ir.config_parameter"].sudo()
+    new = (icp.get_param("search_leads.docling_serve_base_url") or "").strip()
+    if new:
+        return
+    old = (icp.get_param("search_leads.rag_api_base_url") or "").strip()
+    if old:
+        icp.set_param("search_leads.docling_serve_base_url", old)
+        _logger.info(
+            "Copied search_leads.rag_api_base_url into search_leads.docling_serve_base_url for docling-serve."
+        )
+
+
+def post_init_hook(env):
+    """After module data load: migrate quick-link pins, optional default pin, drop API Sources root."""
+    _migrate_docling_serve_icp(env)
+    api_sources_was_pinned = _api_sources_was_pinned(env)
+    _migrate_api_sources_quick_link_to_daily_search(env)
+    _default_daily_search_priority_if_needed(env, api_sources_was_pinned)
+    _unlink_api_sources_root_menu(env)
+    _reorder_main_menus_if_available(env)

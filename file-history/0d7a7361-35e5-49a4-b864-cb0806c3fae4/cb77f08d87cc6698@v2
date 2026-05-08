@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""Generate test Excel file for ticket bulk upload."""
+
+from datetime import datetime, timedelta
+from openpyxl import Workbook
+
+# Create workbook
+wb = Workbook()
+ws = wb.active
+ws.title = "Tickets"
+
+# Write headers
+headers = ['Summary', 'Description', 'Assigned To', 'Due Date', 'Priority']
+ws.append(headers)
+
+# Test data - mix of scenarios
+test_tickets = [
+    [
+        'Test ticket 1 - User with department',
+        'This ticket should be assigned to a user with a department',
+        'EMAR',
+        (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d'),
+        'P1'
+    ],
+    [
+        'Test ticket 2 - Different user',
+        'Testing with another user abbreviation',
+        'AE',
+        (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%d'),
+        'P2'
+    ],
+    [
+        'Test ticket 3 - No priority',
+        'Testing without priority field',
+        'EMAR',
+        (datetime.now() + timedelta(days=5)).strftime('%Y-%m-%d'),
+        ''
+    ],
+    [
+        'Test ticket 4 - Self assignment',
+        'Leave assigned to empty to test self-assignment',
+        '',
+        (datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d'),
+        'P3'
+    ],
+]
+
+# Write test data
+for row_data in test_tickets:
+    ws.append(row_data)
+
+# Save file
+output_path = 'X:/03_ACG/Odoo_Docs/test_ticket_upload.xlsx'
+wb.save(output_path)
+print(f"Test file created: {output_path}")
+print(f"Total test tickets: {len(test_tickets)}")

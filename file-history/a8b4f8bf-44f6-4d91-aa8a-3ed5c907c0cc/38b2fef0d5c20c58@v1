@@ -1,0 +1,161 @@
+<x-layouts.app title="Assessments">
+    <div class="space-y-6">
+
+        {{-- Header --}}
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="page-title">Assessments</h1>
+                <p class="page-subtitle">Track and manage CMMC compliance assessments.</p>
+            </div>
+            @can('assessments.create')
+            <a href="{{ route('assessments.create') }}" class="btn-primary">
+                @include('components.icon', ['name' => 'plus'])
+                New Assessment
+            </a>
+            @endcan
+        </div>
+
+        @if($assessments->isEmpty())
+            <div class="card">
+                <div class="empty-state py-20">
+                    @include('components.icon', ['name' => 'clipboard', 'class' => 'empty-state-icon'])
+                    <p class="empty-state-title">No assessments yet</p>
+                    <p class="empty-state-text">Create your first assessment to begin evaluating compliance against a framework.</p>
+                    @can('assessments.create')
+                    <a href="{{ route('assessments.create') }}" class="btn-primary btn-sm mt-4">
+                        @include('components.icon', ['name' => 'plus'])
+                        Create Assessment
+                    </a>
+                    @endcan
+                </div>
+            </div>
+        @else
+            <div class="card">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Assessment Name</th>
+                                <th>Framework</th>
+                                <th>Status</th>
+                                <th>Completion</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Created</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            @foreach($assessments as $assessment)
+                            @php
+                                $statusBadge = [
+                                    'draft'       => 'badge-gray',
+                                    'in_progress' => 'badge-blue',
+                                    'under_review'=> 'badge-yellow',
+                                    'complete'    => 'badge-green',
+                                    'archived'    => 'badge-gray',
+                                ];
+                                $statusLabel = [
+                                    'draft'        => 'Draft',
+                                    'in_progress'  => 'In Progress',
+                                    'under_review' => 'Under Review',
+                                    'complete'     => 'Complete',
+                                    'archived'     => 'Archived',
+                                ];
+                                $completion = $assessment->completion_percentage ?? 0;
+                                $barColor = $completion >= 100 ? 'bg-green-500' : ($completion >= 50 ? 'bg-blue-500' : 'bg-yellow-400');
+                            @endphp
+                            <tr>
+                                <td>
+                                    <a href="{{ route('assessments.show', $assessment) }}"
+                                       class="font-medium text-gray-900 hover:text-blue-600">
+                                        {{ $assessment->name }}
+                                    </a>
+                                    @if($assessment->description)
+                                        <p class="text-xs text-gray-400 mt-0.5 truncate max-w-xs">{{ $assessment->description }}</p>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($assessment->framework)
+                                        <span class="text-sm text-gray-700">{{ $assessment->framework->name }}</span>
+                                        @if($assessment->framework->version)
+                                            <span class="text-xs text-gray-400 ml-1">v{{ $assessment->framework->version }}</span>
+                                        @endif
+                                    @else
+                                        <span class="text-gray-400">—</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class="{{ $statusBadge[$assessment->status] ?? 'badge-gray' }}">
+                                        {{ $statusLabel[$assessment->status] ?? ucfirst($assessment->status) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center gap-2 min-w-[120px]">
+                                        <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                            <div class="{{ $barColor }} h-2 rounded-full transition-all"
+                                                 style="width: {{ $completion }}%"></div>
+                                        </div>
+                                        <span class="text-xs font-medium text-gray-600 w-8 text-right">{{ $completion }}%</span>
+                                    </div>
+                                </td>
+                                <td class="text-sm text-gray-600">
+                                    {{ $assessment->start_date ? \Carbon\Carbon::parse($assessment->start_date)->format('M d, Y') : '—' }}
+                                </td>
+                                <td class="text-sm text-gray-600">
+                                    @if($assessment->end_date)
+                                        @php $end = \Carbon\Carbon::parse($assessment->end_date); @endphp
+                                        <span class="{{ $end->isPast() && $assessment->status !== 'complete' ? 'text-red-600 font-medium' : '' }}">
+                                            {{ $end->format('M d, Y') }}
+                                        </span>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                                <td class="text-sm text-gray-500">{{ $assessment->created_at->format('M d, Y') }}</td>
+                                <td>
+                                    <div class="flex items-center justify-end gap-1">
+                                        <a href="{{ route('assessments.show', $assessment) }}"
+                                           class="btn-ghost btn-sm" title="View">
+                                            @include('components.icon', ['name' => 'eye'])
+                                        </a>
+                                        @can('assessments.edit')
+                                        <a href="{{ route('assessments.edit', $assessment) }}"
+                                           class="btn-ghost btn-sm" title="Edit">
+                                            @include('components.icon', ['name' => 'edit'])
+                                        </a>
+                                        @endcan
+                                        @can('assessments.create')
+                                        <form method="POST" action="{{ route('assessments.clone', $assessment) }}">
+                                            @csrf
+                                            <button type="submit" class="btn-ghost btn-sm" title="Clone">
+                                                @include('components.icon', ['name' => 'copy'])
+                                            </button>
+                                        </form>
+                                        @endcan
+                                        @can('assessments.delete')
+                                        <form method="POST" action="{{ route('assessments.destroy', $assessment) }}"
+                                              onsubmit="return confirm('Delete this assessment and all findings?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn-ghost btn-sm text-red-500 hover:text-red-700" title="Delete">
+                                                @include('components.icon', ['name' => 'trash'])
+                                            </button>
+                                        </form>
+                                        @endcan
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @if($assessments->hasPages())
+                <div class="card-footer">
+                    {{ $assessments->links() }}
+                </div>
+                @endif
+            </div>
+        @endif
+    </div>
+</x-layouts.app>

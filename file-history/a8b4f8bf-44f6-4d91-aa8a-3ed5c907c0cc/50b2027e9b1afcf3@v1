@@ -1,0 +1,227 @@
+<x-layouts.app title="Add Risk">
+    <div class="space-y-6">
+
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="page-title">Add Risk</h1>
+                <p class="page-subtitle">Document a new risk in the organizational risk register.</p>
+            </div>
+            <a href="{{ route('risks.index') }}" class="btn-outline">
+                @include('components.icon', ['name' => 'x'])
+                Cancel
+            </a>
+        </div>
+
+        <form method="POST" action="{{ route('risks.store') }}">
+            @csrf
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <div class="lg:col-span-2 space-y-6">
+
+                    {{-- Basic Info --}}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="text-base font-semibold text-gray-900">Risk Details</h2>
+                        </div>
+                        <div class="card-body space-y-5">
+
+                            <div>
+                                <label for="title" class="form-label">Risk Title <span class="text-red-500">*</span></label>
+                                <input type="text" id="title" name="title" value="{{ old('title') }}"
+                                       class="form-input @error('title') border-red-500 @enderror"
+                                       placeholder="Brief, descriptive risk title" required autofocus>
+                                @error('title')<p class="form-error">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div>
+                                <label for="description" class="form-label">Description <span class="text-red-500">*</span></label>
+                                <textarea id="description" name="description" rows="4"
+                                          class="form-input @error('description') border-red-500 @enderror"
+                                          placeholder="Describe the risk in detail, including potential causes and impacts…" required>{{ old('description') }}</textarea>
+                                @error('description')<p class="form-error">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="category" class="form-label">Category</label>
+                                    <select id="category" name="category" class="form-select @error('category') border-red-500 @enderror">
+                                        <option value="">Select category…</option>
+                                        @foreach(['operational'=>'Operational','technical'=>'Technical','compliance'=>'Compliance','financial'=>'Financial','reputational'=>'Reputational','third_party'=>'Third Party'] as $val => $label)
+                                            <option value="{{ $val }}" {{ old('category') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('category')<p class="form-error">{{ $message }}</p>@enderror
+                                </div>
+
+                                <div>
+                                    <label for="status" class="form-label">Status</label>
+                                    <select id="status" name="status" class="form-select @error('status') border-red-500 @enderror">
+                                        @foreach(['open'=>'Open','in_progress'=>'In Progress','mitigated'=>'Mitigated','accepted'=>'Accepted','transferred'=>'Transferred','avoided'=>'Avoided','closed'=>'Closed'] as $val => $label)
+                                            <option value="{{ $val }}" {{ old('status', 'open') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('status')<p class="form-error">{{ $message }}</p>@enderror
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="date_identified" class="form-label">Date Identified</label>
+                                    <input type="date" id="date_identified" name="date_identified"
+                                           value="{{ old('date_identified', now()->format('Y-m-d')) }}"
+                                           class="form-input @error('date_identified') border-red-500 @enderror">
+                                    @error('date_identified')<p class="form-error">{{ $message }}</p>@enderror
+                                </div>
+                                <div>
+                                    <label for="response_due_date" class="form-label">Response Due Date</label>
+                                    <input type="date" id="response_due_date" name="response_due_date"
+                                           value="{{ old('response_due_date') }}"
+                                           class="form-input @error('response_due_date') border-red-500 @enderror">
+                                    @error('response_due_date')<p class="form-error">{{ $message }}</p>@enderror
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {{-- Inherent Risk --}}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="text-base font-semibold text-gray-900">Inherent Risk Assessment</h2>
+                            <p class="text-sm text-gray-500 mt-0.5">Risk level before any controls are applied.</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="inherent_likelihood" class="form-label">Likelihood</label>
+                                    <select id="inherent_likelihood" name="inherent_likelihood"
+                                            class="form-select @error('inherent_likelihood') border-red-500 @enderror">
+                                        <option value="">Select…</option>
+                                        @foreach(['rare'=>'Rare','unlikely'=>'Unlikely','possible'=>'Possible','likely'=>'Likely','almost_certain'=>'Almost Certain'] as $val => $label)
+                                            <option value="{{ $val }}" {{ old('inherent_likelihood') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('inherent_likelihood')<p class="form-error">{{ $message }}</p>@enderror
+                                </div>
+                                <div>
+                                    <label for="inherent_impact" class="form-label">Impact</label>
+                                    <select id="inherent_impact" name="inherent_impact"
+                                            class="form-select @error('inherent_impact') border-red-500 @enderror">
+                                        <option value="">Select…</option>
+                                        @foreach(['negligible'=>'Negligible','minor'=>'Minor','moderate'=>'Moderate','significant'=>'Significant','severe'=>'Severe'] as $val => $label)
+                                            <option value="{{ $val }}" {{ old('inherent_impact') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('inherent_impact')<p class="form-error">{{ $message }}</p>@enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Risk Response --}}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="text-base font-semibold text-gray-900">Risk Response</h2>
+                        </div>
+                        <div class="card-body space-y-5">
+                            <div>
+                                <label for="risk_response_type" class="form-label">Response Type</label>
+                                <select id="risk_response_type" name="risk_response_type"
+                                        class="form-select @error('risk_response_type') border-red-500 @enderror">
+                                    <option value="">Select response strategy…</option>
+                                    @foreach(['mitigate'=>'Mitigate — Reduce likelihood or impact','accept'=>'Accept — Acknowledge and monitor','transfer'=>'Transfer — Insurance or third-party','avoid'=>'Avoid — Eliminate the risk source'] as $val => $label)
+                                        <option value="{{ $val }}" {{ old('risk_response_type') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                                @error('risk_response_type')<p class="form-error">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div>
+                                <label for="notes" class="form-label">Notes</label>
+                                <textarea id="notes" name="notes" rows="3"
+                                          class="form-input @error('notes') border-red-500 @enderror"
+                                          placeholder="Additional context, response plans, or observations…">{{ old('notes') }}</textarea>
+                                @error('notes')<p class="form-error">{{ $message }}</p>@enderror
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- Sidebar --}}
+                <div class="space-y-6">
+
+                    {{-- Owner & Subcontrol --}}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="text-base font-semibold text-gray-900">Ownership & Linkage</h2>
+                        </div>
+                        <div class="card-body space-y-4">
+
+                            <div>
+                                <label for="risk_owner_id" class="form-label">Risk Owner</label>
+                                <select id="risk_owner_id" name="risk_owner_id"
+                                        class="form-select @error('risk_owner_id') border-red-500 @enderror">
+                                    <option value="">Unassigned</option>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}" {{ old('risk_owner_id') == $user->id ? 'selected' : '' }}>
+                                            {{ $user->full_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('risk_owner_id')<p class="form-error">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div>
+                                <label for="subcontrol_id" class="form-label">Related Subcontrol</label>
+                                <select id="subcontrol_id" name="subcontrol_id"
+                                        class="form-select @error('subcontrol_id') border-red-500 @enderror">
+                                    <option value="">None</option>
+                                    @foreach($subcontrols as $subcontrol)
+                                        <option value="{{ $subcontrol->id }}" {{ old('subcontrol_id') == $subcontrol->id ? 'selected' : '' }}>
+                                            {{ $subcontrol->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('subcontrol_id')<p class="form-error">{{ $message }}</p>@enderror
+                                <p class="form-hint">Optionally link to a specific control subcontrol.</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {{-- Flags --}}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="text-base font-semibold text-gray-900">Risk Flags</h2>
+                        </div>
+                        <div class="card-body">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input type="checkbox" name="is_key_risk" value="1"
+                                       {{ old('is_key_risk') ? 'checked' : '' }}
+                                       class="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">Key Risk</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">Mark this as a key risk for executive reporting.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    {{-- Submit --}}
+                    <div class="card">
+                        <div class="card-body">
+                            <button type="submit" class="btn-primary w-full">
+                                @include('components.icon', ['name' => 'check'])
+                                Add Risk
+                            </button>
+                            <a href="{{ route('risks.index') }}" class="btn-ghost w-full mt-2 justify-center">Cancel</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+</x-layouts.app>

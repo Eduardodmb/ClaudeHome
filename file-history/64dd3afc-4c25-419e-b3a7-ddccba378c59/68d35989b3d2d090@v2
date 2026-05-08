@@ -1,0 +1,164 @@
+# VCard Manager
+
+A multi-admin SaaS platform for publishing employee vCard pages. Each admin buys seats and uses them to create public profile pages for their clients' employees.
+
+**Live vCard URL format:** `http://localhost:8085/{company-slug}/{employee-slug}`
+
+---
+
+## Requirements
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Bash (Git Bash on Windows is fine)
+
+---
+
+## First-time setup
+
+```bash
+bash setup.sh
+```
+
+The script will:
+1. Create `.env` from `.env.example`
+2. Start MySQL and wait for it to be healthy
+3. Scaffold base Laravel into the project (preserving all custom files)
+4. Install PHP and Node dependencies
+5. Run database migrations and seed test accounts
+6. Build frontend assets (Tailwind CSS + Alpine.js)
+
+---
+
+## Running the project
+
+```bash
+# Start (uses pre-built assets)
+docker compose up
+
+# Start with Vite HMR for frontend development
+docker compose --profile dev up
+```
+
+Open **http://localhost:8085**
+
+---
+
+## Test accounts
+
+| Email | Password | Role | Seats |
+|-------|----------|------|-------|
+| super@vcardapp.com | password | Super Admin | — |
+| admin1@vcardapp.com | password | Admin | 5 |
+| admin2@vcardapp.com | password | Admin | 3 |
+| admin3@vcardapp.com | password | Admin | 3 |
+
+---
+
+## Architecture
+
+```
+Users (admins)
+  └── Customers           — companies managed by an admin
+        └── Employees     — each employee has one public vCard
+              ├── Skills
+              ├── Experiences
+              └── Portfolio items
+```
+
+### Seat system
+- Each admin has a `seats_total` quota set by the super admin
+- Creating an active employee consumes 1 seat
+- Deactivating an employee frees its seat
+- The super admin adds seats via **Admin → Seats** panel
+
+---
+
+## Admin panel features
+
+| Section | Who can access | What it does |
+|---------|---------------|--------------|
+| Dashboard | All | Stats, recent customers & employees |
+| Customers | All | Create/edit customers with logo upload |
+| Employees | All | Create/edit employee vCards (per customer) |
+| Seats | All | View usage; super admin adds seats to any admin |
+| Admins | Super admin | Create/delete admin accounts |
+
+### Employee form sections
+Each employee vCard has four editable sections:
+1. **Basic Info** — name, title, bio, contact details, social URLs, profile photo
+2. **Skills** — name + proficiency level (0–100%)
+3. **Experience** — company, role, dates, description (timeline on public page)
+4. **Portfolio** — title, category, image, URL, description (grid on public page)
+
+---
+
+## Public vCard page
+
+Modelled after the Ryan vCard template:
+
+- **Sidebar (dark)** — circular profile photo, name, title badge, contact icons, social links
+- **Main content** — sticky tab bar switching between About / Resume / Skills / Portfolio
+- **Skills** — animated progress bars
+- **Experience** — vertical dot timeline
+- **Portfolio** — hover-reveal project links
+
+---
+
+## Development commands
+
+```bash
+make setup          # run setup.sh
+make up             # docker compose up -d
+make dev            # start with Vite HMR (--profile dev)
+make down           # stop containers
+make shell          # open shell in app container
+make artisan <cmd>  # run any artisan command
+make migrate        # run migrations
+make fresh          # migrate:fresh --seed (wipes data)
+make mysql          # open MySQL CLI
+make logs           # tail app + nginx logs
+```
+
+---
+
+## Environment variables
+
+Key variables in `.env` (copied from `.env.example`):
+
+| Variable | Default | Notes |
+|----------|---------|-------|
+| `APP_PORT` | `8085` | Nginx port on host |
+| `DB_PORT` | `3306` | MySQL port on host |
+| `VITE_PORT` | `5173` | Vite HMR port (dev profile) |
+| `DB_DATABASE` | `vcard_app` | MySQL database name |
+| `DB_PASSWORD` | `secret` | MySQL user password |
+
+---
+
+## Project structure
+
+```
+app/Http/Controllers/Admin/   — admin panel controllers
+app/Http/Controllers/Auth/    — login / logout
+app/Http/Controllers/         — VCardController (public page)
+app/Http/Middleware/           — EnsureAdmin (role-based guard)
+app/Models/                   — 7 Eloquent models
+database/migrations/          — 7 custom migrations
+database/seeders/             — seeds 4 user accounts
+resources/views/
+  layouts/admin.blade.php     — sidebar admin layout
+  vcard/show.blade.php        — public profile page
+  admin/{customers,employees,seats,users}/
+routes/web.php                — all application routes
+docker-compose.yml            — 4 services: app, nginx, mysql, node
+Dockerfile                    — PHP 8.3-FPM + Composer
+```
+
+---
+
+## Tech stack
+
+- **Backend:** PHP 8.3, Laravel 11
+- **Database:** MySQL 8
+- **Frontend:** Tailwind CSS v3, Alpine.js v3, Vite
+- **Dev environment:** Docker Compose

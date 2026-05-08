@@ -1,0 +1,169 @@
+from odoo import models, fields
+
+
+class HrApplicantTracker(models.Model):
+    _inherit = 'hr.applicant'
+
+    # Basic Info
+    indeed_zip_source = fields.Selection([
+        ('indeed', 'Indeed'),
+        ('zip', 'ZipRecruiter'),
+        ('linkedin', 'LinkedIn'),
+        ('referral', 'Referral'),
+        ('other', 'Other'),
+    ], string='Source Platform')
+    job_post_salary = fields.Monetary(string='Job Post Salary', currency_field='company_currency_id')
+    current_salary = fields.Monetary(string='Current Salary', currency_field='company_currency_id')
+    desired_salary = fields.Monetary(string='Desired Salary', currency_field='company_currency_id')
+    negotiable = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Negotiable')
+    ranking = fields.Selection([('p1', 'P1'), ('p2', 'P2'), ('p3', 'P3')], string='Ranking')
+    company_currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True)
+
+    # Phone Screen
+    phone_screen_date = fields.Date(string='Phone Screen Date')
+    phone_screen_by = fields.Many2one('res.users', string='Phone Screen By')
+    experience_estimating = fields.Boolean(string='Estimating Experience')
+    experience_projects = fields.Boolean(string='Projects Experience')
+    experience_office = fields.Boolean(string='Office Experience')
+    experience_field = fields.Boolean(string='Field Experience')
+    similar_experience = fields.Text(string='Similar Experience to Business')
+    years_experience = fields.Integer(string='Years of Experience')
+    type_projects = fields.Text(string='Type of Projects')
+    software_asana = fields.Boolean(string='ASANA')
+    software_autocad = fields.Boolean(string='AutoCAD')
+    software_bluebeam = fields.Boolean(string='Bluebeam')
+    software_procore = fields.Boolean(string='Procore')
+    software_rsmeans = fields.Boolean(string='RSMeans')
+    federal_state_experience = fields.Boolean(string='Federal/State/City Projects')
+    area_expertise = fields.Text(string='Area of Expertise / Strengths')
+    goals = fields.Text(string='Goals')
+    reason_left_job = fields.Text(string='Reason Left Previous Job')
+    certifications_safety = fields.Boolean(string='OSHA Safety')
+    certifications_qa = fields.Boolean(string='QA')
+    certifications_usace = fields.Boolean(string='USACE')
+    certifications_pm = fields.Boolean(string='Project Manager')
+    currently_working = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Currently Working')
+    can_travel = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Can Travel')
+    need_relocate = fields.Text(string='Need to Relocate / Issues')
+    desired_schedule = fields.Text(string='Desired Schedule')
+    migration_status = fields.Selection([
+        ('citizen', 'US Citizen'),
+        ('green_card', 'Green Card'),
+        ('work_permit', 'Work Permit'),
+        ('other', 'Other'),
+    ], string='Migration Status')
+    background_check = fields.Selection([('yes', 'Yes'), ('no', 'No'), ('pending', 'Pending')], string='Background Check')
+    interview_availability = fields.Text(string='Interview Availability')
+    interview_type = fields.Selection([('in_person', 'In Person'), ('teams', 'Teams')], string='Interview Type')
+    phone_call_notes = fields.Html(string='Phone Call Notes')
+
+    # Interview Setup
+    interview_setup_by = fields.Many2one('res.users', string='Interview Set Up By')
+    interview_datetime = fields.Datetime(string='Interview Date/Time')
+    interviewer_id = fields.Many2one('res.users', string='Interviewer')
+    acg_application_form = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='ACG Application Form')
+    wpm_test_score = fields.Integer(string='WPM Type Test Score')
+    excel_rating = fields.Selection([
+        ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'),
+        ('6', '6'), ('7', '7'), ('8', '8'), ('9', '9'), ('10', '10'),
+    ], string='Excel Skill (1-10)')
+    other_tests = fields.Text(string='Other Tests')
+    test_sow_rfi = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Test SOW RFI')
+    test_outlook = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Outlook Email Test')
+    test_track_activities = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Track Multiple Activities')
+
+    # HR Interview Questions
+    hr_manage_stress = fields.Text(string='How Manage Stress')
+    hr_no_instructions = fields.Text(string='No Clear Instructions')
+    hr_follow_up = fields.Text(string='How Follow Up on Open Items')
+    hr_hours_worked = fields.Text(string='Hours Worked / Schedule')
+    hr_saturdays = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Available Saturdays')
+    hr_make_things_happen = fields.Text(string='How Make Things Happen')
+    hr_learn_new_programs = fields.Text(string='Ability to Learn New Programs')
+    hr_arrive_on_time = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Arrive On Time')
+    hr_reliable_transport = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Reliable Transportation')
+    hr_organize_day = fields.Text(string='How Organize Day')
+    hr_track_activities = fields.Text(string='How Track Multiple Activities')
+
+    # Recommendations
+    ana_recommendation = fields.Html(string="Ana's Recommendation")
+    hr_recommendation = fields.Html(string='HR Recommendation for Position')
+
+    # Supervisor Interview - Estimating
+    supervisor_interview_date = fields.Date(string='Supervisor Interview Date')
+    supervisor_interview_by = fields.Many2one('res.users', string='Supervisor Interview By')
+    est_reading_contract = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Reading Contract')
+    est_understand_sow = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Understand SOW')
+    est_create_bom = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Create BOM')
+    est_takeoff_tools = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Takeoff Tools')
+    est_find_subcontractors = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Find Subcontractors')
+    est_subcontractor_pricing = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Subcontractor Pricing')
+    est_trade_codes = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Trade Codes')
+    est_bonding = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Request Bonding')
+    est_submit_proposal = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Submit Proposal')
+    est_write_sow = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Write SOW')
+    est_winning_rate = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Winning Rate')
+    est_timeframe = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Estimate Timeframe')
+    est_multiple_proposals = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Multiple Proposals')
+
+    # Office Documentation / PM
+    doc_daily_reports = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Daily Reports')
+    doc_closing_day = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Closing Day')
+    doc_submittals = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Prepare Submittals')
+    doc_meeting_minutes = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Meeting Minutes')
+    doc_adobe_editing = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Adobe Editing')
+    doc_reading_contract = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Reading Contract')
+    doc_process_development = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Process Development')
+    doc_procedures = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Documenting Procedures')
+    doc_templates = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Creating Templates')
+    doc_safety_docs = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Safety Documents')
+    doc_em385 = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='EM 385-11 USACE')
+    doc_safety_toolbox = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Safety Toolbox')
+    doc_permits = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Issuing Permits')
+
+    # Telecom Trades
+    telecom_fiber_types = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Fiber Optic Types')
+    telecom_splicing = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Splicing')
+    telecom_fiber_testers = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Fiber Testers')
+    telecom_underground = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Fiber Underground')
+    telecom_handholes = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Handholes/Conduit')
+    telecom_aerial = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Fiber Aerial')
+    telecom_access_control = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Access Controls')
+    telecom_audio_video = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Audio Video')
+    telecom_cat6 = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Cooper CAT 6')
+    telecom_cat6_diff = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Diff CAT 6 and 6A')
+    telecom_tools = fields.Text(string='Tools Candidate Possess')
+
+    # IT Experience
+    it_cybersecurity = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Cybersecurity')
+    it_servers = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Servers')
+    it_programming = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Programming')
+    it_languages = fields.Text(string='Programming Languages')
+    it_networking = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Networking Infrastructure')
+    it_switches = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Switches/Brands')
+    it_ms_accounts = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Create MS Accounts')
+    it_ms_teams = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='MS Teams Workflows')
+    it_scrum = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Scrum Boards')
+
+    # Other Office Experience
+    office_accounting = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Accounting/Financials')
+    office_ga_oh_profit = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='GA/OH/Profit')
+    office_purchasing = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Purchasing')
+    office_sales = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Sales')
+    office_business_dev = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Business Development')
+    office_scheduling = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Scheduling')
+    office_recruiting = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Recruiting')
+
+    # Supervisor Recommendation
+    supervisor_recommendation = fields.Html(string='Supervisor Recommendation')
+
+    # Final Documentation
+    final_outcome = fields.Html(string='Final Outcome from Interviewer')
+    platform_updated = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='Platform Updated')
+    asana_updated = fields.Selection([('yes', 'Yes'), ('no', 'No')], string='ASANA Updated')
+    final_decision = fields.Selection([
+        ('hired', 'Hired'),
+        ('pool', 'Pool'),
+        ('rejected', 'Rejected'),
+    ], string='Final Decision')
+    open_items = fields.Html(string='Open Items')

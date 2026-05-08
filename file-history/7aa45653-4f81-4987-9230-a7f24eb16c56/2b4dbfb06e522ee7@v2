@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Add "Quality Assurance" tab to Project form.
+  Each row shows: Who created, Creation date, Department, Job Category, Status, CAPA Created (yes/no).
+  Open button on each row opens the QA record in form view.
+-->
+<odoo>
+    <!-- Inherit project form: add Quality Assurance tab after Settings. QA records with this project_id appear here (not in the CAPA tab). -->
+    <record id="view_project_form_quality_assurance_tab" model="ir.ui.view">
+        <field name="name">project.project.form.quality.assurance.tab</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='settings']" position="after">
+                <page name="quality_assurance" string="Quality Assurance" sequence="1700">
+                    <field name="quality_assurance_ids" nolabel="1" context="{'default_project_id': id}">
+                        <list editable="top" create="1" delete="1">
+                            <!-- Opens this QA in form view (action_view_quality_assurance on quality.assurance) -->
+                            <button name="action_view_quality_assurance" type="object" icon="fa-arrow-right" title="Open QA" class="btn-link"/>
+                            <field name="qa_title"/>
+                            <field name="create_uid" widget="many2one_avatar_user"/>
+                            <field name="create_date" widget="date"/>
+                            <field name="department_id"/>
+                            <field name="job_category"/>
+                            <field name="state" widget="badge" decoration-warning="state == 'open'" decoration-success="state == 'closed'"/>
+                            <field name="capa_created" widget="boolean"/>
+                            <field name="project_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

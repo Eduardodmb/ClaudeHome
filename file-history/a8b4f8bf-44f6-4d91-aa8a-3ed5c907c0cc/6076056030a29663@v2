@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
+class Audit extends Model
+{
+    use SoftDeletes, LogsActivity;
+
+    protected $fillable = [
+        'name', 'framework_id', 'status', 'audit_firm',
+        'start_date', 'end_date', 'final_report_path', 'notes',
+    ];
+
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date'   => 'date',
+    ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly(['name', 'status'])->logOnlyDirty();
+    }
+
+    public function framework() { return $this->belongsTo(Framework::class); }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'audit_users');
+    }
+
+    public function isActive(): bool
+    {
+        $now = now()->toDateString();
+        return $this->status === 'in_progress'
+            && $this->start_date <= $now
+            && $this->end_date >= $now;
+    }
+}

@@ -1,0 +1,57 @@
+<x-layouts.app title="Edit Questionnaire">
+<div class="max-w-2xl space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="page-title">Edit Questionnaire</h1>
+            <p class="page-subtitle">{{ $questionnaire->name }}</p>
+        </div>
+        <a href="{{ route('questionnaires.show', $questionnaire) }}" class="btn-ghost">Cancel</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ route('questionnaires.update', $questionnaire) }}" class="space-y-5">
+                @csrf @method('PUT')
+
+                @if($errors->any())
+                <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                    <ul class="list-disc list-inside space-y-1">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+                </div>
+                @endif
+
+                <div>
+                    <label class="form-label">Questionnaire Name <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" value="{{ old('name', $questionnaire->name) }}" class="form-input" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">Vendor</label>
+                        <input type="text" class="form-input bg-gray-50 text-gray-500" value="{{ $questionnaire->vendor->name }}" disabled>
+                    </div>
+                    <div>
+                        <label class="form-label">Template</label>
+                        <input type="text" class="form-input bg-gray-50 text-gray-500" value="{{ $questionnaire->template->name }}" disabled>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="form-label">Due Date</label>
+                    <input type="date" name="due_date" value="{{ old('due_date', $questionnaire->due_date?->format('Y-m-d')) }}" class="form-input">
+                </div>
+
+                @if($questionnaire->status !== 'draft')
+                <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+                    <strong>Note:</strong> This questionnaire has already been {{ $questionnaire->status === 'completed' ? 'completed' : 'sent' }}. Only the name and due date can be edited.
+                </div>
+                @endif
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                    <a href="{{ route('questionnaires.show', $questionnaire) }}" class="btn-ghost">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</x-layouts.app>

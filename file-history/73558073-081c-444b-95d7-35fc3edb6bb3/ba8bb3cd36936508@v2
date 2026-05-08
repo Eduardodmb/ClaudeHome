@@ -1,0 +1,52 @@
+#!/bin/bash
+# Install Odoo modules from a list file on another Docker instance
+# Usage: ./install_modules_from_file.sh <container_name> <database_name> <modules_file>
+
+CONTAINER_NAME=${1:-odoo}
+DB_NAME=${2:-odoo}
+MODULES_FILE=${3:-installed_modules.txt}
+
+if [ ! -f "$MODULES_FILE" ]; then
+    echo "❌ Error: Module list file not found: $MODULES_FILE"
+    exit 1
+fi
+
+echo "Installing modules to container: $CONTAINER_NAME"
+echo "Database: $DB_NAME"
+echo "Modules file: $MODULES_FILE"
+echo "=================================================="
+
+# Read modules from file and convert to comma-separated list
+MODULES=$(cat $MODULES_FILE | tr '\n' ',' | sed 's/,$//')
+
+echo "Total modules to install: $(wc -l < $MODULES_FILE)"
+echo ""
+echo "⚠️  WARNING: This will:"
+echo "   1. Update module list"
+echo "   2. Install all modules from the file"
+echo "   3. This may take a long time!"
+echo ""
+read -p "Continue? (y/N): " confirm
+
+if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
+    echo "Cancelled."
+    exit 0
+fi
+
+echo ""
+echo "Step 1: Updating module list..."
+docker exec -it $CONTAINER_NAME odoo -d $DB_NAME -u base --stop-after-init
+
+echo ""
+echo "Step 2: Installing modules..."
+docker exec -it $CONTAINER_NAME odoo -d $DB_NAME -i $MODULES --stop-after-init
+
+if [ $? -eq 0 ]; then
+    echo ""
+    echo "✅ Successfully installed modules!"
+    echo "Restart your Odoo container to use the modules."
+else
+    echo ""
+    echo "❌ Error installing modules. Check the logs above."
+    exit 1
+fi

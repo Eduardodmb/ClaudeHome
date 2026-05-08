@@ -1,0 +1,57 @@
+"""Project-specific subcontractor requirement tracking with attachments."""
+
+from odoo import api, fields, models
+
+
+class ProjectSubcontractorRequirementLine(models.Model):
+    _name = "project.subcontractor.requirement.line"
+    _description = "Project Subcontractor Requirement Line"
+    _order = "sequence, id"
+
+    project_subcontractor_id = fields.Many2one(
+        "project.project.subcontractor",
+        string="Project Subcontractor",
+        required=True,
+        ondelete="cascade",
+        index=True,
+    )
+    partner_requirement_line_id = fields.Many2one(
+        "partner.subcontractor.requirement.line",
+        string="Partner Requirement",
+        required=True,
+        ondelete="cascade",
+        index=True,
+    )
+    sequence = fields.Integer(related="partner_requirement_line_id.sequence", store=True)
+
+    # Related fields from partner requirement
+    name = fields.Char(related="partner_requirement_line_id.name", string="Requirement", readonly=True)
+    description = fields.Text(related="partner_requirement_line_id.description", readonly=True)
+    is_optional = fields.Boolean(related="partner_requirement_line_id.is_optional", readonly=True)
+    done = fields.Boolean(related="partner_requirement_line_id.done", readonly=True)
+    not_applicable = fields.Boolean(related="partner_requirement_line_id.not_applicable", readonly=True)
+
+    # Partner-level attachments (from contact)
+    partner_attachment_ids = fields.Many2many(
+        related="partner_requirement_line_id.attachment_ids",
+        string="Contact Attachments",
+        readonly=True
+    )
+
+    # Project-specific attachments
+    project_attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'project_requirement_attachment_rel',
+        'requirement_line_id',
+        'attachment_id',
+        string='Project Attachments',
+        help="Upload project-specific documents for this requirement"
+    )
+
+    _sql_constraints = [
+        (
+            "project_subcontractor_requirement_unique",
+            "unique(project_subcontractor_id, partner_requirement_line_id)",
+            "Each requirement must be unique per project subcontractor.",
+        )
+    ]

@@ -1,0 +1,85 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('vendors', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->text('description')->nullable();
+            $table->enum('vendor_type', ['saas', 'open_source', 'on_prem', 'consulting', 'financial', 'other'])->default('saas');
+            $table->string('other_type')->nullable();
+            $table->string('street_1')->nullable();
+            $table->string('street_2')->nullable();
+            $table->string('city')->nullable();
+            $table->string('zip_code')->nullable();
+            $table->string('country')->nullable();
+            $table->string('state')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('vendor_contacts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('vendor_id')->constrained()->onDelete('cascade');
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->string('phone')->nullable();
+            $table->boolean('is_primary')->default(false);
+            $table->timestamps();
+        });
+
+        Schema::create('vendor_subcontrol', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('vendor_id')->constrained()->onDelete('cascade');
+            $table->foreignId('subcontrol_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+            $table->unique(['vendor_id', 'subcontrol_id']);
+        });
+
+        Schema::create('questionnaire_templates', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->json('structure');
+            $table->json('scoring_rules')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('questionnaires', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->foreignId('questionnaire_template_id')->constrained();
+            $table->foreignId('vendor_id')->constrained();
+            $table->enum('status', ['draft', 'sent', 'in_progress', 'completed', 'expired'])->default('draft');
+            $table->date('sent_date')->nullable();
+            $table->date('due_date')->nullable();
+            $table->date('completed_date')->nullable();
+            $table->decimal('score', 5, 2)->nullable();
+            $table->json('responses')->nullable();
+            $table->string('response_token')->unique()->nullable();
+            $table->foreignId('created_by')->constrained('users');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('questionnaires');
+        Schema::dropIfExists('questionnaire_templates');
+        Schema::dropIfExists('vendor_subcontrol');
+        Schema::dropIfExists('vendor_contacts');
+        Schema::dropIfExists('vendors');
+    }
+};

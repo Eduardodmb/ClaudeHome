@@ -1,0 +1,70 @@
+<odoo>
+    <!-- Root menu for the Daily Search module — must come first -->
+    <menuitem id="menu_daily_search_root"
+              name="Daily Search"
+              groups="group_daily_search_manager"/>
+    <!-- Submenus nested under Daily Search root menu -->
+    <menuitem id="menu_daily_search_leads"
+              parent="menu_daily_search_root"
+              name="All Leads"
+              action="action_daily_search_leads" sequence="20"/>
+    <menuitem id="menu_daily_search_leads_bid"
+              parent="menu_daily_search_root"
+              name="Bid"
+              action="action_daily_search_leads_bid" sequence="21"/>
+    <menuitem id="menu_daily_search_leads_no_bid"
+              parent="menu_daily_search_root"
+              name="No-Bid"
+              action="action_daily_search_leads_no_bid" sequence="22"/>
+    <menuitem id="menu_daily_search_websites"
+              parent="menu_daily_search_root"
+              name="Websites"
+              action="action_daily_search_websites" sequence="5"/>
+    <!-- Submenu: Daily Checklist, Nested under Daily Search root menu-->
+    <menuitem id="menu_daily_search_checklist"
+              parent="menu_daily_search_root"
+              name="Daily Checklist"
+              action="action_daily_checklist" sequence="10"/>
+    <menuitem id="menu_daily_search_manual_ss"
+              parent="menu_daily_search_root"
+              name="Manual Lead Entry"
+              action="action_daily_search_manual_lead_entry" sequence="15"
+              groups="group_daily_search_manager"/>
+    <menuitem id="menu_daily_search_sources_sought_bidding"
+              parent="menu_daily_search_root"
+              name="Sources Sought"
+              action="action_daily_search_leads_sources_sought_bidding"
+              sequence="16"
+              groups="group_daily_search_manager"/>
+    <menuitem id="menu_daily_search_configuration"
+              parent="menu_daily_search_root"
+              name="Configuration"
+              sequence="50"
+              groups="group_daily_search_manager"/>
+    <menuitem id="menu_daily_search_company_area_types"
+              parent="menu_daily_search_configuration"
+              name="Company area types"
+              action="action_daily_search_company_area_types"
+              sequence="10"
+              groups="group_daily_search_manager"/>
+    <menuitem id="menu_daily_search_company_area"
+              parent="menu_daily_search_configuration"
+              name="Company area (person)"
+              action="action_daily_search_company_area_assignments"
+              sequence="20"
+              groups="group_daily_search_manager"/>
+
+    <!-- API "Sources" under Daily Search (top-level API Sources app removed in post_init_hook). -->
+    <record id="api_source.menu_api_source" model="ir.ui.menu">
+        <field name="parent_id" ref="menu_daily_search_root"/>
+        <field name="sequence" eval="3"/>
+    </record>
+
+    <!-- Hidden from Daily Search (prefer Email Bid Leads Unassigned). -->
+    <record id="menu_daily_search_websites" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="menu_daily_search_checklist" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

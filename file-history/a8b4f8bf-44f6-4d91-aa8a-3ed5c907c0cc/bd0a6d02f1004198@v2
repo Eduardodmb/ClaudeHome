@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
+class Framework extends Model
+{
+    use SoftDeletes, LogsActivity;
+
+    protected $fillable = ['name', 'description', 'version', 'status'];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly(['name', 'status'])->logOnlyDirty();
+    }
+
+    public function apps()
+    {
+        return $this->hasMany(FrameworkApp::class)->orderBy('sort_order');
+    }
+
+    public function assessments()
+    {
+        return $this->hasMany(Assessment::class);
+    }
+
+    public function subcontrols()
+    {
+        return $this->hasManyThrough(Subcontrol::class, FrameworkApp::class);
+    }
+}

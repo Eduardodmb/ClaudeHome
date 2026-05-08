@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_crm_lead_form_fields_style" model="ir.ui.view">
+        <field name="name">crm.lead.form.fields.style</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group" position="replace">
+                <group>
+                    <separator string="Principal Contact Info"/>
+                    <group name="lead_partner" invisible="type == 'opportunity'">
+                        <!-- Preload all the partner's information -->
+                        <field name="is_partner_visible" invisible="1"/>
+                        <field name="partner_id" widget="res_partner_many2one" context="{                                         'default_name': contact_name,                                         'default_title': title,                                         'default_street': street,                                         'default_street2': street2,                                         'default_city': city,                                         'default_state_id': state_id,                                         'default_zip': zip,                                         'default_country_id': country_id,                                         'default_function': function,                                         'default_phone': phone,                                         'default_mobile': mobile,                                         'default_email': email_from,                                         'default_user_id': user_id,                                         'default_team_id': team_id,                                         'default_website': website,                                         'default_lang': lang_code,                                         'show_vat': True                                     }" invisible="not is_partner_visible"/>
+                        <field name="partner_name"/>
+                        <label for="street" string="Address"/>
+                        <div class="o_address_format">
+                            <field name="street" placeholder="Street..." class="o_address_street"/>
+                            <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                        </div>
+                        <field name="website" widget="url" placeholder="e.g. https://www.odoo.com"/>
+                        <field name="lang_active_count" invisible="1"/>
+                        <field name="lang_code" invisible="1"/>
+                        <field name="lang_id" invisible="lang_active_count &lt;= 1" options="{'no_quick_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                    </group>
+                    <group name="lead_info" invisible="type == 'opportunity'">
+                        <label for="contact_name"/>
+                        <div class="o_row">
+                            <field name="contact_name"/>
+                            <field name="title" placeholder="Title" domain="[]" options="{&quot;no_open&quot;: True}"/>
+                        </div>
+                        <field name="is_blacklisted" invisible="1"/>
+                        <field name="phone_blacklisted" invisible="1"/>
+                        <field name="email_state" invisible="1"/>
+                        <field name="phone_state" invisible="1"/>
+                        <field name="partner_email_update" invisible="1"/>
+                        <field name="partner_phone_update" invisible="1"/>
+                        <label for="email_from_group_lead_info" class="oe_inline"/>
+                        <div class="o_row o_row_readonly">
+                            <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger" title="This email is blacklisted for mass mailings. Click to unblacklist." type="object" context="{'default_email': email_from}" groups="base.group_user" invisible="not is_blacklisted"/>
+                            <field name="email_from" id="email_from_group_lead_info" string="Email" widget="email"/>
+                            <span class="fa fa-exclamation-triangle text-warning oe_edit_only" title="By saving this change, the customer email will also be updated." invisible="not partner_email_update"/>
+                        </div>
+                        <field name="email_cc" groups="base.group_no_one"/>
+                        <field name="function"/>
+                        <label for="phone_group_lead_info" class="oe_inline"/>
+                        <div class="o_row o_row_readonly">
+                            <button name="phone_action_blacklist_remove" class="fa fa-ban text-danger" title="This phone number is blacklisted for SMS Marketing. Click to unblacklist." type="object" context="{'default_phone': phone}" groups="base.group_user" invisible="not phone_blacklisted"/>
+                            <field name="phone" id="phone_group_lead_info" widget="phone"/>
+                            <span class="fa fa-exclamation-triangle text-warning oe_edit_only" title="By saving this change, the customer phone number will also be updated." invisible="not partner_phone_update"/>
+                        </div>
+                        <label for="mobile" class="oe_inline"/>
+                        <div class="o_row o_row_readonly">
+                            <button name="phone_action_blacklist_remove" class="fa fa-ban text-danger" title="This phone number is blacklisted for SMS Marketing. Click to unblacklist." type="object" context="{'default_phone': mobile}" groups="base.group_user" invisible="not mobile_blacklisted"/>
+                            <field name="mobile" widget="phone" string="Mobile"/>
+                        </div>
+                    </group>
+                    <group name="opportunity_partner" invisible="type == 'opportunity'">
+                        <field name="user_id" context="{'default_sales_team_id': team_id}" widget="many2one_avatar_user"/>
+                        <field name="team_id" options="{'no_open': True, 'no_create': True}" context="{'kanban_view_ref': 'sales_team.crm_team_view_kanban'}"/>
+                    </group>
+                    <group name="lead_priority" invisible="type == 'opportunity'">
+                        <field name="priority" widget="priority"/>
+                        <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                    </group>
+                    <group name="opportunity_partner" invisible="type == 'lead'">
+                        <field name="partner_id" widget="res_partner_many2one" string="Contact" context="{'res_partner_search_mode': type == 'opportunity' and 'customer' or False,                                         'default_name': contact_name or partner_name,                                         'default_street': street,                                         'default_is_company': type == 'opportunity' and contact_name == False,                                         'default_company_name': type == 'opportunity' and partner_name,                                         'default_street2': street2,                                         'default_city': city,                                         'default_title': title,                                         'default_state_id': state_id,                                         'default_zip': zip,                                         'default_country_id': country_id,                                         'default_function': function,                                         'default_phone': phone,                                         'default_mobile': mobile,                                         'default_email': email_from,                                         'default_user_id': user_id,                                         'default_team_id': team_id,                                         'default_website': website,                                         'default_lang': lang_code,                                         'show_vat': True,                                     }"/>
+                        <field name="is_blacklisted" invisible="1"/>
+                        <field name="partner_is_blacklisted" invisible="1"/>
+                        <field name="phone_blacklisted" invisible="1"/>
+                        <field name="mobile_blacklisted" invisible="1"/>
+                        <field name="email_state" invisible="1"/>
+                        <field name="phone_state" invisible="1"/>
+                        <field name="partner_email_update" invisible="1"/>
+                        <field name="partner_phone_update" invisible="1"/>
+                        <label for="email_from" class="oe_inline"/>
+                        <div class="o_row o_row_readonly">
+                            <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger" title="This email is blacklisted for mass mailings. Click to unblacklist." type="object" context="{'default_email': email_from}" groups="base.group_user" invisible="not is_blacklisted"/>
+                            <field name="email_from" string="Email" widget="email"/>
+                            <span class="fa fa-exclamation-triangle text-warning oe_edit_only" title="By saving this change, the customer email will also be updated." invisible="not partner_email_update"/>
+                        </div>
+                        <label for="phone" class="oe_inline"/>
+                        <div class="o_row o_row_readonly">
+                            <button name="phone_action_blacklist_remove" class="fa fa-ban text-danger" title="This phone number is blacklisted for SMS Marketing. Click to unblacklist." type="object" context="{'default_phone': phone}" groups="base.group_user" invisible="not phone_blacklisted"/>
+                            <field name="phone" widget="phone"/>
+                            <span class="fa fa-exclamation-triangle text-warning oe_edit_only" title="By saving this change, the customer phone number will also be updated." invisible="not partner_phone_update"/>
+                        </div>
+                        <field name="lost_reason_id" invisible="active"/>
+                        <field name="date_conversion" invisible="1"/>
+                        <field name="user_company_ids" invisible="1"/>
+                    </group>
+                    <group invisible="type == 'lead'">
+                        <field name="user_id" context="{'default_sales_team_id': team_id}" widget="many2one_avatar_user" string="ACG Contact"/>
+                        <field name="sme_contact_id" widget="many2one_avatar_user"/>
+                        <label for="date_deadline">Expected Closing</label>
+                        <div class="o_lead_opportunity_form_inline_fields">
+                            <field name="date_deadline" nolabel="1" class="oe_inline"/>
+                            <field name="priority" widget="priority" nolabel="1" class="oe_inline align-top"/>
+                        </div>
+                        <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                    </group>
+                </group>
+            </xpath>
+
+
+            <xpath expr="//sheet/group" position="before">
+                <!-- Row 1: two columns (lead / pipeline). Milestones are NOT inside the left column — that caused broken grids. -->
+                <group>
+                    <group name="custom_fields_group" col="1">
+                        <separator string="Details" invisible="type != 'opportunity'"/>
+                        <field name="division_id"/>
+                        <field name="sharepoint_url"/>
+                        <field name="scope_of_work"/>
+                        <field name="lead_seq"/>
+                        <field name="winning_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                        <field name="solicitation_number"/>
+                        <field name="vendor_registration"/>
+                        <field name="is_cui"/>
+                        <field name="street" placeholder="Street..." class="o_address_street"/>
+                        <!-- <field name="street2" placeholder="Street 2..." class="o_address_street"/> -->
+                        <field name="city" placeholder="City" class="o_address_city"/>
+                        <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
+                        <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                        <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                        
+                    </group>
+                    <group name="stage_requirements_group" col="1">
+                        <separator string="Estimating pipeline progress" invisible="type != 'opportunity'"/>
+                        <field name="x_checklist" readonly="type == 'opportunity'"/>
+                        <field name="x_scope_debrief" readonly="type == 'opportunity'"/>
+                        <field name="x_bom_review" readonly="type == 'opportunity'"/>
+                        <field name="x_final_proposal" readonly="type == 'opportunity'"/>
+                        <field name="x_final_review" readonly="type == 'opportunity'"/>
+                        <field name="x_sent_proposal" readonly="type == 'opportunity'"/>
+                        <field name="bonding_id"/>
+                        <field name="estimate_type_id"/>
+                        <field name="lead_source_custom_id"/>
+                        <field name="job_category_id" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="secondary_job_category_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="is_business_development"/>
+                    </group>
+                </group>
+                <!-- Row 2: full-width milestones in 3 columns for space efficiency -->
+                <group name="crm_milestone_dates_section" class="o_crm_milestone_dates_form">
+                    <field name="has_missed_due_milestones" invisible="1"/>
+                    <field name="next_due_within_3_days" invisible="1"/>
+
+                    <!-- Next due computed (full width) -->
+                    <separator string="Next due (computed)"/>
+                    <field
+                        name="next_duedate"
+                        string="Next due date"
+                        readonly="1"
+                        widget="date"
+                        decoration-danger="has_missed_due_milestones or next_due_within_3_days"
+                    />
+
+                    <!-- 3-column layout for milestones -->
+                    <group colspan="2">
+                        <!-- Column 1: Submission date -->
+                        <group string="Submission date">
+                            <field name="submission_missed" invisible="1"/>
+                            <field
+                                name="submission_date"
+                                widget="date"
+                                decoration-danger="submission_missed"
+                                decoration-success="submission_done"
+                            />
+                            <field name="submission_done" string="Completed"/>
+                            <field name="submission_na" string="N/A"/>
+                            <div class="text-muted" invisible="not submission_done">
+                                <span>Recorded </span>
+                                <field name="submission_done_by" widget="many2one_avatar_user" readonly="1" class="oe_inline"/>
+                                <field
+                                    name="submission_done_at"
+                                    readonly="1"
+                                    class="oe_inline"
+                                    widget="date"
+                                />
+                            </div>
+                        </group>
+
+                        <!-- Column 2: Site visit -->
+                        <group string="Site visit">
+                            <field name="visit_missed" invisible="1"/>
+                            <field
+                                name="next_visit"
+                                widget="date"
+                                decoration-danger="visit_missed"
+                                decoration-success="visit_done"
+                            />
+                            <field name="visit_done" string="Completed"/>
+                            <field name="visit_na" string="N/A"/>
+                            <div class="text-muted" invisible="not visit_done">
+                                <span>Recorded </span>
+                                <field name="visit_done_by" widget="many2one_avatar_user" readonly="1" class="oe_inline"/>
+                                <field
+                                    name="visit_done_at"
+                                    readonly="1"
+                                    class="oe_inline"
+                                    widget="date"
+                                />
+                            </div>
+                        </group>
+
+                        <!-- Column 3: Q&A date -->
+                        <group string="Q&amp;A date">
+                            <field name="qa_missed" invisible="1"/>
+                            <field
+                                name="qa_date"
+                                widget="date"
+                                decoration-danger="qa_missed"
+                                decoration-success="qa_done"
+                            />
+                            <field name="qa_done" string="Completed"/>
+                            <field name="qa_na" string="N/A"/>
+                            <div class="text-muted" invisible="not qa_done">
+                                <span>Recorded </span>
+                                <field name="qa_done_by" widget="many2one_avatar_user" readonly="1" class="oe_inline"/>
+                                <field
+                                    name="qa_done_at"
+                                    readonly="1"
+                                    class="oe_inline"
+                                    widget="date"
+                                />
+                            </div>
+                        </group>
+                        
+                        <group>
+                            <separator string="Preferred Point of Contact"/>
+                                <field name="secondary_contact_id" string="Preferred Contact"/>
+                                <field name="secondary_email" widget="email"/>
+                                <field name="secondary_phone" widget="phone"/>
+                        </group>
+                    </group>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

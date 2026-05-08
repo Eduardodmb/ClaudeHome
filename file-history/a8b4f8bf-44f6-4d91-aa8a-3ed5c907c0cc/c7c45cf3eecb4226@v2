@@ -1,0 +1,133 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Framework;
+use App\Models\FrameworkApp;
+use App\Models\ParentSubcontrol;
+use App\Models\Subcontrol;
+use Illuminate\Http\UploadedFile;
+use League\Csv\Reader;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
+class FrameworkImportService
+{
+    private Framework $framework;
+    private array $appCache         = [];
+    private array $parentSubCache   = [];
+
+    public function __construct(Framework $framework)
+    {
+        $this->framework = $framework;
+    }
+
+    public function import(UploadedFile $file): int
+    {
+        $rows = $this->readFile($file);
+        $count = 0;
+
+        foreach ($rows as $index => $row) {
+            if ($index === 0) continue; // skip header
+
+            // Map by column position (0-based)
+            $frameworkName    = trim($row[0] ?? '');
+            $appName          = trim($row[1] ?? '');
+            $appDescription   = trim($row[2] ?? '');
+            $parentName       = trim($row[3] ?? '');
+            $subcontrolName   = trim($row[4] ?? '');
+            $overview         = trim($row[5] ?? '');
+            $actionItems      = trim($row[6] ?? '');
+            $relatedDocs      = trim($row[7] ?? '');
+            $additionalGuide  = trim($row[8] ?? '');
+            $icon             = trim($row[9] ?? '');
+            $level1           = trim($row[10] ?? '');
+            $level2           = trim($row[11] ?? '');
+            $level3           = trim($row[12] ?? '');
+            $level4           = trim($row[13] ?? '');
+            $level5           = trim($row[14] ?? '');
+
+            if (empty($subcontrolName)) continue;
+
+            $app = $this->getOrCreateApp($appName, $appDescription, $icon);
+
+            $parent = null;
+            if (!empty($parentName)) {
+                $parent = $this->getOrCreateParent($app, $parentName);
+            }
+
+            Subcontrol::create([
+                'framework_app_id'    => $app->id,
+                'parent_subcontrol_id'=> $parent?->id,
+                'name'                => $subcontrolName,
+                'overview'            => $overview ?: null,
+                'action_items'        => $actionItems ?: null,
+                'related_documents'   => $relatedDocs ?: null,
+                'additional_guidance' => $additionalGuide ?: null,
+                'level_1'             => $level1 ?: null,
+                'level_2'             => $level2 ?: null,
+                'level_3'             => $level3 ?: null,
+                'level_4'             => $level4 ?: null,
+                'level_5'             => $level5 ?: null,
+                'sort_order'          => $count,
+            ]);
+
+            $count++;
+        }
+
+        return $count;
+    }
+
+    private function readFile(UploadedFile $file): array
+    {
+        $extension = strtolower($file->getClientOriginalExtension());
+
+        if ($extension === 'csv') {
+            $content = file_get_contents($file->getRealPath());
+            // Detect delimiter
+            $delimiter = substr_count($content, "\t") > substr_count($content, ",") ? "\t" : ",";
+            $rows = [];
+            foreach (explode("\n", $content) as $line) {
+                if (trim($line) === '') continue;
+                $rows[] = str_getcsv($line, $delimiter);
+            }
+            return $rows;
+        }
+
+        // Excel
+        $spreadsheet = IOFactory::load($file->getRealPath());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = [];
+        foreach ($sheet->getRowIterator() as $row) {
+            $cells = [];
+            foreach ($row->getCellIterator() as $cell) {
+                $cells[] = $cell->getValue();
+            }
+            $rows[] = $cells;
+        }
+        return $rows;
+    }
+
+    private function getOrCreateApp(string $name, string $description, string $icon): FrameworkApp
+    {
+        $key = strtolower($name);
+        if (!isset($this->appCache[$key])) {
+            $this->appCache[$key] = FrameworkApp::firstOrCreate(
+                ['framework_id' => $this->framework->id, 'name' => $name],
+                ['description' => $description ?: null, 'icon' => $icon ?: null, 'sort_order' => count($this->appCache)]
+            );
+        }
+        return $this->appCache[$key];
+    }
+
+    private function getOrCreateParent(FrameworkApp $app, string $name): ParentSubcontrol
+    {
+        $key = $app->id . ':' . strtolower($name);
+        if (!isset($this->parentSubCache[$key])) {
+            $this->parentSubCache[$key] = ParentSubcontrol::firstOrCreate(
+                ['framework_app_id' => $app->id, 'name' => $name],
+                ['sort_order' => count($this->parentSubCache)]
+            );
+        }
+        return $this->parentSubCache[$key];
+    }
+}

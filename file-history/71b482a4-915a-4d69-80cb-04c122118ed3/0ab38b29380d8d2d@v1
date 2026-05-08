@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_activity_view_kanban_inherit_tickets" model="ir.ui.view">
+        <field name="name">mail.activity.view.kanban.inherit.tickets</field>
+        <field name="model">mail.activity</field>
+        <field name="inherit_id" ref="mail.mail_activity_view_kanban_open_target"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="default_group_by">date_deadline:day</attribute>
+                <attribute name="records_draggable">true</attribute>
+                <attribute name="drag_across_groups">1</attribute>
+            </xpath>
+
+            <xpath expr="//templates" position="before">
+                <field name="res_name"/>
+                <field name="user_id"/>
+                <field name="custom_state"/>
+                <field name="is_postponed"/>
+                <field name="activity_tag_ids"/>
+                <field name="group_id"/>
+                <field name="date_deadline"/>
+            </xpath>
+
+            <xpath expr="//templates" position="inside">
+                <t t-name="group-header">
+                    <div class="o_column_title">
+                        <t t-if="group.groupByField.name === 'date_deadline'">
+                            <div class="fw-bold text-uppercase" style="font-size:0.7rem; color: #888; letter-spacing: 0.05em;">
+                                <t t-out="group.range &amp;&amp; group.range.from ? luxon.DateTime.fromISO(group.range.from).toFormat('cccc') : ''"/>
+                            </div>
+                        </t>
+                        <t t-out="group.displayName"/>
+                    </div>
+                </t>
+            </xpath>
+
+            <xpath expr="//t[@t-name='card']" position="replace">
+                <t t-name="card">
+                    <!-- Fix 1: res_name truncated to one line with ellipsis -->
+                    <div class="mb-1" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%;">
+                        <span class="text-primary fw-bold" style="font-size: 0.8rem;">
+                            <i class="fa fa-file-text-o me-1"/>
+                            <field name="res_name"/>
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-start">
+                        <!-- Fix 1: summary capped at 2 lines with ellipsis -->
+                        <span class="fw-bold fs-5" style="
+                            display: -webkit-box;
+                            -webkit-line-clamp: 2;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            word-break: break-word;
+                            max-width: calc(100% - 80px);
+                        ">
+                            <field name="summary"/>
+                        </span>
+                        <field name="activity_type_id" widget="badge"/>
+                    </div>
+
+                    <div class="mt-1 mb-2">
+                        <span class="text-muted small">Assigned to: </span>
+                        <span class="fw-bold small"><field name="user_id"/></span>
+                    </div>
+
+                    <div class="mt-2">
+                        <span t-attf-class="badge rounded-pill #{record.custom_state.raw_value == 'done' ? 'text-bg-success' : (record.custom_state.raw_value == 'planned' ? 'text-bg-info' : 'text-bg-danger')}">
+                            <field name="custom_state"/>
+                        </span>
+                        <span t-if="record.is_postponed.raw_value" class="badge rounded-pill text-bg-warning ms-1">
+                            <i class="fa fa-history me-1"/>Postponed
+                        </span>
+                    </div>
+
+                    <footer class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold text-primary" style="font-size: 0.7rem; text-transform: uppercase;">
+                                <t t-out="luxon.DateTime.fromISO(record.date_deadline.raw_value).toFormat('cccc')"/>
+                            </span>
+                            <field name="date_deadline" widget="remaining_days"/>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button name="action_done" type="object" title="Mark Done" icon="fa-check"
+                                    class="btn btn-link text-success p-0"
+                                    invisible="custom_state != 'planned'"/>
+                            <button name="action_cancel" type="object" title="Cancel" icon="fa-times"
+                                    class="btn btn-link text-danger p-0"
+                                    invisible="custom_state != 'planned'"/>
+                            <button name="action_open_as_wizard" type="object" title="Open Activity" icon="fa-external-link"
+                                    class="btn btn-link text-primary p-0"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                        </div>
+                    </footer>
+                </t>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Fix 2: Force all kanban groups (date columns) to be expanded by default -->
+    <record id="mail_activity_kanban_action_inherit_expand" model="ir.actions.act_window">
+        <field name="name">Activities</field>
+        <field name="res_model">mail.activity</field>
+        <field name="view_mode">kanban</field>
+        <field name="context">{"default_group_by": "date_deadline:day", "fold_all_kanban_groups": false}</field>
+    </record>
+
+</odoo>

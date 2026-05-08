@@ -1,0 +1,57 @@
+2026-04-25 04:02:27,018 1 INFO odoo18 odoo.modules.loading: updating modules list 
+
+2026-04-25 04:02:27,019 1 INFO odoo18 odoo.addons.base.models.ir_module: ALLOW access to module.update_list on [] to user __system__ #1 via 172.18.0.1 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_past_performance: Unmet dependencies: project_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_expenses: Unmet dependencies: project_bom 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module opportunity_project_port: Unmet dependencies: crm_custom_fields, project_custom_fields, crm_notes, project_notes 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module employees_department_custom_fields: Unmet dependencies: ticket_system 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module crm_custom_fields: Unmet dependencies: ticket_system 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module crm_notes: Unmet dependencies: crm_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_custom_fields: Unmet dependencies: hr_employee_certifications, ticket_system 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module hr_employee_certifications: Unmet dependencies: employees_department_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_kickoff_checklist: Unmet dependencies: project_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module quality_assurance: Unmet dependencies: project_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_change_order: Unmet dependencies: project_bom, ticket_system 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module employee_custom_fields: Unmet dependencies: hr_employee_certifications, project_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_fields_style: Unmet dependencies: project_custom_fields, project_bom 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module hr_training_kpi_dashboard: Unmet dependencies: hr_internal_trainings 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module crm_business_dev: Unmet dependencies: crm_custom_fields, ticket_system 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module hr_internal_trainings: Unmet dependencies: hr_employee_certifications 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module crm_bdo_kpi_dashboard: Unmet dependencies: crm_business_dev 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module crm_fields_style: Unmet dependencies: crm_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module ticket_system: Unmet dependencies: hr_employee_certifications, hr_employee_growth 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_bom: Unmet dependencies: hr_employee_certifications, project_custom_fields, crm_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_daily_report: Unmet dependencies: project_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_mail_history: Unmet dependencies: project_custom_fields, crm_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_notes: Unmet dependencies: project_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module hr_employee_fields_style: Unmet dependencies: hr_employee_certifications, hr_employee_growth, hr_internal_trainings, employee_custom_fields, ticket_system 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module hr_employee_growth: Unmet dependencies: employees_department_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module crm_dashboard: Unmet dependencies: crm_custom_fields 
+
+2026-04-25 04:02:27,924 1 INFO odoo18 odoo.modules.graph: module project_dashboard: Unmet dependencies: project_bom, project_custom_fields, project_change_order 

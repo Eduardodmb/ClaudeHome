@@ -1,0 +1,49 @@
+<?php
+
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EmployeeController;
+use App\Http\Controllers\Admin\SeatController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\VCardController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', fn () => redirect('/login'));
+
+// Auth
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Admin panel
+Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Customers
+    Route::resource('customers', CustomerController::class)->except('show');
+
+    // Employees nested under customer
+    Route::prefix('customers/{customer}/employees')->name('customers.employees.')->group(function () {
+        Route::get('/', [EmployeeController::class, 'index'])->name('index');
+        Route::get('/create', [EmployeeController::class, 'create'])->name('create');
+        Route::post('/', [EmployeeController::class, 'store'])->name('store');
+        Route::get('/{employee}/edit', [EmployeeController::class, 'edit'])->name('edit');
+        Route::put('/{employee}', [EmployeeController::class, 'update'])->name('update');
+        Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Seats
+    Route::get('seats', [SeatController::class, 'index'])->name('seats.index');
+    Route::post('seats/add', [SeatController::class, 'addSeats'])->name('seats.add')->middleware('admin:super_admin');
+
+    // Users (super admin only)
+    Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware('admin:super_admin');
+    Route::post('users', [UserController::class, 'store'])->name('users.store')->middleware('admin:super_admin');
+    Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('admin:super_admin');
+});
+
+// Public vCard pages (keep last to avoid route conflicts)
+Route::get('/{customerSlug}/{employeeSlug}', [VCardController::class, 'show'])
+    ->where(['customerSlug' => '[a-z0-9\-]+', 'employeeSlug' => '[a-z0-9\-]+'])
+    ->name('vcard.show');

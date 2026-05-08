@@ -1,0 +1,36 @@
+/* Compact Recruitment List Views */
+
+/* Make all recruitment list views compact and hide "Add a line" */
+.o_action[data-res-model="hr.applicant"] .o_list_view .o_data_row {
+    height: 30px !important;
+}
+
+.o_action[data-res-model="hr.applicant"] .o_list_view .o_data_cell {
+    padding: 3px 6px !important;
+    font-size: 13px !important;
+}
+
+.o_action[data-res-model="hr.applicant"] .o_list_view .o_list_number {
+    padding: 3px 8px !important;
+}
+
+.o_action[data-res-model="hr.applicant"] .o_list_view thead th {
+    padding: 5px 6px !important;
+    font-size: 12px !important;
+}
+
+/* Hide "Add a line" button in recruitment lists */
+.o_action[data-res-model="hr.applicant"] .o_list_view .o_list_table tfoot {
+    display: none !important;
+}
+
+/* Also hide the create button if it's in editable list */
+.o_action[data-res-model="hr.applicant"] .o_list_view .o_field_x2many_list_row_add {
+    display: none !important;
+}
+
+/* General compact styling for recruitment module */
+body .o_content .o_kanban_view.o_applicant_kanban .o_kanban_record {
+    padding: 6px 8px !important;
+    margin-bottom: 4px !important;
+}

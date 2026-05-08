@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_lead_form_bonding_tab" model="ir.ui.view">
+        <field name="name">crm.lead.form.bonding.tab</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="bonding" string="Bonding">
+                    <field name="bonding_ids" nolabel="1">
+                        <list editable="top" create="1" delete="1"
+                            decoration-muted="state == 'closed'"
+                            decoration-info="state == 'pending'"
+                            decoration-success="state == 'in_use'"
+                            decoration-warning="state == 'to_be_closed'">
+                            <button name="action_view_bonding" type="object" icon="fa-arrow-right" title="View bond" class="btn-link"/>
+                            <field name="name"/>
+                            <field name="bonding_type_id"/>
+                            <field name="lead_id" column_invisible="1"/>
+                            <field name="project_id" optional="hide"/>
+                            <field name="owner_id" widget="many2one_avatar_employee"/>
+                            <field name="date_requested"/>
+                            <field name="date_issued" optional="hide"/>
+                            <field name="expiry_date" optional="show"/>
+                            <field name="amount" widget="monetary" sum="Total Amount"/>
+                            <field name="cost" widget="monetary" sum="Total Cost"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="bonding_company" optional="hide"/>
+                            <field name="bond_number" optional="hide"/>
+                            <field name="state" widget="badge"
+                                decoration-info="state == 'pending'"
+                                decoration-success="state == 'in_use'"
+                                decoration-warning="state == 'to_be_closed'"
+                                decoration-muted="state == 'closed'"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

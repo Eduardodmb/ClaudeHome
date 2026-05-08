@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_project_accounting_user,project.project.accounting.user,project.model_project_project,group_project_accounting_user,1,0,0,0
+access_project_task_accounting_user,project.task.accounting.user,project.model_project_task,group_project_accounting_user,1,0,0,0
+access_res_partner_accounting_user,res.partner.accounting.user,base.model_res_partner,group_project_accounting_user,1,0,0,0
+access_res_users_accounting_user,res.users.accounting.user,base.model_res_users,group_project_accounting_user,1,0,0,0
+access_project_project_stage_accounting_user,project.project.stage.accounting.user,project.model_project_project_stage,group_project_accounting_user,1,0,0,0

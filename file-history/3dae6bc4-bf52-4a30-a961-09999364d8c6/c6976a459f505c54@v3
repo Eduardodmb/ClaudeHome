@@ -1,0 +1,483 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { Plus, Edit2, Trash2, Save, X, Clock, Lock, Upload, Download } from 'lucide-react';
+import useDataStore from '../stores/dataStore';
+import { formatDuration, formatTimeRange } from '../utils/formatTime';
+
+const DEFAULT_PASSWORD = 'ThisIsPasswordManualEntry';
+
+function ManualEntry() {
+  const projects = useDataStore((state) => state.projects);
+  const tasks = useDataStore((state) => state.tasks);
+  const timeEntries = useDataStore((state) => state.timeEntries);
+  const addTask = useDataStore((state) => state.addTask);
+  const addTimeEntry = useDataStore((state) => state.addTimeEntry);
+  const updateTimeEntry = useDataStore((state) => state.updateTimeEntry);
+  const deleteTimeEntry = useDataStore((state) => state.deleteTimeEntry);
+  const loadTasks = useDataStore((state) => state.loadTasks);
+  const loadTimeEntries = useDataStore((state) => state.loadTimeEntries);
+
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [taskName, setTaskName] = useState('');
+  const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [startTime, setStartTime] = useState('09:00');
+  const [endTime, setEndTime] = useState('10:00');
+  const [endNextDay, setEndNextDay] = useState(false);
+  const [notes, setNotes] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editStart, setEditStart] = useState('');
+  const [editEnd, setEditEnd] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [editTaskId, setEditTaskId] = useState('');
+  const [recentEntries, setRecentEntries] = useState([]);
+  const [isLocked, setIsLocked] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [savedPassword, setSavedPassword] = useState('');
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+
+  useEffect(() => { loadTimeEntries(); }, [loadTimeEntries]);
+
+  useEffect(() => {
+    const sorted = [...timeEntries].sort((a, b) => new Date(b.start_time) - new Date(a.start_time)).slice(0, 20);
+    setRecentEntries(sorted);
+  }, [timeEntries]);
+
+  // Seed default password on first launch; respect explicit removal (empty string)
+  useEffect(() => {
+    window.electronAPI.dbGet("SELECT value FROM settings WHERE key = 'manualEntryPassword'", []).then(async (row) => {
+      if (!row) {
+        await window.electronAPI.dbRun(
+          "INSERT INTO settings (key, value) VALUES ('manualEntryPassword', ?)",
+          [DEFAULT_PASSWORD]
+        );
+        setSavedPassword(DEFAULT_PASSWORD);
+        setIsLocked(true);
+      } else if (row.value) {
+        setSavedPassword(row.value);
+        setIsLocked(true);
+      }
+      // row.value === '' means owner explicitly removed it → stay unlocked
+    });
+  }, []);
+
+  const projectsByCustomer = {};
+  projects.forEach((project) => {
+    if (!projectsByCustomer[project.customer_name]) projectsByCustomer[project.customer_name] = [];
+    projectsByCustomer[project.customer_name].push(project);
+  });
+
+  // Detect overlapping entries
+  const overlappingIds = useMemo(() => {
+    const ids = new Set();
+    for (let i = 0; i < recentEntries.length; i++) {
+      for (let j = i + 1; j < recentEntries.length; j++) {
+        const a = recentEntries[i];
+        const b = recentEntries[j];
+        if (!a.end_time || !b.end_time) continue;
+        const aStart = new Date(a.start_time).getTime();
+        const aEnd = new Date(a.end_time).getTime();
+        const bStart = new Date(b.start_time).getTime();
+        const bEnd = new Date(b.end_time).getTime();
+        if (aStart < bEnd && aEnd > bStart) {
+          ids.add(a.id);
+          ids.add(b.id);
+        }
+      }
+    }
+    return ids;
+  }, [recentEntries]);
+
+  const handleSave = async () => {
+    if (!selectedProjectId || !taskName.trim()) { alert('Please select a project and enter a task name'); return; }
+    if (!date || !startTime || !endTime) { alert('Please fill in date, start time and end time'); return; }
+    setSaving(true);
+    try {
+      const existingTask = tasks.find(
+        (t) => t.project_id === parseInt(selectedProjectId) && t.name.toLowerCase() === taskName.trim().toLowerCase()
+      );
+      let taskId;
+      if (existingTask) {
+        taskId = existingTask.id;
+      } else {
+        await addTask(parseInt(selectedProjectId), taskName.trim());
+        await loadTasks();
+        const updatedTasks = useDataStore.getState().tasks;
+        const newTask = updatedTasks.find(
+          (t) => t.project_id === parseInt(selectedProjectId) && t.name.toLowerCase() === taskName.trim().toLowerCase()
+        );
+        taskId = newTask.id;
+      }
+      const startDateTime = new Date(`${date}T${startTime}:00`);
+      const endDate = endNextDay
+        ? new Date(new Date(date).getTime() + 86400000).toISOString().split('T')[0]
+        : date;
+      const endDateTime = new Date(`${endDate}T${endTime}:00`);
+      await addTimeEntry(taskId, startDateTime, endDateTime, notes.trim());
+      const [h, m] = endTime.split(':').map(Number);
+      const nextEnd = `${String((h + 1) % 24).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      setTaskName('');
+      setNotes('');
+      setEndNextDay(false);
+      if (endNextDay) {
+        setDate(endDate);
+        setStartTime(endTime);
+        setEndTime(nextEnd);
+      } else {
+        setStartTime(endTime);
+        setEndTime(nextEnd);
+      }
+    } catch (error) {
+      alert('Failed to save: ' + error.message);
+    } finally { setSaving(false); }
+  };
+
+  const startEdit = (entry) => {
+    setEditingId(entry.id);
+    const start = new Date(entry.start_time);
+    const end = new Date(entry.end_time);
+    setEditStart(start.toTimeString().slice(0, 5));
+    setEditEnd(end.toTimeString().slice(0, 5));
+    setEditNotes(entry.notes || '');
+    setEditTaskId(entry.task_id ? String(entry.task_id) : '');
+  };
+
+  const handleUpdate = async (entry) => {
+    try {
+      const entryDate = new Date(entry.start_time).toISOString().split('T')[0];
+      const newStart = new Date(`${entryDate}T${editStart}:00`);
+      const newEnd = new Date(`${entryDate}T${editEnd}:00`);
+      const newTaskId = editTaskId && editTaskId !== String(entry.task_id) ? parseInt(editTaskId) : null;
+      await updateTimeEntry(entry.id, newStart, newEnd, editNotes.trim(), newTaskId);
+      setEditingId(null);
+    } catch (error) { alert('Failed to update: ' + error.message); }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Delete this entry?')) return;
+    try { await deleteTimeEntry(id); }
+    catch (error) { alert('Failed to delete: ' + error.message); }
+  };
+
+  const handleUnlock = () => {
+    if (passwordInput === savedPassword) {
+      setIsLocked(false);
+      setPasswordError(false);
+    } else {
+      setPasswordError(true);
+      setPasswordInput('');
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const entries = await window.electronAPI.dbAll(
+        `SELECT te.start_time, te.end_time, te.duration_seconds, te.notes,
+                t.name as task, p.name as project, c.name as customer
+         FROM time_entries te
+         JOIN tasks t ON te.task_id = t.id
+         JOIN projects p ON t.project_id = p.id
+         JOIN customers c ON p.customer_id = c.id
+         ORDER BY te.start_time`,
+        []
+      );
+      const payload = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        entries: entries.map((e) => ({
+          customer: e.customer,
+          project: e.project,
+          task: e.task,
+          startTime: e.start_time,
+          endTime: e.end_time,
+          durationSeconds: e.duration_seconds,
+          notes: e.notes || '',
+        })),
+      };
+      const result = await window.electronAPI.exportData(payload);
+      if (result.success) alert(`Exported ${entries.length} entries.`);
+    } catch (error) {
+      alert('Export failed: ' + error.message);
+    }
+  };
+
+  const handleImport = async () => {
+    setImporting(true);
+    setImportResult(null);
+    try {
+      const result = await window.electronAPI.importData();
+      if (result.canceled) { setImporting(false); return; }
+
+      const { entries } = result.data;
+      let imported = 0, createdCustomers = 0, createdProjects = 0, createdTasks = 0;
+
+      for (const entry of entries) {
+        // Find or create customer
+        let customer = await window.electronAPI.dbGet(
+          'SELECT id FROM customers WHERE LOWER(name) = LOWER(?)',
+          [entry.customer]
+        );
+        if (!customer) {
+          await window.electronAPI.dbRun('INSERT INTO customers (name) VALUES (?)', [entry.customer]);
+          customer = await window.electronAPI.dbGet('SELECT id FROM customers WHERE LOWER(name) = LOWER(?)', [entry.customer]);
+          createdCustomers++;
+        }
+
+        // Find or create project
+        let project = await window.electronAPI.dbGet(
+          'SELECT id FROM projects WHERE LOWER(name) = LOWER(?) AND customer_id = ?',
+          [entry.project, customer.id]
+        );
+        if (!project) {
+          await window.electronAPI.dbRun('INSERT INTO projects (customer_id, name) VALUES (?, ?)', [customer.id, entry.project]);
+          project = await window.electronAPI.dbGet(
+            'SELECT id FROM projects WHERE LOWER(name) = LOWER(?) AND customer_id = ?',
+            [entry.project, customer.id]
+          );
+          createdProjects++;
+        }
+
+        // Find or create task
+        let task = await window.electronAPI.dbGet(
+          'SELECT id FROM tasks WHERE LOWER(name) = LOWER(?) AND project_id = ?',
+          [entry.task, project.id]
+        );
+        if (!task) {
+          await window.electronAPI.dbRun('INSERT INTO tasks (project_id, name) VALUES (?, ?)', [project.id, entry.task]);
+          task = await window.electronAPI.dbGet(
+            'SELECT id FROM tasks WHERE LOWER(name) = LOWER(?) AND project_id = ?',
+            [entry.task, project.id]
+          );
+          createdTasks++;
+        }
+
+        const start = new Date(entry.startTime);
+        const end = new Date(entry.endTime);
+        const duration = Math.round((end - start) / 1000);
+        await window.electronAPI.dbRun(
+          'INSERT INTO time_entries (task_id, start_time, end_time, duration_seconds, notes) VALUES (?, ?, ?, ?, ?)',
+          [task.id, start.toISOString(), end.toISOString(), duration, entry.notes || '']
+        );
+        imported++;
+      }
+
+      await loadTimeEntries();
+      setImportResult({ imported, createdCustomers, createdProjects, createdTasks });
+    } catch (error) {
+      alert('Import failed: ' + error.message);
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  if (isLocked) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-3">
+        <div className="flex justify-end">
+          <button onClick={handleExport}
+            className="flex items-center gap-1 px-2.5 py-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded hover:bg-gray-50 shadow-sm transition-colors">
+            <Download className="w-3 h-3" />
+            Export data
+          </button>
+        </div>
+        <div className="flex items-center justify-center" style={{ minHeight: 260 }}>
+          <div className="bg-white rounded-lg shadow-sm p-8 w-72 text-center space-y-4">
+            <Lock className="w-8 h-8 text-primary-500 mx-auto" />
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">Protected</h2>
+              <p className="text-[10px] text-gray-400 mt-0.5">Enter the password to add manual entries</p>
+            </div>
+            <input
+              type="password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
+              placeholder="Password"
+              autoFocus
+              className="w-full px-3 py-1.5 text-xs border border-gray-200 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent text-center"
+            />
+            {passwordError && <p className="text-[10px] text-red-500">Incorrect password</p>}
+            <button onClick={handleUnlock}
+              className="w-full px-3 py-1.5 text-xs bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors">
+              Unlock
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-3">
+      {/* Form */}
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="flex items-center gap-1.5 mb-3">
+          <Clock className="w-3.5 h-3.5 text-primary-500" />
+          <h2 className="text-xs font-semibold text-gray-900">Add Time Entry</h2>
+        </div>
+
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Project</label>
+              <select value={selectedProjectId} onChange={(e) => setSelectedProjectId(e.target.value)}
+                className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <option value="">Select project...</option>
+                {Object.entries(projectsByCustomer).map(([customerName, customerProjects]) => (
+                  <optgroup key={customerName} label={customerName}>
+                    {customerProjects.map((project) => (
+                      <option key={project.id} value={project.id}>{project.name}</option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Task</label>
+              <input type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} placeholder="Task name..."
+                className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 gap-2">
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Date</label>
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
+                className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Start</label>
+              <input type="time" value={startTime}
+                onChange={(e) => { setStartTime(e.target.value); setEndTime(e.target.value); }}
+                className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <label className="text-[10px] font-medium text-gray-500">End</label>
+                <label className="flex items-center gap-0.5 cursor-pointer">
+                  <input type="checkbox" checked={endNextDay} onChange={(e) => setEndNextDay(e.target.checked)}
+                    className="w-2.5 h-2.5 accent-primary-500" />
+                  <span className="text-[10px] text-gray-400">+1 day</span>
+                </label>
+              </div>
+              <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)}
+                className={`w-full px-2 py-1.5 text-xs border rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent ${endNextDay ? 'border-orange-300 bg-orange-50' : 'border-gray-200'}`} />
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Notes</label>
+              <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional..."
+                className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            </div>
+          </div>
+
+          <button onClick={handleSave} disabled={saving || !selectedProjectId || !taskName.trim()}
+            className="w-full px-3 py-1.5 text-xs bg-primary-500 text-white rounded hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-1 transition-colors">
+            <Plus className="w-3.5 h-3.5" />
+            <span>{saving ? 'Saving...' : 'Add Entry'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Recent Entries */}
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-semibold text-gray-900">Recent Entries</h2>
+            {overlappingIds.size > 0 && (
+              <span className="text-[10px] px-1.5 py-0.5 bg-red-100 text-red-600 rounded-full">
+                {overlappingIds.size} overlapping
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button onClick={handleExport}
+              className="flex items-center gap-1 px-2 py-1 text-[10px] border border-gray-200 text-gray-600 rounded hover:bg-gray-50 transition-colors">
+              <Download className="w-3 h-3" />
+              Export
+            </button>
+            <button onClick={handleImport} disabled={importing}
+              className="flex items-center gap-1 px-2 py-1 text-[10px] border border-primary-200 text-primary-600 rounded hover:bg-primary-50 disabled:opacity-50 transition-colors">
+              <Upload className="w-3 h-3" />
+              {importing ? 'Importing…' : 'Import'}
+            </button>
+          </div>
+        </div>
+
+        {importResult && (
+          <div className="mb-2 px-2.5 py-1.5 bg-green-50 border border-green-200 rounded text-[10px] text-green-700">
+            Imported {importResult.imported} entries
+            {importResult.createdCustomers > 0 && ` · ${importResult.createdCustomers} new customer(s)`}
+            {importResult.createdProjects > 0 && ` · ${importResult.createdProjects} new project(s)`}
+            {importResult.createdTasks > 0 && ` · ${importResult.createdTasks} new task(s)`}
+          </div>
+        )}
+
+        {recentEntries.length === 0 ? (
+          <p className="text-gray-400 text-center py-4 text-xs">No entries yet</p>
+        ) : (
+          <div className="space-y-1">
+            {recentEntries.map((entry) => (
+              <div key={entry.id}
+                className={`flex items-center justify-between py-1.5 px-2 rounded transition-colors ${
+                  overlappingIds.has(entry.id)
+                    ? 'bg-red-50 border border-red-200 hover:bg-red-100'
+                    : 'bg-gray-50 hover:bg-gray-100'
+                }`}>
+                {editingId === entry.id ? (
+                  <div className="flex flex-col gap-1.5 flex-1">
+                    <select value={editTaskId} onChange={(e) => setEditTaskId(e.target.value)}
+                      className="w-full px-1.5 py-1 border border-gray-200 rounded text-xs focus:ring-2 focus:ring-primary-500">
+                      {tasks.map((t) => (
+                        <option key={t.id} value={t.id}>{t.customer_name} / {t.project_name} / {t.name}</option>
+                      ))}
+                    </select>
+                    <div className="flex items-center gap-1.5">
+                      <input type="time" value={editStart} onChange={(e) => setEditStart(e.target.value)}
+                        className="px-1.5 py-1 border border-gray-200 rounded text-xs focus:ring-2 focus:ring-primary-500 w-20" />
+                      <span className="text-gray-400 text-xs">-</span>
+                      <input type="time" value={editEnd} onChange={(e) => setEditEnd(e.target.value)}
+                        className="px-1.5 py-1 border border-gray-200 rounded text-xs focus:ring-2 focus:ring-primary-500 w-20" />
+                      <input type="text" value={editNotes} onChange={(e) => setEditNotes(e.target.value)} placeholder="Notes..."
+                        className="flex-1 px-1.5 py-1 border border-gray-200 rounded text-xs focus:ring-2 focus:ring-primary-500" />
+                      <button onClick={() => handleUpdate(entry)} className="p-1 bg-primary-500 text-white rounded hover:bg-primary-600">
+                        <Save className="w-3 h-3" />
+                      </button>
+                      <button onClick={() => setEditingId(null)} className="p-1 bg-gray-200 text-gray-600 rounded hover:bg-gray-300">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-gray-900 truncate">
+                        {entry.customer_name} / {entry.project_name} / {entry.task_name}
+                      </div>
+                      <div className={`text-[10px] ${overlappingIds.has(entry.id) ? 'text-red-500' : 'text-gray-400'}`}>
+                        {new Date(entry.start_time).toLocaleDateString()} &middot; {formatTimeRange(entry.start_time, entry.end_time)}
+                        {entry.notes && ` — ${entry.notes}`}
+                        {overlappingIds.has(entry.id) && ' ⚠ overlaps'}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 ml-2">
+                      <span className="font-mono text-xs font-medium text-gray-600">{formatDuration(entry.duration_seconds)}</span>
+                      <button onClick={() => startEdit(entry)} className="p-1 text-primary-600 hover:bg-primary-50 rounded">
+                        <Edit2 className="w-3 h-3" />
+                      </button>
+                      <button onClick={() => handleDelete(entry.id)} className="p-1 text-red-500 hover:bg-red-50 rounded">
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default ManualEntry;

@@ -1,0 +1,5 @@
+- [No automatic documentation](feedback_no_auto_documentation.md) — Don't create README/guides unless explicitly requested
+- [Never execute git commands](feedback_no_git_commands.md) — Don't run git commands via PowerShell or Bash tools
+- [Odoo 18 uses list not tree](feedback_odoo18_list_not_tree.md) — Use <list> tag instead of <tree> in Odoo 18 views
+- [Odoo 18 cron job fields](feedback_odoo18_cron_fields.md) — Don't use numbercall or doall fields in ir.cron records
+- [Docker Odoo workflow](project_docker_odoo_workflow.md) — Docker commands and database access for ACG Odoo project

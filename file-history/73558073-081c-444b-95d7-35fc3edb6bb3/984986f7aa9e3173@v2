@@ -1,0 +1,69 @@
+# Instructions: Uncomment After Installing subcontractor_evaluation
+
+## Current Status
+All code referencing `subcontractor_evaluation` module has been COMMENTED OUT to allow Odoo to start.
+
+## Steps to Complete Integration
+
+### 1. Start Odoo & Install Base Module
+```bash
+# Odoo should start successfully now
+# Then in Odoo UI:
+Apps → Update Apps List
+Apps → Search "Subcontractor Evaluation"  
+Apps → Install
+```
+
+### 2. Uncomment All Sections
+
+Search for `UNCOMMENT AFTER INSTALLING subcontractor_evaluation` in these files and uncomment:
+
+#### project_custom_fields/__manifest__.py
+- Line ~11: Add `"subcontractor_evaluation"` to depends list
+
+#### project_custom_fields/models/project_subcontractor.py  
+- ResPartner class: `_get_subcontractor_evaluation_models()` method
+- ProjectLeadSubcontractor: `'subcontractor.evaluation.mixin'` in _inherit list
+- Fields: `partner_rating_info`
+- Method: `_onchange_partner_rating_warning()`
+
+#### project_custom_fields/views/project_subcontractor.xml
+- All `<field name="partner_rating_info" .../>` references
+- All rating field references (performance_rating, quality_rating, etc.)
+- Performance Evaluation page/tab
+- Overall rating fields in lists
+
+#### crm_custom_fields/models/lead_subcontractor.py
+- ResPartner class: `_get_subcontractor_evaluation_models()` method  
+- CrmLeadSubcontractor: `'subcontractor.evaluation.mixin'` in _inherit list
+- Fields: `partner_rating_info`
+- Methods: `_onchange_partner_rating_warning()` and `action_evaluate_subcontractor()`
+
+#### crm_custom_fields/views/lead_subcontractor.xml
+- All `<field name="partner_rating_info" .../>` references
+- All rating field references
+- Performance Evaluation page/tab
+
+### 3. Upgrade Modules
+```bash
+Apps → Project Custom Fields → Upgrade
+Apps → CRM Custom Fields → Upgrade  
+Apps → Contacts Subcontractor Requirements → Upgrade
+```
+
+## Quick Find & Replace
+
+**FIND:** `# UNCOMMENT AFTER INSTALLING subcontractor_evaluation`  
+**ACTION:** Remove the `#` from the lines below this comment
+
+**FIND:** `<!-- UNCOMMENT AFTER INSTALLING subcontractor_evaluation -->`  
+**ACTION:** Remove `<!--` and `-->` from surrounding lines
+
+## Verification
+
+After uncommenting and upgrading, verify:
+1. ✅ Subcontractor forms show "Performance Evaluation" tab
+2. ✅ Rating columns available in lists (optional show/hide)
+3. ✅ Partner rating warning popup when selecting subcontractors
+4. ✅ Partner form shows smart button with rating badge
+5. ✅ Requirements checklist tab in contacts works

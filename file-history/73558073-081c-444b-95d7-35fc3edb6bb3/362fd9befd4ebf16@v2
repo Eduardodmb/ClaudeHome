@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_project_subcontractor_list_requirements" model="ir.ui.view">
+        <field name="name">project.project.subcontractor.list.requirements</field>
+        <field name="model">project.project.subcontractor</field>
+        <field name="inherit_id" ref="project_custom_fields.view_project_project_subcontractor_list"/>
+        <field name="arch" type="xml">
+            <field name="package_status" position="after">
+                <field name="partner_subcontractor_requirements_state"
+                       string="Requirements"
+                       widget="badge"
+                       decoration-success="partner_subcontractor_requirements_state == 'met'"
+                       decoration-warning="partner_subcontractor_requirements_state == 'incomplete'"/>
+            </field>
+            <field name="extra_attachment_ids" position="after">
+                <button name="action_open_partner_subcontractor_checklist"
+                        type="object"
+                        string="View checklist"
+                        title="Open subcontractor contact checklist"
+                        icon="fa-list-ul"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_project_project_subcontractor_form_requirements" model="ir.ui.view">
+        <field name="name">project.project.subcontractor.form.requirements</field>
+        <field name="model">project.project.subcontractor</field>
+        <field name="inherit_id" ref="project_custom_fields.view_project_project_subcontractor_form"/>
+        <field name="arch" type="xml">
+            <field name="package_status" position="after">
+                <field name="partner_subcontractor_requirements_state"
+                       widget="badge"
+                       decoration-success="partner_subcontractor_requirements_state == 'met'"
+                       decoration-warning="partner_subcontractor_requirements_state == 'incomplete'"/>
+                <button name="action_open_partner_subcontractor_checklist"
+                        type="object"
+                        string="View checklist"
+                        title="Open subcontractor contact checklist"
+                        icon="fa-list-ul"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_project_project_form_subcontractor_list_requirements" model="ir.ui.view">
+        <field name="name">project.project.form.subcontractor.list.requirements</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project_custom_fields.project_project_form_inherit_subcontractors"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='subcontractor_line_ids']//list//field[@name='package_status']" position="after">
+                <field name="partner_subcontractor_requirements_state"
+                       string="Requirements"
+                       widget="badge"
+                       decoration-success="partner_subcontractor_requirements_state == 'met'"
+                       decoration-warning="partner_subcontractor_requirements_state == 'incomplete'"/>
+            </xpath>
+            <xpath expr="//field[@name='subcontractor_line_ids']//list//field[@name='extra_attachment_ids']" position="after">
+                <button name="action_open_partner_subcontractor_checklist"
+                        type="object"
+                        string="View checklist"
+                        title="Open subcontractor contact checklist"
+                        icon="fa-list-ul"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,172 @@
+# Export Installed Odoo Modules from Docker
+param([string]$DatabaseName = "odoo")
+
+$ErrorActionPreference = "Stop"
+
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host "  Odoo Modules Export Tool" -ForegroundColor Cyan
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Configuration
+$DB_CONTAINER = "odoo_docker-db-1"
+$DB_USER = "odoo"
+$DB_PASSWORD = "myodoo"
+$OUTPUT_DIR = ".\module_exports"
+$TIMESTAMP = Get-Date -Format "yyyyMMdd_HHmmss"
+$OUTPUT_FILE = "$OUTPUT_DIR\installed_modules_$TIMESTAMP.txt"
+$INSTALL_SCRIPT = "$OUTPUT_DIR\install_modules_$TIMESTAMP.ps1"
+$README_FILE = "$OUTPUT_DIR\README_$TIMESTAMP.txt"
+
+# Create output directory
+if (-not (Test-Path $OUTPUT_DIR)) {
+    New-Item -ItemType Directory -Path $OUTPUT_DIR | Out-Null
+    Write-Host "[OK] Created output directory" -ForegroundColor Green
+}
+
+Write-Host "Database: $DatabaseName" -ForegroundColor Yellow
+Write-Host "Container: $DB_CONTAINER" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Connecting to database..." -ForegroundColor Cyan
+
+# SQL query
+$SQL_QUERY = "SELECT name FROM ir_module_module WHERE state = 'installed' ORDER BY name;"
+
+# Export modules
+try {
+    $env:PGPASSWORD = $DB_PASSWORD
+    $modules = docker exec -i $DB_CONTAINER psql -U $DB_USER -d $DatabaseName -t -A -c $SQL_QUERY
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to connect to database"
+    }
+
+    $modules | Out-File -FilePath $OUTPUT_FILE -Encoding UTF8
+    $moduleCount = ($modules | Measure-Object -Line).Lines
+
+    Write-Host ""
+    Write-Host "[SUCCESS] Exported $moduleCount modules" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Preview (first 20 modules):" -ForegroundColor Cyan
+    Write-Host "-----------------------------------------------------" -ForegroundColor Gray
+    ($modules -split "`n" | Select-Object -First 20) | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
+    if ($moduleCount -gt 20) {
+        Write-Host "  ... and $($moduleCount - 20) more" -ForegroundColor Gray
+    }
+    Write-Host ""
+
+} catch {
+    Write-Host "[ERROR] $_" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Troubleshooting:" -ForegroundColor Yellow
+    Write-Host "1. Check containers: docker-compose ps" -ForegroundColor Gray
+    Write-Host "2. Check databases: docker exec -it $DB_CONTAINER psql -U $DB_USER -l" -ForegroundColor Gray
+    exit 1
+}
+
+# Generate installation script
+Write-Host "Generating installation script..." -ForegroundColor Cyan
+
+$installContent = @"
+# Odoo Modules Installation Script
+# Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+# Modules: $moduleCount
+
+param(
+    [Parameter(Mandatory)]
+    [string]`$DatabaseName,
+    [string]`$ContainerName = 'odoo_docker-web-1'
+)
+
+`$modulesFile = "`$(Split-Path `$PSCommandPath)\installed_modules_$TIMESTAMP.txt"
+
+if (-not (Test-Path `$modulesFile)) {
+    Write-Host "[ERROR] Modules file not found: `$modulesFile" -ForegroundColor Red
+    exit 1
+}
+
+`$modules = Get-Content `$modulesFile | Where-Object { `$_ }
+`$moduleList = `$modules -join ','
+
+Write-Host "Database: `$DatabaseName" -ForegroundColor Yellow
+Write-Host "Modules: $moduleCount" -ForegroundColor Yellow
+Write-Host ""
+`$confirm = Read-Host "Install $moduleCount modules? (yes/no)"
+
+if (`$confirm -ne 'yes') {
+    Write-Host "Cancelled" -ForegroundColor Yellow
+    exit 0
+}
+
+Write-Host "Step 1/2: Updating module list..." -ForegroundColor Cyan
+docker exec -it `$ContainerName odoo -d `$DatabaseName -u base --stop-after-init --no-http
+
+if (`$LASTEXITCODE -ne 0) {
+    Write-Host "[ERROR] Failed to update" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "Step 2/2: Installing modules..." -ForegroundColor Cyan
+docker exec -it `$ContainerName odoo -d `$DatabaseName -i `$moduleList --stop-after-init --no-http
+
+if (`$LASTEXITCODE -ne 0) {
+    Write-Host "[ERROR] Installation failed" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host ""
+Write-Host "[SUCCESS] All modules installed!" -ForegroundColor Green
+Write-Host ""
+Write-Host "Restart containers: docker-compose restart" -ForegroundColor Cyan
+"@
+
+$installContent | Out-File -FilePath $INSTALL_SCRIPT -Encoding UTF8
+
+# Generate README
+$readmeContent = @"
+Odoo Modules Export
+Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+Database: $DatabaseName
+Modules: $moduleCount
+
+FILES:
+1. installed_modules_$TIMESTAMP.txt - Module list
+2. install_modules_$TIMESTAMP.ps1 - Install script
+3. README_$TIMESTAMP.txt - This file
+
+INSTALLATION:
+1. Copy module_exports folder to other computer
+2. cd X:\03_ACG\Odoo_Docker\module_exports
+3. .\install_modules_$TIMESTAMP.ps1 -DatabaseName 'odoo'
+4. docker-compose restart
+
+REQUIREMENTS:
+- Docker running
+- Database must exist
+- Same Odoo version recommended
+
+TROUBLESHOOTING:
+docker ps                                      # Check containers
+docker exec -it odoo_docker-db-1 psql -U odoo -l  # List databases
+docker-compose logs web                        # Check logs
+"@
+
+$readmeContent | Out-File -FilePath $README_FILE -Encoding UTF8
+
+Write-Host "[OK] Installation script created" -ForegroundColor Green
+Write-Host "[OK] README created" -ForegroundColor Green
+Write-Host ""
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host "  Export Complete" -ForegroundColor Green
+Write-Host "=====================================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Files:" -ForegroundColor White
+Write-Host "  1. installed_modules_$TIMESTAMP.txt ($moduleCount modules)" -ForegroundColor Yellow
+Write-Host "  2. install_modules_$TIMESTAMP.ps1" -ForegroundColor Yellow
+Write-Host "  3. README_$TIMESTAMP.txt" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Location: $OUTPUT_DIR" -ForegroundColor Gray
+Write-Host ""
+Write-Host "To install on another computer:" -ForegroundColor Cyan
+Write-Host "  .\install_modules_$TIMESTAMP.ps1 -DatabaseName 'odoo'" -ForegroundColor Gray
+Write-Host ""

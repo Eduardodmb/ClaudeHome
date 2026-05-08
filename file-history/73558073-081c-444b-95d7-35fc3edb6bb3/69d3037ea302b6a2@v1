@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_bonding_tree" model="ir.ui.view">
+        <field name="name">project.bonding.tree</field>
+        <field name="model">project.bonding</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'closed'" decoration-info="state == 'pending'" decoration-success="state == 'in_use'" decoration-warning="state == 'to_be_closed'">
+                <field name="name"/>
+                <field name="bonding_type_id"/>
+                <field name="project_id"/>
+                <field name="lead_id"/>
+                <field name="owner_id" widget="many2one_avatar_employee"/>
+                <field name="date_requested"/>
+                <field name="date_issued" optional="hide"/>
+                <field name="expiry_date" optional="show"/>
+                <field name="amount" widget="monetary"/>
+                <field name="cost" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="bonding_company" optional="hide"/>
+                <field name="bond_number" optional="hide"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'pending'"
+                    decoration-success="state == 'in_use'"
+                    decoration-warning="state == 'to_be_closed'"
+                    decoration-muted="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_project_bonding_form" model="ir.ui.view">
+        <field name="name">project.bonding.form</field>
+        <field name="model">project.bonding</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_set_in_use" string="Set In Use" type="object" class="btn-primary"
+                        invisible="state != 'pending'"/>
+                    <button name="action_set_to_be_closed" string="Mark To Be Closed" type="object" class="btn-warning"
+                        invisible="state != 'in_use'"/>
+                    <button name="action_close" string="Close" type="object" class="btn-secondary"
+                        invisible="state == 'closed'"/>
+                    <button name="action_reopen" string="Reopen" type="object" class="btn-primary"
+                        invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,in_use,to_be_closed,closed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="bonding_type_id"/>
+                            <field name="project_id"/>
+                            <field name="lead_id"/>
+                            <field name="owner_id"/>
+                            <field name="state" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date_requested"/>
+                            <field name="date_issued"/>
+                            <field name="expiry_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="cost"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="bonding_company"/>
+                            <field name="bond_number"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1" placeholder="Additional notes or details about this bond..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_project_bonding_search" model="ir.ui.view">
+        <field name="name">project.bonding.search</field>
+        <field name="model">project.bonding</field>
+        <field name="arch" type="xml">
+            <search string="Search Bonds">
+                <field name="name"/>
+                <field name="bonding_type_id"/>
+                <field name="project_id"/>
+                <field name="lead_id"/>
+                <field name="owner_id"/>
+                <field name="bonding_company"/>
+                <field name="bond_number"/>
+                <filter string="Pending" name="filter_pending" domain="[('state', '=', 'pending')]"/>
+                <filter string="In Use" name="filter_in_use" domain="[('state', '=', 'in_use')]"/>
+                <filter string="To Be Closed" name="filter_to_be_closed" domain="[('state', '=', 'to_be_closed')]"/>
+                <filter string="Closed" name="filter_closed" domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter string="Bonding Type" name="group_bonding_type" context="{'group_by': 'bonding_type_id'}"/>
+                <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                <filter string="Project" name="group_project" context="{'group_by': 'project_id'}"/>
+                <filter string="Lead/Opportunity" name="group_lead" context="{'group_by': 'lead_id'}"/>
+                <filter string="Owner" name="group_owner" context="{'group_by': 'owner_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_project_bonding" model="ir.actions.act_window">
+        <field name="name">Project Bonds</field>
+        <field name="res_model">project.bonding</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_project_bonding_search"/>
+        <field name="context">{'search_default_filter_in_use': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first project bond
+            </p>
+            <p>
+                Track bid bonds, performance bonds, payment bonds, and other bonding requirements.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_bonding_root" name="Bonding" sequence="130" web_icon="project_bonding,static/description/icon.png"/>
+    <menuitem id="menu_project_bonding" name="Project Bonds" parent="menu_bonding_root" action="action_project_bonding" sequence="10"/>
+</odoo>

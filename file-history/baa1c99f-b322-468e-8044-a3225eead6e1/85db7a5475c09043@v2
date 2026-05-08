@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Legacy full sync (kept for backward compatibility, but recommend disabling in favor of queue-based sync) -->
+        <record id="ir_cron_sharepoint_sync" model="ir.cron">
+            <field name="name">Document Library: Sync SharePoint Documents (Legacy)</field>
+            <field name="model_id" ref="model_document_library_item"/>
+            <field name="state">code</field>
+            <field name="code">model.action_sync_from_sharepoint()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="False"/>  <!-- Disabled by default, use queue-based sync instead -->
+        </record>
+
+        <!-- Queue-based sync: Initialize queue with root folders -->
+        <record id="ir_cron_init_sync_queue" model="ir.cron">
+            <field name="name">Document Library: Initialize Sync Queue</field>
+            <field name="model_id" ref="model_document_library_item"/>
+            <field name="state">code</field>
+            <field name="code">model.action_init_sync_queue()</field>
+            <field name="interval_number">6</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Queue-based sync: Process queued folders -->
+        <record id="ir_cron_process_sync_queue" model="ir.cron">
+            <field name="name">Document Library: Process Sync Queue</field>
+            <field name="model_id" ref="model_document_library_item"/>
+            <field name="state">code</field>
+            <field name="code">model.action_process_sync_queue()</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

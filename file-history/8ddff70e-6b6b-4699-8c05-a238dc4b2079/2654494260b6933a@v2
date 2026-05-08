@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\BelongsToCustomer;
+use Illuminate\Database\Eloquent\Model;
+
+class Report extends Model
+{
+    use BelongsToCustomer;
+
+    protected $fillable = ['customer_id', 'name', 'description', 'type', 'filters', 'file_path', 'created_by'];
+
+    protected $casts = [
+        'filters' => 'array',
+    ];
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+}

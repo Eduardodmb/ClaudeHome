@@ -1,0 +1,118 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Mail\QuestionnaireInvitation;
+use App\Models\Questionnaire;
+use App\Models\QuestionnaireTemplate;
+use App\Models\Vendor;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+
+class QuestionnaireController extends Controller
+{
+    public function index()
+    {
+        $questionnaires = Questionnaire::with(['vendor', 'template'])->latest()->paginate(25);
+        return view('questionnaires.index', compact('questionnaires'));
+    }
+
+    public function create()
+    {
+        $templates = QuestionnaireTemplate::where('status', 'active')->get();
+        $vendors   = Vendor::where('status', 'active')->get();
+        return view('questionnaires.create', compact('templates', 'vendors'));
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name'                      => 'required|string|max:255',
+            'questionnaire_template_id' => 'required|exists:questionnaire_templates,id',
+            'vendor_id'                 => 'required|exists:vendors,id',
+            'due_date'                  => 'nullable|date',
+        ]);
+
+        Questionnaire::create(array_merge($data, [
+            'created_by'     => Auth::id(),
+            'response_token' => Str::uuid(),
+        ]));
+
+        return redirect()->route('questionnaires.index')->with('success', 'Questionnaire created.');
+    }
+
+    public function show(Questionnaire $questionnaire)
+    {
+        $questionnaire->load(['vendor', 'template', 'creator']);
+        return view('questionnaires.show', compact('questionnaire'));
+    }
+
+    public function edit(Questionnaire $questionnaire)
+    {
+        $templates = QuestionnaireTemplate::where('status', 'active')->get();
+        $vendors   = Vendor::where('status', 'active')->get();
+        return view('questionnaires.edit', compact('questionnaire', 'templates', 'vendors'));
+    }
+
+    public function update(Request $request, Questionnaire $questionnaire)
+    {
+        $questionnaire->update($request->only('name', 'due_date'));
+        return redirect()->route('questionnaires.show', $questionnaire)->with('success', 'Updated.');
+    }
+
+    public function destroy(Questionnaire $questionnaire)
+    {
+        $questionnaire->delete();
+        return redirect()->route('questionnaires.index')->with('success', 'Deleted.');
+    }
+
+    public function send(Questionnaire $questionnaire)
+    {
+        $questionnaire->load(['vendor.primaryContact']);
+
+        $recipient = $questionnaire->vendor->primaryContact;
+
+        if (! $recipient || ! $recipient->email) {
+            return back()->with('error', 'No primary contact with an email address found for this vendor.');
+        }
+
+        $questionnaire->update(['status' => 'sent', 'sent_date' => now()]);
+
+        Mail::to($recipient->email, $recipient->first_name . ' ' . $recipient->last_name)
+            ->send(new QuestionnaireInvitation($questionnaire));
+
+        return back()->with('success', "Questionnaire sent to {$recipient->email}.");
+    }
+
+    public function resend(Questionnaire $questionnaire)
+    {
+        return $this->send($questionnaire);
+    }
+
+    public function publicShow(string $token)
+    {
+        $q = Questionnaire::where('response_token', $token)
+            ->with(['vendor', 'template'])
+            ->firstOrFail();
+
+        if ($q->status === 'completed') {
+            return view('questionnaires.completed');
+        }
+
+        $q->update(['status' => 'in_progress']);
+        return view('questionnaires.public', compact('q'));
+    }
+
+    public function publicSubmit(Request $request, string $token)
+    {
+        $q = Questionnaire::where('response_token', $token)->firstOrFail();
+        $q->update([
+            'responses'      => $request->responses,
+            'status'         => 'completed',
+            'completed_date' => now(),
+        ]);
+        return view('questionnaires.thank-you');
+    }
+}

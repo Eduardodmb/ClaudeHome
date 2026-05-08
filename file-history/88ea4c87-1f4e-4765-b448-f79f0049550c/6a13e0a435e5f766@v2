@@ -1,0 +1,345 @@
+from odoo import models, fields, api
+from datetime import datetime, timedelta
+
+
+class MailActivityWeeklyPerformance(models.Model):
+    _name = 'mail.activity.weekly.performance'
+    _description = 'Weekly Activity Performance Dashboard'
+    _order = 'week_start desc'
+
+    name = fields.Char(string="Week Period", compute="_compute_name", store=True)
+    week_start = fields.Date(string="Week Start Date", required=True)
+    week_end = fields.Date(string="Week End Date", compute="_compute_week_end", store=True)
+
+    employee_ids = fields.Many2many(
+        'hr.employee',
+        string="Employees",
+        help="Employees to track (leave empty for all)"
+    )
+
+    # Week Lines (one per employee)
+    weekly_line_ids = fields.One2many(
+        'mail.activity.weekly.performance.line',
+        'weekly_performance_id',
+        string="Weekly Employee Performance",
+        compute="_compute_weekly_lines",
+        store=True
+    )
+
+    @api.depends('week_start')
+    def _compute_name(self):
+        for record in self:
+            if record.week_start:
+                week_end = record.week_start + timedelta(days=6)
+                record.name = f"Week of {record.week_start.strftime('%Y-%m-%d')} to {week_end.strftime('%Y-%m-%d')}"
+            else:
+                record.name = "New Week"
+
+    @api.depends('week_start')
+    def _compute_week_end(self):
+        for record in self:
+            if record.week_start:
+                record.week_end = record.week_start + timedelta(days=6)
+            else:
+                record.week_end = False
+
+    @api.depends('week_start', 'employee_ids')
+    def _compute_weekly_lines(self):
+        for record in self:
+            if not record.week_start:
+                record.weekly_line_ids = False
+                continue
+
+            employees = record.employee_ids if record.employee_ids else self.env['hr.employee'].search([])
+
+            line_vals = []
+            for employee in employees:
+                vals = record._compute_employee_weekly_metrics(employee)
+                if vals:
+                    line_vals.append((0, 0, vals))
+
+            record.weekly_line_ids = [(5,)] + line_vals
+
+    def _compute_employee_weekly_metrics(self, employee):
+        """Compute all weekly metrics for a single employee"""
+        week_start = self.week_start
+        week_end = self.week_end
+        prior_week_start = week_start - timedelta(days=7)
+        prior_week_end = week_start - timedelta(days=1)
+
+        # Get activities for current week
+        current_week_activities = self._get_activities_for_period(
+            employee, week_start, week_end
+        )
+
+        # Get activities for prior week
+        prior_week_activities = self._get_activities_for_period(
+            employee, prior_week_start, prior_week_end
+        )
+
+        if not current_week_activities and not prior_week_activities:
+            return None
+
+        # Calculate Prior Week Metrics
+        prior_week_metrics = self._calculate_week_metrics(
+            prior_week_activities, prior_week_start, prior_week_end
+        )
+
+        # Calculate Current Week Accumulated Metrics
+        current_week_metrics = self._calculate_week_metrics(
+            current_week_activities, week_start, week_end
+        )
+
+        # Calculate Daily Metrics (Monday to Sunday)
+        daily_metrics = []
+        for day_offset in range(7):
+            day_date = week_start + timedelta(days=day_offset)
+            day_metrics = self._calculate_daily_metrics(
+                current_week_activities, day_date, day_offset
+            )
+            daily_metrics.append((0, 0, day_metrics))
+
+        return {
+            'employee_id': employee.id,
+            # Prior Week
+            'prior_week_open_vs_completed': prior_week_metrics['open_vs_completed'],
+            'prior_week_p1_strikes': prior_week_metrics['p1_strikes'],
+            # Week Accumulated
+            'week_open_total': current_week_metrics['open_total'],
+            'week_past_due': current_week_metrics['past_due'],
+            'week_missing_date': current_week_metrics['missing_date'],
+            'week_completed_total': current_week_metrics['completed_total'],
+            'week_progress_percent': current_week_metrics['progress_percent'],
+            'week_open_vs_completed': current_week_metrics['open_vs_completed'],
+            'week_p1_strikes': current_week_metrics['p1_strikes'],
+            # Daily lines
+            'daily_line_ids': daily_metrics,
+        }
+
+    def _get_activities_for_period(self, employee, date_from, date_to):
+        """Get all activities for an employee in a period"""
+        domain = [
+            '|',
+            ('create_date', '>=', fields.Datetime.to_datetime(date_from)),
+            ('date_deadline', '>=', date_from),
+            ('user_id.employee_id', '=', employee.id),
+        ]
+        return self.env['mail.activity'].search(domain)
+
+    def _calculate_week_metrics(self, activities, date_from, date_to):
+        """Calculate metrics for a week period"""
+        today = fields.Date.today()
+
+        # Filter activities relevant to this period
+        open_activities = activities.filtered(lambda a: a.custom_state == 'planned')
+        completed_activities = activities.filtered(
+            lambda a: a.custom_state == 'done' and
+            a.completed_date and
+            date_from <= a.completed_date.date() <= date_to
+        )
+
+        # Calculate totals
+        open_total = len(open_activities)
+        past_due = len(open_activities.filtered(
+            lambda a: a.date_deadline and a.date_deadline < today
+        ))
+        missing_date = len(open_activities.filtered(lambda a: not a.date_deadline))
+        completed_total = len(completed_activities)
+
+        # Calculate percentages
+        total_activities = open_total + completed_total
+        progress_percent = (completed_total / total_activities * 100) if total_activities > 0 else 0.0
+        open_vs_completed = (open_total / completed_total * 100) if completed_total > 0 else 0.0
+
+        # Calculate P1 strikes (overdue high-priority activities)
+        # Note: Standard Odoo activities don't have priority, so we'll use activity_type priority
+        p1_strikes = len(open_activities.filtered(
+            lambda a: a.date_deadline and
+            a.date_deadline < today and
+            hasattr(a.activity_type_id, 'priority') and
+            a.activity_type_id.priority == 'high'
+        ))
+
+        return {
+            'open_total': open_total,
+            'past_due': past_due,
+            'missing_date': missing_date,
+            'completed_total': completed_total,
+            'progress_percent': progress_percent,
+            'open_vs_completed': open_vs_completed,
+            'p1_strikes': p1_strikes,
+        }
+
+    def _calculate_daily_metrics(self, week_activities, day_date, day_offset):
+        """Calculate metrics for a single day"""
+        today = fields.Date.today()
+
+        # Get activities for this specific day
+        day_activities = week_activities.filtered(
+            lambda a: (a.date_deadline == day_date) or
+            (a.completed_date and a.completed_date.date() == day_date)
+        )
+
+        # Open activities for the day
+        open_day = day_activities.filtered(lambda a: a.custom_state == 'planned')
+        open_total_day = len(open_day)
+
+        # Past due (activities with deadline before today that are still open)
+        past_due_day = len(open_day.filtered(
+            lambda a: a.date_deadline and a.date_deadline < today
+        ))
+
+        # Missing date
+        missing_date_day = len(open_day.filtered(lambda a: not a.date_deadline))
+
+        # Completed today
+        completed_today = len(day_activities.filtered(
+            lambda a: a.custom_state == 'done' and
+            a.completed_date and
+            a.completed_date.date() == day_date
+        ))
+
+        # Open vs Completed %
+        total_day = open_total_day + completed_today
+        open_vs_completed = (open_total_day / completed_today * 100) if completed_today > 0 else 0.0
+
+        # New P1 items (activities created on this day with high priority)
+        new_p1_items = len(day_activities.filtered(
+            lambda a: a.create_date.date() == day_date and
+            hasattr(a.activity_type_id, 'priority') and
+            a.activity_type_id.priority == 'high'
+        ))
+
+        # P1 strikes for the day
+        p1_strikes_day = len(open_day.filtered(
+            lambda a: a.date_deadline and
+            a.date_deadline < today and
+            hasattr(a.activity_type_id, 'priority') and
+            a.activity_type_id.priority == 'high'
+        ))
+
+        day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+        return {
+            'day_date': day_date,
+            'day_name': day_names[day_offset],
+            'open_total_day': open_total_day,
+            'past_due_day': past_due_day,
+            'missing_date_day': missing_date_day,
+            'completed_today': completed_today,
+            'open_vs_completed': open_vs_completed,
+            'new_p1_items': new_p1_items,
+            'p1_strikes_day': p1_strikes_day,
+        }
+
+
+class MailActivityWeeklyPerformanceLine(models.Model):
+    _name = 'mail.activity.weekly.performance.line'
+    _description = 'Weekly Performance Employee Line'
+    _order = 'employee_id'
+
+    weekly_performance_id = fields.Many2one(
+        'mail.activity.weekly.performance',
+        string="Weekly Performance",
+        required=True,
+        ondelete='cascade'
+    )
+
+    employee_id = fields.Many2one(
+        'hr.employee',
+        string="Employee",
+        required=True
+    )
+
+    # Prior Week Metrics
+    prior_week_open_vs_completed = fields.Float(
+        string="Prior Week Open vs Completed %",
+        help="Open vs Completed percentage for prior week"
+    )
+    prior_week_p1_strikes = fields.Integer(
+        string="Prior Week P1 Strikes",
+        help="Number of P1 strikes in prior week"
+    )
+
+    # Week Accumulated Metrics
+    week_open_total = fields.Integer(
+        string="Week Open Total",
+        help="Total open activities for the week"
+    )
+    week_past_due = fields.Integer(
+        string="Week Past Due",
+        help="Past due activities"
+    )
+    week_missing_date = fields.Integer(
+        string="Week Missing Date",
+        help="Activities without deadline"
+    )
+    week_completed_total = fields.Integer(
+        string="Week Completed Total",
+        help="Total completed activities week to date"
+    )
+    week_progress_percent = fields.Float(
+        string="Week Progress %",
+        help="Completion progress percentage"
+    )
+    week_open_vs_completed = fields.Float(
+        string="Week Open vs Completed %",
+        help="Ratio of open to completed"
+    )
+    week_p1_strikes = fields.Integer(
+        string="Week P1 Strikes",
+        help="Number of P1 strikes this week"
+    )
+
+    # Daily breakdown lines (One2many to daily metrics)
+    daily_line_ids = fields.One2many(
+        'mail.activity.daily.performance',
+        'weekly_line_id',
+        string="Daily Performance"
+    )
+
+
+class MailActivityDailyPerformance(models.Model):
+    _name = 'mail.activity.daily.performance'
+    _description = 'Daily Activity Performance'
+    _order = 'day_date'
+
+    weekly_line_id = fields.Many2one(
+        'mail.activity.weekly.performance.line',
+        string="Weekly Performance Line",
+        required=True,
+        ondelete='cascade'
+    )
+
+    day_date = fields.Date(string="Date", required=True)
+    day_name = fields.Char(string="Day", required=True)
+
+    # Daily Metrics
+    open_total_day = fields.Integer(
+        string="Open Total",
+        help="Total open activities for this day"
+    )
+    past_due_day = fields.Integer(
+        string="Past Due",
+        help="Past due activities"
+    )
+    missing_date_day = fields.Integer(
+        string="Missing Date",
+        help="Activities without deadline"
+    )
+    completed_today = fields.Integer(
+        string="Completed Today",
+        help="Activities completed on this day"
+    )
+    open_vs_completed = fields.Float(
+        string="Open vs Completed %",
+        help="Ratio of open to completed"
+    )
+    new_p1_items = fields.Integer(
+        string="New P1 Items",
+        help="New high-priority items created today"
+    )
+    p1_strikes_day = fields.Integer(
+        string="P1 Strikes",
+        help="P1 strikes for this day"
+    )

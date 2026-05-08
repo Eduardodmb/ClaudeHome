@@ -1,0 +1,147 @@
+import secrets
+import string
+from datetime import timedelta
+import logging
+
+from odoo import models, fields, api
+
+_logger = logging.getLogger(__name__)
+_DEFAULT_EXPIRY_HOURS = 72
+
+
+def _generate_temp_password(length=12):
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
+
+
+class HrApplicantPortalToken(models.Model):
+    _name = 'hr.applicant.portal.token'
+    _description = 'Applicant Portal Temporary Access Token'
+    _order = 'create_date desc'
+
+    applicant_id = fields.Many2one(
+        'hr.applicant',
+        string='Applicant',
+        required=True,
+        ondelete='cascade',
+        index=True,
+    )
+    token = fields.Char(string='Access Token', readonly=True, copy=False, index=True)
+    temp_password = fields.Char(
+        string='Temporary Password',
+        readonly=True,
+        copy=False,
+        help='Plain-text temporary password included in the candidate email.',
+    )
+    expiry = fields.Datetime(string='Expiry', required=True)
+    portal_user_id = fields.Many2one('res.users', string='Portal User', readonly=True, ondelete='set null')
+    is_expired = fields.Boolean(string='Expired', compute='_compute_is_expired')
+    magic_link = fields.Char(string='Magic Link', compute='_compute_magic_link')
+
+    @api.depends('expiry')
+    def _compute_is_expired(self):
+        now = fields.Datetime.now()
+        for rec in self:
+            rec.is_expired = bool(rec.expiry and rec.expiry < now)
+
+    def _compute_magic_link(self):
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        for rec in self:
+            rec.magic_link = (
+                f"{base_url}/recruitment/portal/login/{rec.token}" if rec.token else False
+            )
+
+    @api.model
+    def _get_expiry_hours(self):
+        try:
+            return int(
+                self.env['ir.config_parameter'].sudo().get_param(
+                    'hr_recruitment_enhanced.portal_token_expiry_hours',
+                    _DEFAULT_EXPIRY_HOURS,
+                )
+            )
+        except (ValueError, TypeError):
+            return _DEFAULT_EXPIRY_HOURS
+
+    @api.model
+    def generate_for_applicant(self, applicant):
+        """Create or refresh a portal access token for the given applicant.
+
+        Ensures a portal user exists for the applicant's email, sets a new
+        temporary password, expires any old tokens, and returns the new token record.
+        Returns None if the applicant has no email or the email belongs to an internal user.
+        """
+        applicant.ensure_one()
+
+        email = (applicant.email_from or '').strip().lower()
+        if not email:
+            _logger.warning("Applicant %s has no email; skipping portal token.", applicant.id)
+            return None
+
+        # Ensure partner exists
+        if not applicant.partner_id:
+            partner = self.env['res.partner'].sudo().create({
+                'name': applicant.partner_name or 'Applicant',
+                'email': applicant.email_from,
+                'phone': applicant.partner_phone,
+            })
+            applicant.sudo().write({'partner_id': partner.id})
+        partner = applicant.partner_id
+
+        # Resolve portal user
+        portal_user = applicant.portal_user_id
+        if not portal_user:
+            existing = self.env['res.users'].sudo().search(
+                [('login', '=ilike', email), ('active', 'in', [True, False])],
+                limit=1,
+            )
+            if existing:
+                if not existing.active:
+                    _logger.warning("User %s is archived; skipping portal token.", email)
+                    return None
+                if existing.has_group('base.group_user'):
+                    _logger.warning("Email %s belongs to an internal user; skipping portal token.", email)
+                    return None
+                portal_user = existing
+                if portal_user.partner_id.id != partner.id:
+                    portal_user.sudo().write({'partner_id': partner.id})
+            else:
+                portal_group = self.env.ref('base.group_portal')
+                portal_user = self.env['res.users'].sudo().with_context(no_reset_password=True).create({
+                    'name': applicant.partner_name or partner.name or 'Applicant',
+                    'login': email,
+                    'email': email,
+                    'partner_id': partner.id,
+                    'groups_id': [(6, 0, [portal_group.id])],
+                })
+                _logger.info("Created portal user %s for applicant %s.", email, applicant.id)
+
+        # Set a fresh temporary password
+        temp_password = _generate_temp_password()
+        portal_user.sudo().write({'password': temp_password})
+
+        # Expire existing tokens for this applicant
+        self.sudo().search([('applicant_id', '=', applicant.id)]).write(
+            {'expiry': fields.Datetime.now()}
+        )
+
+        expiry_hours = self._get_expiry_hours()
+        token_rec = self.sudo().create({
+            'applicant_id': applicant.id,
+            'token': secrets.token_urlsafe(32),
+            'temp_password': temp_password,
+            'expiry': fields.Datetime.now() + timedelta(hours=expiry_hours),
+            'portal_user_id': portal_user.id,
+        })
+        _logger.info(
+            "Portal token created for applicant %s (expires in %sh).", applicant.id, expiry_hours
+        )
+        return token_rec
+
+    @api.model
+    def cleanup_expired_tokens(self):
+        expired = self.sudo().search([('expiry', '<', fields.Datetime.now())])
+        count = len(expired)
+        expired.unlink()
+        if count:
+            _logger.info("Cleaned up %s expired portal tokens.", count)

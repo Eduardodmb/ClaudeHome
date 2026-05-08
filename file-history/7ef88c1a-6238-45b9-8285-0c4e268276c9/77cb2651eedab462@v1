@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Opportunity list columns live here (not crm_fields_style) so arch and model fields stay in one module upgrade. -->
+    <record id="crm_lead_opportunity_tree_dates" model="ir.ui.view">
+        <field name="name">crm.lead.tree.opportunity.dates</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list/field[@name='contact_name']" position="before">
+                <field name="division_id"/>
+                <field name="next_duedate"/>
+                <field name="next_visit"/>
+                <field name="qa_date"/>
+                <field name="submission_date_list_label" string="Submission Date"/>
+                <field name="bonding_id"/>
+                <field name="estimate_type_id"/>
+                <field name="lead_source_custom_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

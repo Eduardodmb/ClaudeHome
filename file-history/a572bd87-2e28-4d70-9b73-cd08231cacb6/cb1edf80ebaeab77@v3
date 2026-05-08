@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Checklist Templates: Recruitment > Configuration > Job Positions -->
+    <menuitem
+        id="menu_hr_job_checklist_templates"
+        name="Checklist Templates"
+        parent="hr_recruitment.menu_hr_recruitment_config_jobs"
+        action="action_hr_job_checklist_templates"
+        sequence="20"
+        groups="hr_recruitment.group_hr_recruitment_user"/>
+
+    <!-- Applicant Checklist Items: Recruitment > Configuration > Applications -->
+    <menuitem
+        id="menu_hr_applicant_checklist_items"
+        name="Applicant Checklist Items"
+        parent="hr_recruitment.menu_hr_recruitment_config_applications"
+        action="action_hr_applicant_checklist_items"
+        sequence="30"
+        groups="hr_recruitment.group_hr_recruitment_user"/>
+</odoo>

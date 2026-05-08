@@ -1,0 +1,75 @@
+RPC_ERROR
+
+Odoo Server Error
+
+Occured on odoo-dev.local:8443 on 2026-05-02 14:20:01 GMT
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/odoo/tools/safe_eval.py", line 397, in safe_eval
+    return unsafe_eval(c, globals_dict, locals_dict)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "ir.actions.server(1153,)", line 1, in <module>
+  File "/mnt/extra-addons/document_library/models/graph_sync.py", line 736, in action_init_sync_queue
+    Queue.add_to_queue(
+  File "/mnt/extra-addons/document_library/models/document_library_sync_queue.py", line 78, in add_to_queue
+    return self.create({
+           ^^^^^^^^^^^^^
+  File "<decorator-gen-0>", line 2, in create
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 497, in _model_create_multi
+    return create(self, [arg])
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/models.py", line 5039, in create
+    records = self._create(data_list)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/models.py", line 5223, in _create
+    cr.execute(SQL(
+  File "/usr/lib/python3/dist-packages/odoo/sql_db.py", line 371, in execute
+    res = self._obj.execute(query, params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "document_library_sync_queue_unique_folder_drive"
+DETAIL:  Key (drive_id, folder_item_id)=(b!0wyzU4hOs0CBvJO-fMz0sef2AqeWgVpOpT3u0EhP-NgZOkI3Ikl4RLPhSRgo2QDZ, b!0wyzU4hOs0CBvJO-fMz0sef2AqeWgVpOpT3u0EhP-NgZOkI3Ikl4RLPhSRgo2QDZ) already exists.
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/odoo/http.py", line 2166, in _transactioning
+    return service_model.retrying(func, env=self.env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/service/model.py", line 157, in retrying
+    result = func()
+             ^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/http.py", line 2133, in _serve_ir_http
+    response = self.dispatcher.dispatch(rule.endpoint, args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/http.py", line 2381, in dispatch
+    result = self.request.registry['ir.http']._dispatch(endpoint)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/base/models/ir_http.py", line 333, in _dispatch
+    result = endpoint(**request.params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/http.py", line 754, in route_wrapper
+    result = endpoint(self, *args, **params_ok)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/web/controllers/action.py", line 58, in run
+    result = action.run()
+             ^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/base/models/ir_actions.py", line 995, in run
+    res = runner(run_self, eval_context=eval_context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/website/models/ir_actions_server.py", line 60, in _run_action_code_multi
+    res = super(ServerAction, self)._run_action_code_multi(eval_context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/base/models/ir_actions.py", line 827, in _run_action_code_multi
+    safe_eval(self.code.strip(), eval_context, mode="exec", nocopy=True, filename=str(self))  # nocopy allows to return 'action'
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/tools/safe_eval.py", line 411, in safe_eval
+    raise ValueError('%r while evaluating\n%r' % (e, expr))
+ValueError: UniqueViolation('duplicate key value violates unique constraint "document_library_sync_queue_unique_folder_drive"\nDETAIL:  Key (drive_id, folder_item_id)=(b!0wyzU4hOs0CBvJO-fMz0sef2AqeWgVpOpT3u0EhP-NgZOkI3Ikl4RLPhSRgo2QDZ, b!0wyzU4hOs0CBvJO-fMz0sef2AqeWgVpOpT3u0EhP-NgZOkI3Ikl4RLPhSRgo2QDZ) already exists.\n') while evaluating
+'action = model.action_init_sync_queue()'
+
+The above server error caused the following client error:
+RPC_ERROR: Odoo Server Error
+    RPC_ERROR
+        at makeErrorFromResponse (https://odoo-dev.local:8443/web/assets/52e04b7/web.assets_web.min.js:3174:165)
+        at XMLHttpRequest.<anonymous> (https://odoo-dev.local:8443/web/assets/52e04b7/web.assets_web.min.js:3179:13)

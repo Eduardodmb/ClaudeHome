@@ -1,0 +1,26 @@
+FROM php:8.3-fpm-alpine
+
+RUN apk add --no-cache \
+    git curl zip unzip bash \
+    libpng-dev libzip-dev oniguruma-dev libxml2-dev \
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-enable opcache
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+RUN addgroup -g 1000 appgroup && adduser -u 1000 -G appgroup -s /bin/sh -D appuser
+
+COPY --chown=appuser:appgroup . .
+
+RUN if [ -f "composer.json" ]; then composer install --no-interaction --no-scripts 2>/dev/null || true; fi
+
+RUN mkdir -p storage/framework/{sessions,views,cache} \
+        storage/logs \
+        bootstrap/cache \
+    && chmod -R 777 storage bootstrap/cache 2>/dev/null || true
+
+USER appuser
+
+CMD ["php-fpm"]

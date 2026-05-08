@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Default CRM opportunity list view with custom columns and order -->
+    <record id="crm_lead_tree_view_estimating_default" model="ir.ui.view">
+        <field name="name">crm.lead.tree.estimating.default</field>
+        <field name="model">crm.lead</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <list default_order="stage_id, next_duedate"
+                  decoration-danger="x_has_dates_this_week"
+                  sample="1">
+                <field name="name" string="Opportunity"/>
+                <field name="x_division_display" string="Division"/>
+                <field name="next_duedate" string="Next Due Date"/>
+                <field name="next_visit" string="Site Visit"/>
+                <field name="qa_date" string="Q&amp;A Date"/>
+                <field name="submission_date" string="Submission Date"/>
+                <field name="bonding_id" string="Bonding"/>
+                <field name="lead_source_custom_id" string="Lead Source"/>
+                <field name="user_id" string="Salesperson"/>
+                <field name="stage_id" string="Stage"/>
+                <field name="x_has_dates_this_week" invisible="1"/>
+                <field name="x_division_bom_ids" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Override default CRM Pipeline action to filter by specific stages and group by stage -->
+    <record id="crm.crm_lead_opportunities" model="ir.actions.act_window">
+        <field name="view_id" ref="crm_lead_tree_view_estimating_default"/>
+        <field name="domain">[
+            ('type', '=', 'opportunity'),
+            ('stage_id.name', 'in', [
+                '0. Initial Checklist',
+                '1. Scope Review - Estimator',
+                '2. Cost Estimate - Estimator',
+                '3. Proposal - Estimator',
+                '4. Final Review',
+                '4.1 Re-Quote'
+            ])
+        ]</field>
+        <field name="context">{
+            'default_type': 'opportunity',
+            'group_by': ['stage_id']
+        }</field>
+    </record>
+</odoo>

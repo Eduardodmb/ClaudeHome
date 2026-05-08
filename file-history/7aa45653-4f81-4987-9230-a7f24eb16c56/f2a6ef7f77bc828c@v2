@@ -1,0 +1,35 @@
+<odoo>
+    <record id="view_project_notes_form_inherit" model="ir.ui.view">
+        <field name="name">project.project.notes.form.inherit</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//page[@name='activities_table_tab']" position="before">
+                <page string="Notes" name="project_notes_tab" sequence="100" groups="project_notes.group_change_project_notes">
+                    <field name="project_notes_ids" context="{'default_project_id': id}">
+                        <list editable="bottom">
+                            <field name="note_taken_date"/>
+                            <field name="note_taken_by" widget="many2one_avatar_user"/>
+                            <field name="notes" widget="html" options="{'collaborative': True}"/>
+                        </list>
+                        
+                        <form string="Project Note">
+                            <sheet>
+                                <group>
+                                    <group>
+                                        <field name="note_taken_date"/>
+                                        <field name="note_taken_by" widget="many2one_avatar_user"/>
+                                    </group>
+                                </group>
+                                <label for="notes" string="Note Content"/>
+                                <field name="notes" widget="html" nolabel="1" options="{'style-inline': true}"/>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

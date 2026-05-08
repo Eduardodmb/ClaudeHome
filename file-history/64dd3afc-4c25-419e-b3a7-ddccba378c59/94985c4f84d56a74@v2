@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-900">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — VCard Manager</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="h-full flex items-center justify-center">
+<div class="w-full max-w-sm px-6">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white">VCard<span class="text-amber-500">Manager</span></h1>
+        <p class="text-slate-400 mt-2 text-sm">Sign in to your account</p>
+    </div>
+
+    <form method="POST" action="{{ route('login') }}" class="bg-slate-800 rounded-2xl p-8 shadow-2xl">
+        @csrf
+
+        <div class="space-y-5">
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" required autofocus
+                       class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent placeholder-slate-400"
+                       placeholder="you@example.com">
+                @error('email')
+                <p class="mt-1 text-xs text-red-400">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
+                <input type="password" name="password" required
+                       class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent placeholder-slate-400"
+                       placeholder="••••••••">
+            </div>
+
+            <div class="flex items-center">
+                <input type="checkbox" name="remember" id="remember" class="rounded border-slate-600 bg-slate-700 text-amber-500 focus:ring-amber-500">
+                <label for="remember" class="ml-2 text-sm text-slate-400">Remember me</label>
+            </div>
+        </div>
+
+        <button type="submit"
+                class="mt-6 w-full bg-amber-500 hover:bg-amber-400 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors">
+            Sign in
+        </button>
+    </form>
+</div>
+</body>
+</html>

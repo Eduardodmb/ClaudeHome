@@ -1,0 +1,34 @@
+<odoo>
+    <record id="mail_activity_view_form_popup_inherit_dept" model="ir.ui.view">
+        <field name="name">mail.activity.view.form.popup.inherit.dept</field>
+        <field name="model">mail.activity</field>
+        <field name="inherit_id" ref="mail.mail_activity_view_form_popup"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='summary']" position="after">
+                <field name="custom_state" invisible="1"/>
+                <group invisible="activity_category != 'meeting'" string="Meeting Schedule">
+                    <field name="calendar_start" 
+                           required="activity_category == 'meeting' and custom_state == 'planned'"/>
+                    <field name="calendar_stop" 
+                           required="activity_category == 'meeting' and custom_state == 'planned'"/>
+                    <field name="calendar_event_id" string="Linked Event" readonly="1" invisible="not calendar_event_id"/>
+                </group>
+            </xpath>
+
+            <xpath expr="//field[@name='summary']" position="attributes">
+                <attribute name="required">activity_category == 'meeting'</attribute>
+            </xpath>
+
+            <!-- Create Meeting / Reset to Planned are added by activity_modification -->
+
+            <xpath expr="//button[@name='action_done']" position="attributes">
+                <attribute name="invisible">custom_state != 'planned'</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_done_schedule_next']" position="attributes">
+                <attribute name="invisible">custom_state != 'planned'</attribute>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
