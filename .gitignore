@@ -1,8 +1,36 @@
+# Runtime and session data
+history.jsonl
+mcp-needs-auth-cache.json
+.credentials.json
+.last-cleanup
+sessions/
+state/
+worktrees/
+shell-snapshots/
+paste-cache/
+file-history/
+downloads/
+cache/
+backups/
+plans/
+tasks/
+ide/
+session-env/
+projects/
+
+# Symlinks to personal-claude-docs (recreated by setup-home.ps1)
+commands
+skills
+learning
+reference
+agents
+enterprise
+personal
+.claude/
+
+# OS
 *.tmp
 *.log
 .DS_Store
 Thumbs.db
-state/
-*.pdf
-*.docx
-*.pptx
+desktop.ini
