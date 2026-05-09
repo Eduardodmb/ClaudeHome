@@ -28,6 +28,9 @@ if ($Project -ne "") {
     $Project = (Resolve-Path $Project -ErrorAction SilentlyContinue).Path
 }
 
+# Detect available PowerShell executable
+$psExe = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
+
 # Build the claude command (with optional cd)
 if ($Project -and (Test-Path $Project)) {
     $claudeCmd = "Set-Location -LiteralPath '$Project'; claude"
@@ -48,12 +51,13 @@ if (-not $wt) {
     if ($Project -and (Test-Path $Project)) { Set-Location $Project }
     & claude
     exit
+    exit
 }
 
 # Build wt argument string
 # Format: wt new-tab ... -- pwsh ... ; split-pane ... -- pwsh ...
-$leftCmd  = "pwsh -NoExit -Command `"$claudeCmd`""
-$rightCmd = "pwsh -NoExit -ExecutionPolicy Bypass -File `"$sidebarScript`""
+$leftCmd  = "$psExe -NoExit -Command `"$claudeCmd`""
+$rightCmd = "$psExe -NoExit -ExecutionPolicy Bypass -File `"$sidebarScript`""
 
 $wtArgs = "new-tab --title `"Claude Code`" -- $leftCmd ; split-pane -V --size 0.35 --title `"Quick Ref`" -- $rightCmd"
 
