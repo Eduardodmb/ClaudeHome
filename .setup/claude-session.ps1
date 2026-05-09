@@ -31,6 +31,9 @@ if ($Project -ne "") {
 # Detect available PowerShell executable
 $psExe = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
 
+# Default to calling directory when no project given
+if ($Project -eq "") { $Project = $PWD.Path }
+
 # Build the claude command (with optional cd)
 if ($Project -and (Test-Path $Project)) {
     $claudeCmd = "Set-Location -LiteralPath '$Project'; claude"
