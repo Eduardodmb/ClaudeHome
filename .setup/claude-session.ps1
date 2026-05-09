@@ -10,6 +10,7 @@
 
 .PARAMETER Project
     Optional path to a project directory. Claude starts there.
+    Defaults to the current directory.
 
 .EXAMPLE
     .\claude-session.ps1
@@ -23,23 +24,16 @@ param(
 
 $sidebarScript = "C:\Users\eduar\.claude\.setup\sidebar.ps1"
 
-# Resolve project path
+# Default to calling directory
+if ($Project -eq "") { $Project = $PWD.Path }
+
+# Resolve to absolute path
 if ($Project -ne "") {
     $Project = (Resolve-Path $Project -ErrorAction SilentlyContinue).Path
 }
 
 # Detect available PowerShell executable
 $psExe = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
-
-# Default to calling directory when no project given
-if ($Project -eq "") { $Project = $PWD.Path }
-
-# Build the claude command (with optional cd)
-if ($Project -and (Test-Path $Project)) {
-    $claudeCmd = "Set-Location -LiteralPath '$Project'; claude"
-} else {
-    $claudeCmd = "claude"
-}
 
 # Check wt is available
 $wt = Get-Command wt -ErrorAction SilentlyContinue
@@ -54,15 +48,17 @@ if (-not $wt) {
     if ($Project -and (Test-Path $Project)) { Set-Location $Project }
     & claude
     exit
-    exit
 }
 
-# Build wt argument string
-# Format: wt new-tab ... -- pwsh ... ; split-pane ... -- pwsh ...
-$leftCmd  = "$psExe -NoExit -Command `"$claudeCmd`""
+# Build wt argument string.
+# Use -d for starting directory instead of embedding Set-Location in the command
+# string — a semicolon inside -Command would be misread by wt as a command separator.
+$leftCmd  = "$psExe -NoExit -Command claude"
 $rightCmd = "$psExe -NoExit -ExecutionPolicy Bypass -File `"$sidebarScript`""
 
-$wtArgs = "new-tab --title `"Claude Code`" -- $leftCmd ; split-pane -V --size 0.35 --title `"Quick Ref`" -- $rightCmd"
+$dirFlag = if ($Project -and (Test-Path $Project)) { "-d `"$Project`"" } else { "" }
+
+$wtArgs = "new-tab --title `"Claude Code`" $dirFlag -- $leftCmd ; split-pane -V --size 0.35 --title `"Quick Ref`" -- $rightCmd"
 
 Write-Host "Opening Claude Code with sidebar..." -ForegroundColor Cyan
 if ($Project) { Write-Host "  Project: $Project" -ForegroundColor DarkGray }
