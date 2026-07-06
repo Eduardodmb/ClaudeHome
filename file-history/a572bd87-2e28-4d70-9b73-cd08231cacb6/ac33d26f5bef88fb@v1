@@ -1,8 +1,0 @@
-from . import models
-from . import wizard
-
-
-def post_init_hook(cr, registry):
-    from .hooks import post_init_hook as _post_init_hook
-
-    return _post_init_hook(cr, registry)

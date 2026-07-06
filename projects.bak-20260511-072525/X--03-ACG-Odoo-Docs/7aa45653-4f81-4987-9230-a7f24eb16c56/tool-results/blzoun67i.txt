@@ -1,0 +1,1569 @@
+2026-05-07 07:37:43,130 1115 INFO ? odoo: Odoo version 18.0-20260305 
+2026-05-07 07:37:43,132 1115 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf 
+2026-05-07 07:37:43,132 1115 INFO ? odoo: addons paths: ['/usr/lib/python3/dist-packages/odoo/addons', '/var/lib/odoo/addons/18.0', '/mnt/extra-addons'] 
+2026-05-07 07:37:43,132 1115 INFO ? odoo: database: odoo@db:5432 
+Warn: Can't find .pfb for face 'Courier'
+2026-05-07 07:37:43,245 1115 INFO ? odoo.addons.base.models.ir_actions_report: Will use the Wkhtmltopdf binary at /usr/local/bin/wkhtmltopdf 
+2026-05-07 07:37:43,253 1115 INFO ? odoo.addons.base.models.ir_actions_report: Will use the Wkhtmltoimage binary at /usr/local/bin/wkhtmltoimage 
+2026-05-07 07:37:43,409 1115 INFO odoo18 odoo.modules.loading: loading 1 modules... 
+2026-05-07 07:37:43,414 1115 INFO odoo18 odoo.modules.loading: 1 modules loaded in 0.00s, 0 queries (+0 extra) 
+2026-05-07 07:37:43,432 1115 INFO odoo18 odoo.modules.loading: updating modules list 
+2026-05-07 07:37:43,435 1115 INFO odoo18 odoo.addons.base.models.ir_module: ALLOW access to module.update_list on [] to user __system__ #1 via n/a 
+2026-05-07 07:37:46,796 1115 INFO odoo18 odoo.addons.base.models.ir_module: ALLOW access to module.button_upgrade on ['CRM Custom Fields', 'Project Custom Fields'] to user __system__ #1 via n/a 
+2026-05-07 07:37:46,796 1115 INFO odoo18 odoo.addons.base.models.ir_module: ALLOW access to module.update_list on ['CRM Custom Fields', 'Project Custom Fields'] to user __system__ #1 via n/a 
+2026-05-07 07:37:47,553 1115 INFO odoo18 odoo.addons.base.models.ir_module: ALLOW access to module.button_install on [] to user __system__ #1 via n/a 
+2026-05-07 07:37:47,807 1115 INFO odoo18 odoo.modules.loading: loading 228 modules... 
+2026-05-07 07:37:57,653 1115 INFO odoo18 odoo.modules.loading: Loading module crm_custom_fields (197/228) 
+2026-05-07 07:37:58,567 1115 INFO odoo18 odoo.modules.registry: module crm_custom_fields: creating or updating database tables 
+2026-05-07 07:37:58,672 1115 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (note_display, note) of mail.activity() have the same label: Note. [Modules: activity_modification and mail] 
+2026-05-07 07:37:59,034 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/security/crm_security.xml 
+2026-05-07 07:37:59,043 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/security/ir.model.access.csv 
+2026-05-07 07:37:59,089 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_stage_views.xml 
+2026-05-07 07:37:59,114 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_lead_estimating_pipeline_view.xml 
+2026-05-07 07:37:59,175 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/data/checklist_base_tasks_db.xml 
+2026-05-07 07:37:59,286 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/menu_rename.xml 
+2026-05-07 07:37:59,306 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/res_config_settings_views.xml 
+2026-05-07 07:37:59,368 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_bd_email_config_menu.xml 
+2026-05-07 07:37:59,382 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/views.xml 
+2026-05-07 07:37:59,388 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_lead_opportunity_tree_dates.xml 
+2026-05-07 07:37:59,454 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_lead_estimator_assignment_views.xml 
+2026-05-07 07:37:59,516 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/crm_lead_estimator_assignment_views.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.estimator.assignment.banner',
+ 'view': ir.ui.view(4312,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_estimator_assignment_banner'} 
+2026-05-07 07:37:59,517 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/crm_lead_estimator_assignment_views.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.estimator.assignment.banner',
+ 'view': ir.ui.view(4312,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_estimator_assignment_banner'} 
+2026-05-07 07:37:59,594 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_lead_opportunity_tree_hide_contact_actions.xml 
+2026-05-07 07:37:59,635 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_lead_delete_restriction_views.xml 
+2026-05-07 07:37:59,656 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/crm_lead_delete_restriction_views.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.delete.restrict',
+ 'view': ir.ui.view(4314,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_form_delete_restrict'} 
+2026-05-07 07:37:59,657 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/crm_lead_delete_restriction_views.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.delete.restrict',
+ 'view': ir.ui.view(4314,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_form_delete_restrict'} 
+2026-05-07 07:37:59,728 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/templates.xml 
+2026-05-07 07:37:59,750 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/templates.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.inherit.checkpoints.fixed',
+ 'view': ir.ui.view(3576,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_checkpoints_fixed'} 
+2026-05-07 07:37:59,751 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/templates.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.inherit.checkpoints.fixed',
+ 'view': ir.ui.view(3576,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_checkpoints_fixed'} 
+2026-05-07 07:37:59,766 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/secondary_notebook.xml 
+2026-05-07 07:37:59,790 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/secondary_notebook.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.secondary.notebook',
+ 'view': ir.ui.view(3860,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_form_secondary_notebook'} 
+2026-05-07 07:37:59,792 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/secondary_notebook.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.secondary.notebook',
+ 'view': ir.ui.view(3860,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_form_secondary_notebook'} 
+2026-05-07 07:37:59,814 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_lead_post_proposal_lock.xml 
+2026-05-07 07:37:59,844 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/crm_lead_post_proposal_lock.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.post.proposal.lock.banner',
+ 'view': ir.ui.view(3724,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_post_proposal_lock_banner'} 
+2026-05-07 07:37:59,844 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/crm_lead_post_proposal_lock.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.post.proposal.lock.banner',
+ 'view': ir.ui.view(3724,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_post_proposal_lock_banner'} 
+2026-05-07 07:37:59,855 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_lead_report_tab.xml 
+2026-05-07 07:37:59,883 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/crm_lead_report_tab.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.report.tab',
+ 'view': ir.ui.view(3725,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_report_tab'} 
+2026-05-07 07:37:59,883 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/crm_lead_report_tab.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.report.tab',
+ 'view': ir.ui.view(3725,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_report_tab'} 
+2026-05-07 07:37:59,895 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/wizard/crm_lead_proposal_sent_wizard_views.xml 
+2026-05-07 07:37:59,910 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/appointment_view.xml 
+2026-05-07 07:37:59,965 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/appointment_view.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.inherit.appointments',
+ 'view': ir.ui.view(3581,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_appointments'} 
+2026-05-07 07:37:59,966 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/appointment_view.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.inherit.appointments',
+ 'view': ir.ui.view(3581,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_appointments'} 
+2026-05-07 07:38:00,024 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_cert_view.xml 
+2026-05-07 07:38:00,093 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/crm_cert_view.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.cert.extension',
+ 'view': ir.ui.view(3585,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_cert_extension'} 
+2026-05-07 07:38:00,094 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/crm_cert_view.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.cert.extension',
+ 'view': ir.ui.view(3585,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_cert_extension'} 
+2026-05-07 07:38:00,128 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/checklist_view.xml 
+2026-05-07 07:38:00,187 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/checklist_view.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.inherit.checklist',
+ 'view': ir.ui.view(3590,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_checklist'} 
+2026-05-07 07:38:00,188 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/checklist_view.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.inherit.checklist',
+ 'view': ir.ui.view(3590,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_checklist'} 
+2026-05-07 07:38:00,213 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/disclaimer_views.xml 
+2026-05-07 07:38:00,244 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/disclaimer_views.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.inherit.disclaimers',
+ 'view': ir.ui.view(3593,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_disclaimers'} 
+2026-05-07 07:38:00,245 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/disclaimer_views.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.inherit.disclaimers',
+ 'view': ir.ui.view(3593,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_disclaimers'} 
+2026-05-07 07:38:00,274 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/disclaimer_views.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.inherit.save.button',
+ 'view': ir.ui.view(3594,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_save_button'} 
+2026-05-07 07:38:00,275 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/disclaimer_views.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.inherit.save.button',
+ 'view': ir.ui.view(3594,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_save_button'} 
+2026-05-07 07:38:00,289 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/partner_rel_views.xml 
+2026-05-07 07:38:00,305 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/contacts_views.xml 
+2026-05-07 07:38:00,329 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/contacts_views.xml',
+ 'line': 24,
+ 'name': 'crm.crm.form.contacts.extension',
+ 'view': ir.ui.view(3596,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_form_contacts'} 
+2026-05-07 07:38:00,330 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/contacts_views.xml',
+ 'line': 40,
+ 'name': 'crm.crm.form.contacts.extension',
+ 'view': ir.ui.view(3596,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_form_contacts'} 
+2026-05-07 07:38:00,357 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/contacts_views.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.inherit.customer',
+ 'view': ir.ui.view(3597,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_customer_visibility'} 
+2026-05-07 07:38:00,358 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/contacts_views.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.inherit.customer',
+ 'view': ir.ui.view(3597,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_inherit_customer_visibility'} 
+2026-05-07 07:38:00,375 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/bom_division_config.xml 
+2026-05-07 07:38:00,400 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/product_views.xml 
+2026-05-07 07:38:00,424 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/bom_division_view.xml 
+2026-05-07 07:38:00,447 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/bom_division_view.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.inherit.division.bom',
+ 'view': ir.ui.view(3601,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_form_inherit_division_bom'} 
+2026-05-07 07:38:00,449 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/bom_division_view.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.inherit.division.bom',
+ 'view': ir.ui.view(3601,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_form_inherit_division_bom'} 
+2026-05-07 07:38:00,472 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/item_bom_view.xml 
+2026-05-07 07:38:00,506 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/item_bom_view.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.items.bom.tab',
+ 'view': ir.ui.view(3602,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_items_bom_tab'} 
+2026-05-07 07:38:00,507 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/item_bom_view.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.items.bom.tab',
+ 'view': ir.ui.view(3602,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_items_bom_tab'} 
+2026-05-07 07:38:00,523 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/labor_title_bom.xml 
+2026-05-07 07:38:00,563 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/labor_title_bom.xml',
+ 'line': 24,
+ 'name': 'crm.lead.inherit.labor.bom',
+ 'view': ir.ui.view(3603,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_inherit_labor_bom'} 
+2026-05-07 07:38:00,564 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/labor_title_bom.xml',
+ 'line': 40,
+ 'name': 'crm.lead.inherit.labor.bom',
+ 'view': ir.ui.view(3603,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_inherit_labor_bom'} 
+2026-05-07 07:38:00,580 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/labor_type_bom_view.xml 
+2026-05-07 07:38:00,622 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/labor_type_bom_view.xml',
+ 'line': 24,
+ 'name': 'crm.lead.labor.dom.form.simple.inherit',
+ 'view': ir.ui.view(3604,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_labor_dom_form_simple_inherit'} 
+2026-05-07 07:38:00,623 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/labor_type_bom_view.xml',
+ 'line': 40,
+ 'name': 'crm.lead.labor.dom.form.simple.inherit',
+ 'view': ir.ui.view(3604,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_labor_dom_form_simple_inherit'} 
+2026-05-07 07:38:00,635 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/labor_bom_view.xml 
+2026-05-07 07:38:00,669 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/labor_bom_view.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.labor.bom.form',
+ 'view': ir.ui.view(3605,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_labor_bom_form'} 
+2026-05-07 07:38:00,670 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/labor_bom_view.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.labor.bom.form',
+ 'view': ir.ui.view(3605,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_labor_bom_form'} 
+2026-05-07 07:38:00,682 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/irs_mile_view.xml 
+2026-05-07 07:38:00,707 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/irs_mile_view.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.mileage',
+ 'view': ir.ui.view(3606,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_mileage'} 
+2026-05-07 07:38:00,708 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/irs_mile_view.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.mileage',
+ 'view': ir.ui.view(3606,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_mileage'} 
+2026-05-07 07:38:00,729 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/travel_expense_view.xml 
+2026-05-07 07:38:00,776 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/travel_expense_view.xml',
+ 'line': 24,
+ 'name': 'crm.lead.form.travel.expense.tab',
+ 'view': ir.ui.view(3607,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_travel_expense_tab'} 
+2026-05-07 07:38:00,777 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/travel_expense_view.xml',
+ 'line': 40,
+ 'name': 'crm.lead.form.travel.expense.tab',
+ 'view': ir.ui.view(3607,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_travel_expense_tab'} 
+2026-05-07 07:38:00,790 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/checklist_menu_view.xml 
+2026-05-07 07:38:00,811 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/data/crm_certification_cron.xml 
+2026-05-07 07:38:00,833 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/hide_stages.xml 
+2026-05-07 07:38:00,862 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/activity_view.xml 
+2026-05-07 07:38:00,894 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/activity_view.xml',
+ 'line': 15,
+ 'name': 'crm.lead.activity.table.form.fixed',
+ 'view': ir.ui.view(3608,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_activity_table_form_fixed'} 
+2026-05-07 07:38:00,895 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/activity_view.xml',
+ 'line': 31,
+ 'name': 'crm.lead.activity.table.form.fixed',
+ 'view': ir.ui.view(3608,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_activity_table_form_fixed'} 
+2026-05-07 07:38:00,920 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/bom_summary_view.xml 
+2026-05-07 07:38:00,974 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/bom_summary_view.xml',
+ 'line': 14,
+ 'name': 'crm.lead.view.form.add.bom.summary.btn',
+ 'view': ir.ui.view(3609,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_add_bom_summary_btn'} 
+2026-05-07 07:38:00,975 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/bom_summary_view.xml',
+ 'line': 30,
+ 'name': 'crm.lead.view.form.add.bom.summary.btn',
+ 'view': ir.ui.view(3609,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_add_bom_summary_btn'} 
+2026-05-07 07:38:01,009 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/bom_summary_adjustment.xml 
+2026-05-07 07:38:01,060 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/bom_summary_adjustment.xml',
+ 'line': 14,
+ 'name': 'crm.lead.view.form.bom.adjustments',
+ 'view': ir.ui.view(3611,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_bom_adjustments'} 
+2026-05-07 07:38:01,061 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/bom_summary_adjustment.xml',
+ 'line': 30,
+ 'name': 'crm.lead.view.form.bom.adjustments',
+ 'view': ir.ui.view(3611,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_bom_adjustments'} 
+2026-05-07 07:38:01,083 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/stage.xml 
+2026-05-07 07:38:01,090 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/data/crm_appointment_type_data.xml 
+2026-05-07 07:38:01,099 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/division_view.xml 
+2026-05-07 07:38:01,122 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/division_menu_view.xml 
+2026-05-07 07:38:01,131 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/setaside.xml 
+2026-05-07 07:38:01,155 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/setaside.xml',
+ 'line': 14,
+ 'name': 'crm.lead.form.setaside',
+ 'view': ir.ui.view(3615,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_inherit_setaside'} 
+2026-05-07 07:38:01,156 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/setaside.xml',
+ 'line': 30,
+ 'name': 'crm.lead.form.setaside',
+ 'view': ir.ui.view(3615,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_inherit_setaside'} 
+2026-05-07 07:38:01,186 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/notes.xml 
+2026-05-07 07:38:01,211 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/notes.xml',
+ 'line': 14,
+ 'name': 'crm.lead.notes.form.inherit',
+ 'view': ir.ui.view(3616,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_notes_form_inherit'} 
+2026-05-07 07:38:01,213 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/notes.xml',
+ 'line': 30,
+ 'name': 'crm.lead.notes.form.inherit',
+ 'view': ir.ui.view(3616,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_notes_form_inherit'} 
+2026-05-07 07:38:01,238 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/lead_subcontractor.xml 
+2026-05-07 07:38:01,299 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/lead_subcontractor.xml',
+ 'line': 14,
+ 'name': 'crm.lead.form.inherit.subcontractors',
+ 'view': ir.ui.view(3620,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_form_inherit_subcontractors'} 
+2026-05-07 07:38:01,300 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_custom_fields/views/lead_subcontractor.xml',
+ 'line': 30,
+ 'name': 'crm.lead.form.inherit.subcontractors',
+ 'view': ir.ui.view(3620,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_form_inherit_subcontractors'} 
+2026-05-07 07:38:01,321 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/job_category_config.xml 
+2026-05-07 07:38:01,346 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/search.xml 
+2026-05-07 07:38:01,378 1115 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/kanban_view.xml 
+2026-05-07 07:38:01,445 1115 INFO odoo18 odoo.modules.loading: Module crm_custom_fields loaded in 3.79s, 1933 queries (+1933 other) 
+2026-05-07 07:38:01,516 1115 INFO odoo18 odoo.modules.loading: Loading module project_custom_fields (199/228) 
+2026-05-07 07:38:02,339 1115 INFO odoo18 odoo.modules.registry: module project_custom_fields: creating or updating database tables 
+2026-05-07 07:38:02,403 1115 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (note_display, note) of mail.activity() have the same label: Note. [Modules: activity_modification and mail] 
+2026-05-07 07:38:02,610 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/security/ir.model.access.csv 
+2026-05-07 07:38:02,663 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/data/partner_employment_type_data.xml 
+2026-05-07 07:38:02,703 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/data/project_deliverable_template_data.xml 
+2026-05-07 07:38:02,755 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/menu_buttons.xml 
+2026-05-07 07:38:02,840 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_type_view.xml 
+2026-05-07 07:38:02,862 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_award_type_view.xml 
+2026-05-07 07:38:02,881 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/templates.xml 
+2026-05-07 07:38:02,907 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/templates.xml',
+ 'line': 22,
+ 'name': 'project.project.form.custom.numeric',
+ 'view': ir.ui.view(3632,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_custom_numeric'} 
+2026-05-07 07:38:02,908 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/templates.xml',
+ 'line': 40,
+ 'name': 'project.project.form.custom.numeric',
+ 'view': ir.ui.view(3632,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_custom_numeric'} 
+2026-05-07 07:38:02,925 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_partner_rel_view.xml 
+2026-05-07 07:38:02,939 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_contacts_view.xml 
+2026-05-07 07:38:02,956 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/project_contacts_view.xml',
+ 'line': 22,
+ 'name': 'project.project.form.contacts.extension',
+ 'view': ir.ui.view(3634,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_contacts'} 
+2026-05-07 07:38:02,957 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/project_contacts_view.xml',
+ 'line': 40,
+ 'name': 'project.project.form.contacts.extension',
+ 'view': ir.ui.view(3634,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_contacts'} 
+2026-05-07 07:38:02,964 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_asana_view.xml 
+2026-05-07 07:38:02,980 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/search.xml 
+2026-05-07 07:38:03,013 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_delete_restriction_views.xml 
+2026-05-07 07:38:03,028 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/project_delete_restriction_views.xml',
+ 'line': 22,
+ 'name': 'project.project.form.delete.restrict',
+ 'view': ir.ui.view(4324,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'project_form_delete_restrict'} 
+2026-05-07 07:38:03,029 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/project_delete_restriction_views.xml',
+ 'line': 40,
+ 'name': 'project.project.form.delete.restrict',
+ 'view': ir.ui.view(4324,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'project_form_delete_restrict'} 
+2026-05-07 07:38:03,104 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/views.xml 
+2026-05-07 07:38:03,119 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/views.xml',
+ 'line': 22,
+ 'name': 'project.project.form.custom',
+ 'view': ir.ui.view(3643,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_custom'} 
+2026-05-07 07:38:03,120 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/views.xml',
+ 'line': 40,
+ 'name': 'project.project.form.custom',
+ 'view': ir.ui.view(3643,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_custom'} 
+2026-05-07 07:38:03,127 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/appointment_view.xml 
+2026-05-07 07:38:03,160 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/appointment_view.xml',
+ 'line': 22,
+ 'name': 'project.project.form.inherit.appointments',
+ 'view': ir.ui.view(3647,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_project_form_inherit_appointments'} 
+2026-05-07 07:38:03,160 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/appointment_view.xml',
+ 'line': 40,
+ 'name': 'project.project.form.inherit.appointments',
+ 'view': ir.ui.view(3647,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_project_form_inherit_appointments'} 
+2026-05-07 07:38:03,184 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/proj_cert_view.xml 
+2026-05-07 07:38:03,202 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/proj_cert_view.xml',
+ 'line': 22,
+ 'name': 'project.project.form.inherit.certifications',
+ 'view': ir.ui.view(3649,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'edit_project_inherit_certifications'} 
+2026-05-07 07:38:03,203 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/proj_cert_view.xml',
+ 'line': 40,
+ 'name': 'project.project.form.inherit.certifications',
+ 'view': ir.ui.view(3649,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'edit_project_inherit_certifications'} 
+2026-05-07 07:38:03,218 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/data/ir_cron_certification.xml 
+2026-05-07 07:38:03,224 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/data/ir_config_parameter.xml 
+2026-05-07 07:38:03,232 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/activity_view.xml 
+2026-05-07 07:38:03,248 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/activity_view.xml',
+ 'line': 13,
+ 'name': 'project.project.activity.table.form',
+ 'view': ir.ui.view(3650,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_activity_table_form'} 
+2026-05-07 07:38:03,248 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/activity_view.xml',
+ 'line': 31,
+ 'name': 'project.project.activity.table.form',
+ 'view': ir.ui.view(3650,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_activity_table_form'} 
+2026-05-07 07:38:03,255 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_subcontractor.xml 
+2026-05-07 07:38:03,283 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/project_subcontractor.xml',
+ 'line': 12,
+ 'name': 'project.project.form.inherit.subcontractors',
+ 'view': ir.ui.view(3653,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'project_project_form_inherit_subcontractors'} 
+2026-05-07 07:38:03,284 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/project_subcontractor.xml',
+ 'line': 30,
+ 'name': 'project.project.form.inherit.subcontractors',
+ 'view': ir.ui.view(3653,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'project_project_form_inherit_subcontractors'} 
+2026-05-07 07:38:03,296 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/meeting.xml 
+2026-05-07 07:38:03,318 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/meeting.xml',
+ 'line': 12,
+ 'name': 'project.project.form.meetings.tab',
+ 'view': ir.ui.view(3656,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_meetings_tab'} 
+2026-05-07 07:38:03,319 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/meeting.xml',
+ 'line': 30,
+ 'name': 'project.project.form.meetings.tab',
+ 'view': ir.ui.view(3656,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_meetings_tab'} 
+2026-05-07 07:38:03,328 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_deliverable_view.xml 
+2026-05-07 07:38:03,363 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/project_deliverable_view.xml',
+ 'line': 12,
+ 'name': 'project.project.form.deliverables',
+ 'view': ir.ui.view(3856,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_deliverables'} 
+2026-05-07 07:38:03,364 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/project_deliverable_view.xml',
+ 'line': 30,
+ 'name': 'project.project.form.deliverables',
+ 'view': ir.ui.view(3856,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_deliverables'} 
+2026-05-07 07:38:03,385 1115 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_tab_ordering.xml 
+2026-05-07 07:38:03,409 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/project_tab_ordering.xml',
+ 'line': 12,
+ 'name': 'project.project.form.tab.ordering',
+ 'view': ir.ui.view(4328,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_tab_ordering'} 
+2026-05-07 07:38:03,410 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_custom_fields/views/project_tab_ordering.xml',
+ 'line': 30,
+ 'name': 'project.project.form.tab.ordering',
+ 'view': ir.ui.view(4328,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_tab_ordering'} 
+2026-05-07 07:38:03,438 1115 INFO odoo18 odoo.modules.loading: Module project_custom_fields loaded in 1.92s, 959 queries (+959 other) 
+2026-05-07 07:38:03,446 1115 INFO odoo18 odoo.modules.loading: Loading module contacts_subcontractor_requirements (202/228) 
+2026-05-07 07:38:04,051 1115 INFO odoo18 odoo.modules.registry: module contacts_subcontractor_requirements: creating or updating database tables 
+2026-05-07 07:38:04,220 1115 INFO odoo18 odoo.modules.loading: loading contacts_subcontractor_requirements/security/ir.model.access.csv 
+2026-05-07 07:38:04,240 1115 INFO odoo18 odoo.modules.loading: loading contacts_subcontractor_requirements/views/subcontractor_requirement_template_views.xml 
+2026-05-07 07:38:04,270 1115 INFO odoo18 odoo.modules.loading: loading contacts_subcontractor_requirements/views/res_partner_views.xml 
+2026-05-07 07:38:04,315 1115 INFO odoo18 odoo.modules.loading: loading contacts_subcontractor_requirements/views/project_subcontractor_views.xml 
+2026-05-07 07:38:04,350 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/contacts_subcontractor_requirements/views/project_subcontractor_views.xml',
+ 'line': 12,
+ 'name': 'project.project.form.subcontractor.list.requirements',
+ 'view': ir.ui.view(4212,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3653,),
+ 'xmlid': 'view_project_project_form_subcontractor_list_requirements'} 
+2026-05-07 07:38:04,351 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/contacts_subcontractor_requirements/views/project_subcontractor_views.xml',
+ 'line': 30,
+ 'name': 'project.project.form.subcontractor.list.requirements',
+ 'view': ir.ui.view(4212,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3653,),
+ 'xmlid': 'view_project_project_form_subcontractor_list_requirements'} 
+2026-05-07 07:38:04,375 1115 INFO odoo18 odoo.modules.loading: loading contacts_subcontractor_requirements/views/crm_lead_subcontractor_views.xml 
+2026-05-07 07:38:04,417 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/contacts_subcontractor_requirements/views/crm_lead_subcontractor_views.xml',
+ 'line': 14,
+ 'name': 'crm.lead.form.subcontractor.list.requirements',
+ 'view': ir.ui.view(4215,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(3620,),
+ 'xmlid': 'view_crm_lead_form_subcontractor_list_requirements'} 
+2026-05-07 07:38:04,418 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/contacts_subcontractor_requirements/views/crm_lead_subcontractor_views.xml',
+ 'line': 30,
+ 'name': 'crm.lead.form.subcontractor.list.requirements',
+ 'view': ir.ui.view(4215,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(3620,),
+ 'xmlid': 'view_crm_lead_form_subcontractor_list_requirements'} 
+2026-05-07 07:38:04,455 1115 INFO odoo18 odoo.modules.loading: Module contacts_subcontractor_requirements loaded in 1.01s, 408 queries (+408 other) 
+2026-05-07 07:38:04,455 1115 INFO odoo18 odoo.modules.loading: Loading module crm_business_dev (203/228) 
+2026-05-07 07:38:05,075 1115 INFO odoo18 odoo.modules.registry: module crm_business_dev: creating or updating database tables 
+2026-05-07 07:38:05,299 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/security/security.xml 
+2026-05-07 07:38:05,333 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/security/ir.model.access.csv 
+2026-05-07 07:38:05,364 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/bdo_view.xml 
+2026-05-07 07:38:05,405 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/event_view.xml 
+2026-05-07 07:38:05,432 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/event_meeting_view.xml 
+2026-05-07 07:38:05,459 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/crm_leads_view.xml 
+2026-05-07 07:38:05,476 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/track_calendar_view.xml 
+2026-05-07 07:38:05,497 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/data/ir_cron.xml 
+2026-05-07 07:38:05,505 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/associated_follow_up.xml 
+2026-05-07 07:38:05,523 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/contact_tab.xml 
+2026-05-07 07:38:05,573 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/crm_lead_followups_tab.xml 
+2026-05-07 07:38:05,616 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_business_dev/views/crm_lead_followups_tab.xml',
+ 'line': 14,
+ 'name': 'crm.lead.form.bd.followups.tab',
+ 'view': ir.ui.view(4231,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_bd_followups_tab'} 
+2026-05-07 07:38:05,617 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_business_dev/views/crm_lead_followups_tab.xml',
+ 'line': 30,
+ 'name': 'crm.lead.form.bd.followups.tab',
+ 'view': ir.ui.view(4231,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_bd_followups_tab'} 
+2026-05-07 07:38:05,647 1115 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/activity.xml 
+2026-05-07 07:38:05,682 1115 INFO odoo18 odoo.modules.loading: Module crm_business_dev loaded in 1.23s, 600 queries (+600 other) 
+2026-05-07 07:38:05,682 1115 INFO odoo18 odoo.modules.loading: Loading module crm_dashboard (204/228) 
+2026-05-07 07:38:06,286 1115 INFO odoo18 odoo.modules.registry: module crm_dashboard: creating or updating database tables 
+2026-05-07 07:38:06,386 1115 INFO odoo18 odoo.modules.loading: loading crm_dashboard/security/ir.model.access.csv 
+2026-05-07 07:38:06,399 1115 INFO odoo18 odoo.modules.loading: loading crm_dashboard/views/crm_dashboard_list_view.xml 
+2026-05-07 07:38:06,423 1115 INFO odoo18 odoo.modules.loading: loading crm_dashboard/views/crm_kpi_dashboard_views.xml 
+2026-05-07 07:38:06,450 1115 INFO odoo18 odoo.modules.loading: loading crm_dashboard/views/crm_kpi_dashboard_menu.xml 
+2026-05-07 07:38:06,474 1115 INFO odoo18 odoo.modules.loading: Module crm_dashboard loaded in 0.79s, 170 queries (+170 other) 
+2026-05-07 07:38:06,474 1115 INFO odoo18 odoo.modules.loading: Loading module crm_fields_style (205/228) 
+2026-05-07 07:38:07,047 1115 INFO odoo18 odoo.modules.registry: module crm_fields_style: creating or updating database tables 
+2026-05-07 07:38:07,152 1115 INFO odoo18 odoo.modules.loading: loading crm_fields_style/views/fields_style.xml 
+2026-05-07 07:38:07,187 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_fields_style/views/fields_style.xml',
+ 'line': 14,
+ 'name': 'crm.lead.form.fields.style',
+ 'view': ir.ui.view(3657,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_fields_style'} 
+2026-05-07 07:38:07,188 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_fields_style/views/fields_style.xml',
+ 'line': 30,
+ 'name': 'crm.lead.form.fields.style',
+ 'view': ir.ui.view(3657,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_form_fields_style'} 
+2026-05-07 07:38:07,216 1115 INFO odoo18 odoo.modules.loading: loading crm_fields_style/views/crm_lead_kanban_view.xml 
+2026-05-07 07:38:07,237 1115 INFO odoo18 odoo.modules.loading: loading crm_fields_style/views/crm_lead_list_view.xml 
+2026-05-07 07:38:07,307 1115 INFO odoo18 odoo.modules.loading: Module crm_fields_style loaded in 0.83s, 166 queries (+166 other) 
+2026-05-07 07:38:07,307 1115 INFO odoo18 odoo.modules.loading: Loading module crm_notes (206/228) 
+2026-05-07 07:38:07,830 1115 INFO odoo18 odoo.modules.registry: module crm_notes: creating or updating database tables 
+2026-05-07 07:38:07,994 1115 INFO odoo18 odoo.modules.loading: loading crm_notes/security/security.xml 
+2026-05-07 07:38:08,003 1115 INFO odoo18 odoo.modules.loading: loading crm_notes/security/ir.model.access.csv 
+2026-05-07 07:38:08,014 1115 INFO odoo18 odoo.modules.loading: loading crm_notes/views/crm_view.xml 
+2026-05-07 07:38:08,073 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_notes/views/crm_view.xml',
+ 'line': 14,
+ 'name': 'crm.lead.notes.form.inherit',
+ 'view': ir.ui.view(3662,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_notes_form_inherit'} 
+2026-05-07 07:38:08,075 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/crm_notes/views/crm_view.xml',
+ 'line': 30,
+ 'name': 'crm.lead.notes.form.inherit',
+ 'view': ir.ui.view(3662,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_notes_form_inherit'} 
+2026-05-07 07:38:08,157 1115 INFO odoo18 odoo.modules.loading: Module crm_notes loaded in 0.85s, 156 queries (+156 other) 
+2026-05-07 07:38:08,157 1115 INFO odoo18 odoo.modules.loading: Loading module employee_custom_fields (207/228) 
+2026-05-07 07:38:08,683 1115 INFO odoo18 odoo.modules.registry: module employee_custom_fields: creating or updating database tables 
+2026-05-07 07:38:08,954 1115 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/security/ir.model.access.csv 
+2026-05-07 07:38:08,971 1115 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/data/employee_trade_data.xml 
+2026-05-07 07:38:09,027 1115 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/data/employee_region_data.xml 
+2026-05-07 07:38:09,051 1115 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/data/setaside_data.xml 
+2026-05-07 07:38:09,062 1115 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/views.xml 
+2026-05-07 07:38:09,121 1115 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/contacts_config_menu.xml 
+2026-05-07 07:38:09,144 1115 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/insurance_view.xml 
+2026-05-07 07:38:09,205 1115 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/Associated_estimating.xml 
+2026-05-07 07:38:09,260 1115 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/employee_certification_view.xml 
+2026-05-07 07:38:09,327 1115 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/employee_fields.xml 
+2026-05-07 07:38:09,402 1115 INFO odoo18 odoo.modules.loading: Module employee_custom_fields loaded in 1.24s, 864 queries (+864 other) 
+2026-05-07 07:38:09,402 1115 INFO odoo18 odoo.modules.loading: Loading module project_bom (208/228) 
+2026-05-07 07:38:10,116 1115 INFO odoo18 odoo.modules.registry: module project_bom: creating or updating database tables 
+2026-05-07 07:38:10,355 1115 INFO odoo18 odoo.modules.loading: loading project_bom/security/ir.model.access.csv 
+2026-05-07 07:38:10,381 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/bom_summary_report.xml 
+2026-05-07 07:38:10,413 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/bom_summary_report.xml',
+ 'line': 12,
+ 'name': 'project.project.view.form.add.bom.summary.btn',
+ 'view': ir.ui.view(3721,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'project_view_form_add_bom_summary_btn'} 
+2026-05-07 07:38:10,413 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/bom_summary_report.xml',
+ 'line': 30,
+ 'name': 'project.project.view.form.add.bom.summary.btn',
+ 'view': ir.ui.view(3721,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'project_view_form_add_bom_summary_btn'} 
+2026-05-07 07:38:10,446 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/project_secondary_tabs.xml 
+2026-05-07 07:38:10,465 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/project_secondary_tabs.xml',
+ 'line': 12,
+ 'name': 'project.form.secondary.notebook.structure',
+ 'view': ir.ui.view(3669,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'project_view_form_secondary_notebook_structure'} 
+2026-05-07 07:38:10,467 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/project_secondary_tabs.xml',
+ 'line': 30,
+ 'name': 'project.form.secondary.notebook.structure',
+ 'view': ir.ui.view(3669,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'project_view_form_secondary_notebook_structure'} 
+2026-05-07 07:38:10,483 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/project_project_views.xml 
+2026-05-07 07:38:10,506 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/division_view.xml 
+2026-05-07 07:38:10,540 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/division_view.xml',
+ 'line': 12,
+ 'name': 'project.project.form.inherit.division.bom',
+ 'view': ir.ui.view(3670,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_form_inherit_division_bom'} 
+2026-05-07 07:38:10,542 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/division_view.xml',
+ 'line': 30,
+ 'name': 'project.project.form.inherit.division.bom',
+ 'view': ir.ui.view(3670,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_form_inherit_division_bom'} 
+2026-05-07 07:38:10,578 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/item_bom_view.xml 
+2026-05-07 07:38:10,678 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/item_bom_view.xml',
+ 'line': 12,
+ 'name': 'project.form.items.bom.tab',
+ 'view': ir.ui.view(3671,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_view_form_items_bom_tab'} 
+2026-05-07 07:38:10,679 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/item_bom_view.xml',
+ 'line': 30,
+ 'name': 'project.form.items.bom.tab',
+ 'view': ir.ui.view(3671,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_view_form_items_bom_tab'} 
+2026-05-07 07:38:10,696 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/labor_title_view.xml 
+2026-05-07 07:38:10,775 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/labor_title_view.xml',
+ 'line': 12,
+ 'name': 'project.project.inherit.labor.bom',
+ 'view': ir.ui.view(3672,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_project_view_form_inherit_labor_bom'} 
+2026-05-07 07:38:10,776 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/labor_title_view.xml',
+ 'line': 30,
+ 'name': 'project.project.inherit.labor.bom',
+ 'view': ir.ui.view(3672,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_project_view_form_inherit_labor_bom'} 
+2026-05-07 07:38:10,789 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/labor_type_bom_view.xml 
+2026-05-07 07:38:10,810 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/labor_type_bom_view.xml',
+ 'line': 12,
+ 'name': 'project.project.labor.type.bom.form.inherit',
+ 'view': ir.ui.view(3673,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_project_view_form_inherit_labor_type_bom'} 
+2026-05-07 07:38:10,811 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/labor_type_bom_view.xml',
+ 'line': 30,
+ 'name': 'project.project.labor.type.bom.form.inherit',
+ 'view': ir.ui.view(3673,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_project_view_form_inherit_labor_type_bom'} 
+2026-05-07 07:38:10,837 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/labor_bom_view.xml 
+2026-05-07 07:38:10,861 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/labor_bom_view.xml',
+ 'line': 12,
+ 'name': 'project.project.form.labor.bom.form',
+ 'view': ir.ui.view(3674,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_view_form_labor_bom_form'} 
+2026-05-07 07:38:10,862 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/labor_bom_view.xml',
+ 'line': 30,
+ 'name': 'project.project.form.labor.bom.form',
+ 'view': ir.ui.view(3674,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_view_form_labor_bom_form'} 
+2026-05-07 07:38:10,875 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/irs_mile_view.xml 
+2026-05-07 07:38:10,897 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/irs_mile_view.xml',
+ 'line': 12,
+ 'name': 'project.project.form.mileage',
+ 'view': ir.ui.view(3675,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_project_view_form_mileage'} 
+2026-05-07 07:38:10,898 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/irs_mile_view.xml',
+ 'line': 30,
+ 'name': 'project.project.form.mileage',
+ 'view': ir.ui.view(3675,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_project_view_form_mileage'} 
+2026-05-07 07:38:10,914 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/travel_expense.xml 
+2026-05-07 07:38:10,934 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/travel_expense.xml',
+ 'line': 12,
+ 'name': 'project.form.travel.expense.tab',
+ 'view': ir.ui.view(3676,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_view_form_travel_expense_tab'} 
+2026-05-07 07:38:10,935 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/travel_expense.xml',
+ 'line': 30,
+ 'name': 'project.form.travel.expense.tab',
+ 'view': ir.ui.view(3676,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_view_form_travel_expense_tab'} 
+2026-05-07 07:38:10,954 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/bom_summary.xml 
+2026-05-07 07:38:10,984 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/bom_summary.xml',
+ 'line': 12,
+ 'name': 'project.project.form.bom.adjustments',
+ 'view': ir.ui.view(3722,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_view_form_bom_adjustments'} 
+2026-05-07 07:38:10,985 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_bom/views/bom_summary.xml',
+ 'line': 30,
+ 'name': 'project.project.form.bom.adjustments',
+ 'view': ir.ui.view(3722,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3669,),
+ 'xmlid': 'project_view_form_bom_adjustments'} 
+2026-05-07 07:38:11,021 1115 INFO odoo18 odoo.modules.loading: loading project_bom/views/bom_balance_audit_views.xml 
+2026-05-07 07:38:11,057 1115 INFO odoo18 odoo.modules.loading: Module project_bom loaded in 1.65s, 391 queries (+391 other) 
+2026-05-07 07:38:11,057 1115 INFO odoo18 odoo.modules.loading: Loading module project_daily_report (209/228) 
+2026-05-07 07:38:11,751 1115 INFO odoo18 odoo.modules.registry: module project_daily_report: creating or updating database tables 
+<string>:94: (ERROR/3) Unexpected indentation.
+<string>:112: (WARNING/2) Line block ends without a blank line.
+<string>:135: (ERROR/3) Unexpected indentation.
+<string>:133: (WARNING/2) Inline literal start-string without end-string.
+<string>:136: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:138: (ERROR/3) Unexpected indentation.
+<string>:139: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:141: (WARNING/2) Definition list ends without a blank line; unexpected unindent.
+<string>:141: (WARNING/2) Inline literal start-string without end-string.
+<string>:141: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:149: (ERROR/3) Unexpected indentation.
+<string>:147: (WARNING/2) Inline literal start-string without end-string.
+<string>:150: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:152: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:154: (ERROR/3) Unexpected indentation.
+<string>:155: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:157: (ERROR/3) Unexpected indentation.
+<string>:158: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:163: (ERROR/3) Unexpected indentation.
+<string>:164: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:166: (WARNING/2) Definition list ends without a blank line; unexpected unindent.
+<string>:166: (WARNING/2) Inline literal start-string without end-string.
+<string>:166: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:220: (ERROR/3) Unexpected indentation.
+<string>:197: (WARNING/2) Inline literal start-string without end-string.
+<string>:222: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:222: (WARNING/2) Inline literal start-string without end-string.
+<string>:222: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:266: (WARNING/2) Line block ends without a blank line.
+<string>:295: (ERROR/3) Unexpected indentation.
+<string>:291: (WARNING/2) Inline literal start-string without end-string.
+<string>:291: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:297: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:297: (WARNING/2) Inline literal start-string without end-string.
+<string>:297: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:309: (ERROR/3) Unexpected indentation.
+<string>:306: (WARNING/2) Inline literal start-string without end-string.
+<string>:306: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:311: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:311: (WARNING/2) Inline literal start-string without end-string.
+<string>:311: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:319: (ERROR/3) Unexpected indentation.
+<string>:317: (WARNING/2) Inline literal start-string without end-string.
+<string>:317: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:329: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:362: (ERROR/3) Unexpected indentation.
+<string>:359: (WARNING/2) Inline literal start-string without end-string.
+<string>:359: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:363: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:363: (WARNING/2) Inline literal start-string without end-string.
+<string>:363: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:112: (ERROR/3) Undefined substitution referenced: "-----".
+<string>:112: (ERROR/3) Undefined substitution referenced: "-------------".
+<string>:266: (ERROR/3) Undefined substitution referenced: "-------".
+<string>:266: (ERROR/3) Undefined substitution referenced: "-------------".
+2026-05-07 07:38:11,956 1115 INFO odoo18 odoo.modules.loading: loading project_daily_report/security/ir.model.access.csv 
+2026-05-07 07:38:11,971 1115 INFO odoo18 odoo.modules.loading: loading project_daily_report/data/cron.xml 
+2026-05-07 07:38:11,979 1115 INFO odoo18 odoo.modules.loading: loading project_daily_report/views/report_view.xml 
+2026-05-07 07:38:11,985 1115 INFO odoo18 odoo.modules.loading: loading project_daily_report/views/wizard_view.xml 
+2026-05-07 07:38:12,002 1115 INFO odoo18 odoo.modules.loading: Module project_daily_report loaded in 0.95s, 98 queries (+98 other) 
+2026-05-07 07:38:12,002 1115 INFO odoo18 odoo.modules.loading: Loading module project_kickoff_checklist (210/228) 
+2026-05-07 07:38:12,649 1115 INFO odoo18 odoo.modules.registry: module project_kickoff_checklist: creating or updating database tables 
+2026-05-07 07:38:12,687 1115 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (acg_txt, acg_id) of project.kickoff.item() have the same label: ACG. [Modules: project_kickoff_checklist and project_kickoff_checklist] 
+2026-05-07 07:38:12,687 1115 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (customer_txt, customer_id) of project.kickoff.item() have the same label: Customer. [Modules: project_kickoff_checklist and project_kickoff_checklist] 
+2026-05-07 07:38:12,687 1115 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (subcontractor_txt, subcontractor_id) of project.kickoff.item() have the same label: Subcontractor. [Modules: project_kickoff_checklist and project_kickoff_checklist] 
+2026-05-07 07:38:12,856 1115 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/security/security.xml 
+2026-05-07 07:38:12,886 1115 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/security/ir.model.access.csv 
+2026-05-07 07:38:12,906 1115 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/data/checklist_items.xml 
+2026-05-07 07:38:12,939 1115 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/data/fed_class_data.xml 
+2026-05-07 07:38:12,951 1115 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/data/socio_status_data.xml 
+2026-05-07 07:38:12,962 1115 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/views/checklist_view.xml 
+2026-05-07 07:38:13,012 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_kickoff_checklist/views/checklist_view.xml',
+ 'line': 12,
+ 'name': 'project.project.kickoff.checklist.form',
+ 'view': ir.ui.view(3681,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'edit_project_inherit_kickoff'} 
+2026-05-07 07:38:13,012 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_kickoff_checklist/views/checklist_view.xml',
+ 'line': 30,
+ 'name': 'project.project.kickoff.checklist.form',
+ 'view': ir.ui.view(3681,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'edit_project_inherit_kickoff'} 
+2026-05-07 07:38:13,056 1115 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/views/contract_info.xml 
+2026-05-07 07:38:13,084 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_kickoff_checklist/views/contract_info.xml',
+ 'line': 12,
+ 'name': 'project.project.contract.info.form',
+ 'view': ir.ui.view(3682,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'edit_project_inherit_contract_info'} 
+2026-05-07 07:38:13,085 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_kickoff_checklist/views/contract_info.xml',
+ 'line': 30,
+ 'name': 'project.project.contract.info.form',
+ 'view': ir.ui.view(3682,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'edit_project_inherit_contract_info'} 
+2026-05-07 07:38:13,112 1115 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/views/budget.xml 
+2026-05-07 07:38:13,132 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_kickoff_checklist/views/budget.xml',
+ 'line': 12,
+ 'name': 'project.project.form.budget.fields',
+ 'view': ir.ui.view(3683,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'project_view_form_inherit_budget_fields'} 
+2026-05-07 07:38:13,133 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_kickoff_checklist/views/budget.xml',
+ 'line': 30,
+ 'name': 'project.project.form.budget.fields',
+ 'view': ir.ui.view(3683,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'project_view_form_inherit_budget_fields'} 
+2026-05-07 07:38:13,155 1115 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/reports/kickoff_checklist_report.xml 
+2026-05-07 07:38:13,191 1115 INFO odoo18 odoo.modules.loading: Module project_kickoff_checklist loaded in 1.19s, 546 queries (+546 other) 
+2026-05-07 07:38:13,191 1115 INFO odoo18 odoo.modules.loading: Loading module project_mail_history (211/228) 
+2026-05-07 07:38:13,839 1115 INFO odoo18 odoo.modules.registry: module project_mail_history: creating or updating database tables 
+2026-05-07 07:38:13,984 1115 INFO odoo18 odoo.modules.loading: loading project_mail_history/security/ir.model.access.csv 
+2026-05-07 07:38:13,998 1115 INFO odoo18 odoo.modules.loading: loading project_mail_history/data/mail_summary_cron.xml 
+2026-05-07 07:38:14,005 1115 INFO odoo18 odoo.modules.loading: loading project_mail_history/views/project_task_mail_history.xml 
+2026-05-07 07:38:14,035 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_mail_history/views/project_task_mail_history.xml',
+ 'line': 12,
+ 'name': 'project.project.form.inherit.mail.history',
+ 'view': ir.ui.view(2811,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_task_form_inherit_mail_history'} 
+2026-05-07 07:38:14,036 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_mail_history/views/project_task_mail_history.xml',
+ 'line': 30,
+ 'name': 'project.project.form.inherit.mail.history',
+ 'view': ir.ui.view(2811,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_task_form_inherit_mail_history'} 
+2026-05-07 07:38:14,085 1115 INFO odoo18 odoo.modules.loading: Module project_mail_history loaded in 0.89s, 172 queries (+172 other) 
+2026-05-07 07:38:14,085 1115 INFO odoo18 odoo.modules.loading: Loading module project_notes (212/228) 
+2026-05-07 07:38:14,621 1115 INFO odoo18 odoo.modules.registry: module project_notes: creating or updating database tables 
+2026-05-07 07:38:14,819 1115 INFO odoo18 odoo.modules.loading: loading project_notes/security/security.xml 
+2026-05-07 07:38:14,828 1115 INFO odoo18 odoo.modules.loading: loading project_notes/security/ir.model.access.csv 
+2026-05-07 07:38:14,839 1115 INFO odoo18 odoo.modules.loading: loading project_notes/views/project_view.xml 
+2026-05-07 07:38:14,869 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_notes/views/project_view.xml',
+ 'line': 12,
+ 'name': 'project.project.notes.form.inherit',
+ 'view': ir.ui.view(3684,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_notes_form_inherit'} 
+2026-05-07 07:38:14,871 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_notes/views/project_view.xml',
+ 'line': 30,
+ 'name': 'project.project.notes.form.inherit',
+ 'view': ir.ui.view(3684,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_notes_form_inherit'} 
+2026-05-07 07:38:14,921 1115 INFO odoo18 odoo.modules.loading: Module project_notes loaded in 0.84s, 172 queries (+172 other) 
+2026-05-07 07:38:14,921 1115 INFO odoo18 odoo.modules.loading: Loading module project_past_performance (213/228) 
+2026-05-07 07:38:15,465 1115 INFO odoo18 odoo.modules.registry: module project_past_performance: creating or updating database tables 
+2026-05-07 07:38:15,693 1115 INFO odoo18 odoo.modules.loading: loading project_past_performance/security/security.xml 
+2026-05-07 07:38:15,704 1115 INFO odoo18 odoo.modules.loading: loading project_past_performance/security/ir.model.access.csv 
+2026-05-07 07:38:15,720 1115 INFO odoo18 odoo.modules.loading: loading project_past_performance/data/marketing_photo_source_data.xml 
+2026-05-07 07:38:15,728 1115 INFO odoo18 odoo.modules.loading: loading project_past_performance/views/past_perf_view.xml 
+2026-05-07 07:38:15,767 1115 INFO odoo18 odoo.modules.loading: loading project_past_performance/views/marketing_gallery_views.xml 
+2026-05-07 07:38:15,837 1115 INFO odoo18 odoo.models.unlink: User #1 deleted ir.actions.act_window.view records with IDs: [1016, 1017] 
+2026-05-07 07:38:15,851 1115 INFO odoo18 odoo.modules.loading: loading project_past_performance/views/project_project_marketing_views.xml 
+2026-05-07 07:38:15,879 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_past_performance/views/project_project_marketing_views.xml',
+ 'line': 12,
+ 'name': 'project.project.form.marketing',
+ 'view': ir.ui.view(4008,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_marketing'} 
+2026-05-07 07:38:15,880 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_past_performance/views/project_project_marketing_views.xml',
+ 'line': 30,
+ 'name': 'project.project.form.marketing',
+ 'view': ir.ui.view(4008,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_marketing'} 
+2026-05-07 07:38:15,943 1115 INFO odoo18 odoo.modules.loading: Module project_past_performance loaded in 1.02s, 402 queries (+402 other) 
+2026-05-07 07:38:15,943 1115 INFO odoo18 odoo.modules.loading: Loading module project_stage_activity_plans (214/228) 
+2026-05-07 07:38:16,485 1115 INFO odoo18 odoo.modules.registry: module project_stage_activity_plans: creating or updating database tables 
+2026-05-07 07:38:16,503 1115 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (note_display, note) of mail.activity() have the same label: Note. [Modules: activity_modification and mail] 
+2026-05-07 07:38:16,744 1115 INFO odoo18 odoo.modules.loading: loading project_stage_activity_plans/views/project_project_stage_views.xml 
+2026-05-07 07:38:16,773 1115 INFO odoo18 odoo.modules.loading: loading project_stage_activity_plans/views/project_project_views.xml 
+2026-05-07 07:38:16,812 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_stage_activity_plans/views/project_project_views.xml',
+ 'line': 12,
+ 'name': 'project.project.activity.table.form.stage.plans',
+ 'view': ir.ui.view(4335,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3650,),
+ 'xmlid': 'view_project_activity_table_form_stage_plans'} 
+2026-05-07 07:38:16,813 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_stage_activity_plans/views/project_project_views.xml',
+ 'line': 30,
+ 'name': 'project.project.activity.table.form.stage.plans',
+ 'view': ir.ui.view(4335,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(3650,),
+ 'xmlid': 'view_project_activity_table_form_stage_plans'} 
+2026-05-07 07:38:16,854 1115 INFO odoo18 odoo.modules.loading: loading project_stage_activity_plans/views/project_stage_activity_plan_menus.xml 
+2026-05-07 07:38:16,879 1115 INFO odoo18 odoo.modules.loading: Module project_stage_activity_plans loaded in 0.94s, 226 queries (+226 other) 
+2026-05-07 07:38:16,879 1115 INFO odoo18 odoo.modules.loading: Loading module quality_assurance (215/228) 
+2026-05-07 07:38:17,456 1115 INFO odoo18 odoo.modules.registry: module quality_assurance: creating or updating database tables 
+<string>:65: (ERROR/3) Unexpected indentation.
+<string>:52: (WARNING/2) Inline literal start-string without end-string.
+<string>:67: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:67: (WARNING/2) Inline literal start-string without end-string.
+<string>:67: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+2026-05-07 07:38:17,662 1115 INFO odoo18 odoo.modules.loading: loading quality_assurance/security/ir.model.access.csv 
+2026-05-07 07:38:17,676 1115 INFO odoo18 odoo.modules.loading: loading quality_assurance/views/quality_assurance_views.xml 
+2026-05-07 07:38:17,709 1115 INFO odoo18 odoo.modules.loading: loading quality_assurance/views/project_project_views.xml 
+2026-05-07 07:38:17,747 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/quality_assurance/views/project_project_views.xml',
+ 'line': 12,
+ 'name': 'project.project.form.quality.assurance.tab',
+ 'view': ir.ui.view(3691,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_quality_assurance_tab'} 
+2026-05-07 07:38:17,748 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/quality_assurance/views/project_project_views.xml',
+ 'line': 30,
+ 'name': 'project.project.form.quality.assurance.tab',
+ 'view': ir.ui.view(3691,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_quality_assurance_tab'} 
+2026-05-07 07:38:17,811 1115 INFO odoo18 odoo.modules.loading: Module quality_assurance loaded in 0.93s, 228 queries (+228 other) 
+2026-05-07 07:38:17,822 1115 INFO odoo18 odoo.modules.loading: Loading module crm_bdo_kpi_dashboard (220/228) 
+2026-05-07 07:38:18,368 1115 INFO odoo18 odoo.modules.registry: module crm_bdo_kpi_dashboard: creating or updating database tables 
+2026-05-07 07:38:18,581 1115 INFO odoo18 odoo.modules.loading: loading crm_bdo_kpi_dashboard/security/ir.model.access.csv 
+2026-05-07 07:38:18,637 1115 INFO odoo18 odoo.modules.loading: loading crm_bdo_kpi_dashboard/views/bdo_kpi_dashboard_views.xml 
+2026-05-07 07:38:18,692 1115 INFO odoo18 odoo.modules.loading: loading crm_bdo_kpi_dashboard/views/bdo_employee_kpi_views.xml 
+2026-05-07 07:38:18,733 1115 INFO odoo18 odoo.modules.loading: loading crm_bdo_kpi_dashboard/views/bdo_pipeline_kpi_views.xml 
+2026-05-07 07:38:18,767 1115 INFO odoo18 odoo.modules.loading: loading crm_bdo_kpi_dashboard/views/bdo_engagement_kpi_views.xml 
+2026-05-07 07:38:18,817 1115 INFO odoo18 odoo.modules.loading: Module crm_bdo_kpi_dashboard loaded in 0.99s, 298 queries (+298 other) 
+2026-05-07 07:38:18,817 1115 INFO odoo18 odoo.modules.loading: Loading module hr_Employee_notifications (221/228) 
+2026-05-07 07:38:19,354 1115 INFO odoo18 odoo.modules.registry: module hr_Employee_notifications: creating or updating database tables 
+2026-05-07 07:38:19,464 1115 INFO odoo18 odoo.modules.loading: loading hr_Employee_notifications/data/cron_jobs.xml 
+2026-05-07 07:38:19,483 1115 INFO odoo18 odoo.modules.loading: Module hr_Employee_notifications loaded in 0.67s, 66 queries (+66 other) 
+2026-05-07 07:38:19,483 1115 INFO odoo18 odoo.modules.loading: Loading module hr_employee_fields_style (222/228) 
+2026-05-07 07:38:20,078 1115 INFO odoo18 odoo.modules.registry: module hr_employee_fields_style: creating or updating database tables 
+2026-05-07 07:38:20,194 1115 INFO odoo18 odoo.modules.loading: loading hr_employee_fields_style/views/views.xml 
+2026-05-07 07:38:20,273 1115 INFO odoo18 odoo.modules.loading: Module hr_employee_fields_style loaded in 0.79s, 135 queries (+135 other) 
+2026-05-07 07:38:20,273 1115 INFO odoo18 odoo.modules.loading: Loading module opportunity_project_port (223/228) 
+2026-05-07 07:38:20,967 1115 INFO odoo18 odoo.modules.registry: module opportunity_project_port: creating or updating database tables 
+2026-05-07 07:38:21,129 1115 INFO odoo18 odoo.modules.loading: loading opportunity_project_port/security/ir.model.access.csv 
+2026-05-07 07:38:21,143 1115 INFO odoo18 odoo.modules.loading: loading opportunity_project_port/wizards/crm_lead_project_port_wizard_views.xml 
+2026-05-07 07:38:21,164 1115 INFO odoo18 odoo.modules.loading: loading opportunity_project_port/views/crm_lead_views.xml 
+2026-05-07 07:38:21,193 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/opportunity_project_port/views/crm_lead_views.xml',
+ 'line': 14,
+ 'name': 'crm.lead.form.project.port',
+ 'view': ir.ui.view(3731,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_project_port'} 
+2026-05-07 07:38:21,194 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/opportunity_project_port/views/crm_lead_views.xml',
+ 'line': 30,
+ 'name': 'crm.lead.form.project.port',
+ 'view': ir.ui.view(3731,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_project_port'} 
+2026-05-07 07:38:21,266 1115 INFO odoo18 odoo.modules.loading: Module opportunity_project_port loaded in 0.99s, 194 queries (+194 other) 
+2026-05-07 07:38:21,266 1115 INFO odoo18 odoo.modules.loading: Loading module project_change_order (224/228) 
+2026-05-07 07:38:22,047 1115 INFO odoo18 odoo.modules.registry: module project_change_order: creating or updating database tables 
+2026-05-07 07:38:22,237 1115 INFO odoo18 odoo.modules.loading: loading project_change_order/data/sequence.xml 
+2026-05-07 07:38:22,249 1115 INFO odoo18 odoo.modules.loading: loading project_change_order/security/security.xml 
+2026-05-07 07:38:22,260 1115 INFO odoo18 odoo.modules.loading: loading project_change_order/security/ir.model.access.csv 
+2026-05-07 07:38:22,287 1115 INFO odoo18 odoo.modules.loading: loading project_change_order/views/change_order_view.xml 
+2026-05-07 07:38:22,359 1115 INFO odoo18 odoo.modules.loading: loading project_change_order/views/project_view.xml 
+2026-05-07 07:38:22,399 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_change_order/views/project_view.xml',
+ 'line': 12,
+ 'name': 'project.project.form.inherit.change.order',
+ 'view': ir.ui.view(3695,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_change_order_form_inherit'} 
+2026-05-07 07:38:22,400 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_change_order/views/project_view.xml',
+ 'line': 30,
+ 'name': 'project.project.form.inherit.change.order',
+ 'view': ir.ui.view(3695,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_change_order_form_inherit'} 
+2026-05-07 07:38:22,475 1115 INFO odoo18 odoo.modules.loading: loading project_change_order/views/lead_view.xml 
+2026-05-07 07:38:22,521 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_change_order/views/lead_view.xml',
+ 'line': 14,
+ 'name': 'crm.lead.form.inherit.change.order',
+ 'view': ir.ui.view(3696,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_change_order_form_inherit'} 
+2026-05-07 07:38:22,522 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_change_order/views/lead_view.xml',
+ 'line': 30,
+ 'name': 'crm.lead.form.inherit.change.order',
+ 'view': ir.ui.view(3696,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'view_crm_lead_change_order_form_inherit'} 
+2026-05-07 07:38:22,555 1115 INFO odoo18 odoo.modules.loading: loading project_change_order/views/change_order_kpi_dashboard_views.xml 
+2026-05-07 07:38:22,604 1115 INFO odoo18 odoo.modules.loading: loading project_change_order/views/change_order_bom_balance_views.xml 
+2026-05-07 07:38:22,664 1115 INFO odoo18 odoo.modules.loading: Module project_change_order loaded in 1.40s, 516 queries (+516 other) 
+2026-05-07 07:38:22,664 1115 INFO odoo18 odoo.modules.loading: Loading module project_expenses (225/228) 
+2026-05-07 07:38:23,419 1115 INFO odoo18 odoo.modules.registry: module project_expenses: creating or updating database tables 
+2026-05-07 07:38:23,551 1115 INFO odoo18 odoo.modules.loading: loading project_expenses/security/ir.model.access.csv 
+2026-05-07 07:38:23,570 1115 INFO odoo18 odoo.modules.loading: loading project_expenses/wizard/import_expenses_wizard_views.xml 
+2026-05-07 07:38:23,608 1115 INFO odoo18 odoo.modules.loading: Module project_expenses loaded in 0.94s, 117 queries (+117 other) 
+2026-05-07 07:38:23,609 1115 INFO odoo18 odoo.modules.loading: Loading module project_fields_style (226/228) 
+2026-05-07 07:38:24,213 1115 INFO odoo18 odoo.modules.registry: module project_fields_style: creating or updating database tables 
+2026-05-07 07:38:24,333 1115 INFO odoo18 odoo.modules.loading: loading project_fields_style/views/fields_style.xml 
+2026-05-07 07:38:24,378 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_fields_style/views/fields_style.xml',
+ 'line': 12,
+ 'name': 'project.form.fields.style',
+ 'view': ir.ui.view(3697,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_fields_style'} 
+2026-05-07 07:38:24,379 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_fields_style/views/fields_style.xml',
+ 'line': 30,
+ 'name': 'project.form.fields.style',
+ 'view': ir.ui.view(3697,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_form_fields_style'} 
+2026-05-07 07:38:24,444 1115 INFO odoo18 odoo.modules.loading: Module project_fields_style loaded in 0.84s, 159 queries (+159 other) 
+2026-05-07 07:38:24,445 1115 INFO odoo18 odoo.modules.loading: Loading module project_dashboard (227/228) 
+2026-05-07 07:38:25,077 1115 INFO odoo18 odoo.modules.registry: module project_dashboard: creating or updating database tables 
+2026-05-07 07:38:25,088 1115 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (dashboard_profit_percentage, x_bom_summary_profit_percentage) of project.project() have the same label: Profit %. [Modules: project_dashboard and project_bom] 
+2026-05-07 07:38:25,200 1115 INFO odoo18 odoo.modules.loading: loading project_dashboard/security/ir.model.access.csv 
+2026-05-07 07:38:25,219 1115 INFO odoo18 odoo.modules.loading: loading project_dashboard/views/project_dashboard_views.xml 
+2026-05-07 07:38:26,022 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_dashboard/views/project_dashboard_views.xml',
+ 'line': 12,
+ 'name': 'project.project.dashboard.form',
+ 'view': ir.ui.view(3853,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_dashboard_form'} 
+2026-05-07 07:38:26,024 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/project_dashboard/views/project_dashboard_views.xml',
+ 'line': 30,
+ 'name': 'project.project.dashboard.form',
+ 'view': ir.ui.view(3853,),
+ 'view.model': 'project.project',
+ 'view.parent': ir.ui.view(1265,),
+ 'xmlid': 'view_project_dashboard_form'} 
+2026-05-07 07:38:26,078 1115 INFO odoo18 odoo.modules.loading: loading project_dashboard/views/project_kpi_dashboard_views.xml 
+2026-05-07 07:38:26,128 1115 INFO odoo18 odoo.modules.loading: Module project_dashboard loaded in 1.68s, 247 queries (+247 other) 
+2026-05-07 07:38:26,128 1115 INFO odoo18 odoo.modules.loading: Loading module search_leads (228/228) 
+2026-05-07 07:38:27,116 1115 INFO odoo18 odoo.modules.registry: module search_leads: creating or updating database tables 
+2026-05-07 07:38:27,178 1115 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (dashboard_profit_percentage, x_bom_summary_profit_percentage) of project.project() have the same label: Profit %. [Modules: project_dashboard and project_bom] 
+2026-05-07 07:38:27,392 1115 INFO odoo18 odoo.modules.loading: loading search_leads/security/security.xml 
+2026-05-07 07:38:27,431 1115 INFO odoo18 odoo.modules.loading: loading search_leads/security/ir.model.access.csv 
+2026-05-07 07:38:27,490 1115 INFO odoo18 odoo.modules.loading: loading search_leads/data/company_area_types_data.xml 
+2026-05-07 07:38:27,502 1115 INFO odoo18 odoo.modules.loading: loading search_leads/data/company_area_assignment_data.xml 
+2026-05-07 07:38:27,517 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/company_area_type_views.xml 
+2026-05-07 07:38:27,546 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/company_area_assignment_views.xml 
+2026-05-07 07:38:27,570 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/daily_checklist.xml 
+2026-05-07 07:38:27,602 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/lead_view.xml 
+2026-05-07 07:38:27,669 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/res_config_settings_views.xml 
+2026-05-07 07:38:27,747 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/lead_document_wizard_view.xml 
+2026-05-07 07:38:27,759 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/website_view.xml 
+2026-05-07 07:38:27,793 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/no_bid_wizard_view.xml 
+2026-05-07 07:38:27,806 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/menus.xml 
+2026-05-07 07:38:27,844 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/manual_ss_wizard_views.xml 
+2026-05-07 07:38:27,857 1115 INFO odoo18 odoo.modules.loading: loading search_leads/data/cron_reset_check.xml 
+2026-05-07 07:38:27,876 1115 INFO odoo18 odoo.modules.loading: loading search_leads/data/cron_highergov_enrichment.xml 
+2026-05-07 07:38:27,886 1115 INFO odoo18 odoo.modules.loading: loading search_leads/data/cron_highergov_documents.xml 
+2026-05-07 07:38:27,899 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/email_bid_mail_column_template_views.xml 
+2026-05-07 07:38:27,919 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/email_lead_view.xml 
+2026-05-07 07:38:27,947 1115 INFO odoo18 odoo.modules.loading: loading search_leads/views/crm_view.xml 
+2026-05-07 07:38:27,978 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/search_leads/views/crm_view.xml',
+ 'line': 14,
+ 'name': 'crm.lead.form.inherit.search',
+ 'view': ir.ui.view(4308,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_inherit_search'} 
+2026-05-07 07:38:27,979 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/search_leads/views/crm_view.xml',
+ 'line': 30,
+ 'name': 'crm.lead.form.inherit.search',
+ 'view': ir.ui.view(4308,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(1022,),
+ 'xmlid': 'crm_lead_view_form_inherit_search'} 
+2026-05-07 07:38:28,036 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/search_leads/views/crm_view.xml',
+ 'line': 14,
+ 'name': 'crm.lead.form.inherit.search.scope.url',
+ 'view': ir.ui.view(4323,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(3657,),
+ 'xmlid': 'crm_lead_view_form_inherit_search_scope_url'} 
+2026-05-07 07:38:28,037 1115 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A button with icon attribute (fa-external-link) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/search_leads/views/crm_view.xml',
+ 'line': 30,
+ 'name': 'crm.lead.form.inherit.search.scope.url',
+ 'view': ir.ui.view(4323,),
+ 'view.model': 'crm.lead',
+ 'view.parent': ir.ui.view(3657,),
+ 'xmlid': 'crm_lead_view_form_inherit_search_scope_url'} 
+2026-05-07 07:38:28,081 1115 INFO odoo18 odoo.modules.loading: Module search_leads loaded in 1.95s, 920 queries (+920 other) 
+2026-05-07 07:38:28,081 1115 INFO odoo18 odoo.modules.loading: 228 modules loaded in 40.27s, 10143 queries (+10143 extra) 
+2026-05-07 07:38:29,094 1115 INFO odoo18 odoo.modules.registry: verifying fields for every extended model 
+2026-05-07 07:38:30,069 1115 INFO odoo18 odoo.modules.loading: Modules loaded. 
+2026-05-07 07:38:30,075 1115 INFO odoo18 odoo.modules.registry: Registry changed, signaling through the database 
+2026-05-07 07:38:30,076 1115 INFO odoo18 odoo.modules.registry: Registry loaded in 46.689s 
+2026-05-07 07:38:30,076 1115 INFO odoo18 odoo.service.server: Initiating shutdown 
+2026-05-07 07:38:30,076 1115 INFO odoo18 odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2026-05-07 07:38:30,076 1115 INFO odoo18 odoo.sql_db: ConnectionPool(read/write;used=0/count=0/max=64): Closed 1 connections  

@@ -22,7 +22,8 @@ param(
     [string]$Project = ""
 )
 
-$sidebarScript = "C:\Users\eduar\.claude\.setup\sidebar.ps1"
+# sidebar.ps1 lives alongside this script in ~/.claude/.setup/
+$sidebarScript = Join-Path $PSScriptRoot "sidebar.ps1"
 
 # Default to calling directory
 if ($Project -eq "") { $Project = $PWD.Path }

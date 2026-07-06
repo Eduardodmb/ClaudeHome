@@ -1,4 +1,0 @@
-from . import mail_activity_kpi_dashboard
-from . import mail_activity_department_kpi
-from . import mail_activity_employee_kpi
-from . import mail_activity_weekly_performance

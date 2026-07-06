@@ -1,9 +1,0 @@
-/* Hide EMAIL and SMS action buttons in CRM list view */
-.o_list_table.o_list_table_ungrouped tbody tr td.o_list_button {
-    display: none !important;
-}
-
-/* Alternative: Hide only in CRM lead/opportunity list views */
-.o_list_view[data-model="crm.lead"] .o_list_table tbody tr td.o_list_button {
-    display: none !important;
-}

@@ -1,0 +1,506 @@
+2026-05-04 02:32:29,760 159 INFO ? odoo: Odoo version 18.0-20260305 
+2026-05-04 02:32:29,761 159 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf 
+2026-05-04 02:32:29,761 159 INFO ? odoo: addons paths: ['/usr/lib/python3/dist-packages/odoo/addons', '/var/lib/odoo/addons/18.0', '/mnt/extra-addons'] 
+2026-05-04 02:32:29,761 159 INFO ? odoo: database: odoo@db:5432 
+Warn: Can't find .pfb for face 'Courier'
+2026-05-04 02:32:29,899 159 INFO ? odoo.addons.base.models.ir_actions_report: Will use the Wkhtmltopdf binary at /usr/local/bin/wkhtmltopdf 
+2026-05-04 02:32:29,922 159 INFO ? odoo.addons.base.models.ir_actions_report: Will use the Wkhtmltoimage binary at /usr/local/bin/wkhtmltoimage 
+2026-05-04 02:32:30,107 159 INFO odoo18 odoo.modules.loading: loading 1 modules... 
+2026-05-04 02:32:30,111 159 INFO odoo18 odoo.modules.loading: 1 modules loaded in 0.00s, 0 queries (+0 extra) 
+2026-05-04 02:32:30,128 159 INFO odoo18 odoo.modules.loading: updating modules list 
+2026-05-04 02:32:30,131 159 INFO odoo18 odoo.addons.base.models.ir_module: ALLOW access to module.update_list on [] to user __system__ #1 via n/a 
+2026-05-04 02:32:32,642 159 INFO odoo18 odoo.addons.base.models.ir_module: ALLOW access to module.button_upgrade on ['Document Library'] to user __system__ #1 via n/a 
+2026-05-04 02:32:32,642 159 INFO odoo18 odoo.addons.base.models.ir_module: ALLOW access to module.update_list on ['Document Library'] to user __system__ #1 via n/a 
+2026-05-04 02:32:33,296 159 INFO odoo18 odoo.addons.base.models.ir_module: ALLOW access to module.button_install on [] to user __system__ #1 via n/a 
+2026-05-04 02:32:33,760 159 INFO odoo18 odoo.modules.loading: loading 225 modules... 
+2026-05-04 02:32:35,076 159 INFO odoo18 odoo.modules.loading: Loading module document_library (84/225) 
+2026-05-04 02:32:35,602 159 INFO odoo18 odoo.modules.registry: module document_library: creating or updating database tables 
+2026-05-04 02:32:35,701 159 INFO odoo18 odoo.schema: Keep unexpected index document_library_item__is_legacy_index on table document_library_item 
+2026-05-04 02:32:35,732 159 INFO odoo18 odoo.modules.loading: loading document_library/security/document_library_groups.xml 
+2026-05-04 02:32:35,757 159 INFO odoo18 odoo.modules.loading: loading document_library/security/ir.model.access.csv 
+2026-05-04 02:32:35,786 159 INFO odoo18 odoo.modules.loading: loading document_library/data/ir_cron_data.xml 
+2026-05-04 02:32:35,795 159 INFO odoo18 odoo.modules.loading: loading document_library/views/res_config_settings_views.xml 
+2026-05-04 02:32:35,838 159 INFO odoo18 odoo.modules.loading: loading document_library/views/document_library_sync_target_views.xml 
+2026-05-04 02:32:35,862 159 INFO odoo18 odoo.modules.loading: loading document_library/views/document_library_sync_queue_views.xml 
+2026-05-04 02:32:35,899 159 INFO odoo18 odoo.modules.loading: loading document_library/views/document_library_item_views.xml 
+2026-05-04 02:32:35,945 159 INFO odoo18 odoo.modules.loading: loading document_library/views/document_library_context_views.xml 
+2026-05-04 02:32:35,973 159 INFO odoo18 odoo.modules.loading: loading document_library/views/document_library_help_wizard_views.xml 
+2026-05-04 02:32:35,983 159 INFO odoo18 odoo.modules.loading: loading document_library/views/hr_department_views.xml 
+2026-05-04 02:32:36,037 159 INFO odoo18 odoo.modules.loading: Module document_library loaded in 0.96s, 541 queries (+541 other) 
+2026-05-04 02:32:37,698 159 INFO odoo18 odoo.modules.loading: Loading module employees_department_custom_fields (141/225) 
+2026-05-04 02:32:38,089 159 INFO odoo18 odoo.modules.registry: module employees_department_custom_fields: creating or updating database tables 
+2026-05-04 02:32:38,108 159 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (note_display, note) of mail.activity() have the same label: Note. [Modules: activity_modification and mail] 
+2026-05-04 02:32:38,183 159 INFO odoo18 odoo.modules.loading: loading employees_department_custom_fields/security/ir.model.access.csv 
+2026-05-04 02:32:38,202 159 INFO odoo18 odoo.modules.loading: loading employees_department_custom_fields/data/cron_job.xml 
+2026-05-04 02:32:38,209 159 INFO odoo18 odoo.modules.loading: loading employees_department_custom_fields/views/hr_department_form_anchor.xml 
+2026-05-04 02:32:38,236 159 INFO odoo18 odoo.modules.loading: loading employees_department_custom_fields/views/hr_dept_activities_views.xml 
+2026-05-04 02:32:38,255 159 INFO odoo18 odoo.modules.loading: loading employees_department_custom_fields/views/hr_dept_notes_view.xml 
+2026-05-04 02:32:38,277 159 INFO odoo18 odoo.modules.loading: loading employees_department_custom_fields/views/hr_dept_menu.xml 
+2026-05-04 02:32:38,287 159 INFO odoo18 odoo.modules.loading: loading employees_department_custom_fields/views/hr_dept_project_view.xml 
+2026-05-04 02:32:38,317 159 INFO odoo18 odoo.modules.loading: loading employees_department_custom_fields/views/hr_dept_main_activities_view.xml 
+2026-05-04 02:32:38,335 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: 'kanban-box' is deprecated, define a 'card' template instead 
+2026-05-04 02:32:38,336 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A <i> with fa class (fa fa-user) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/employees_department_custom_fields/views/hr_dept_main_activities_view.xml',
+ 'line': 23,
+ 'name': 'department.main.activity.kanban',
+ 'view': ir.ui.view(3500,),
+ 'view.model': 'department.main.activity',
+ 'view.parent': ir.ui.view(),
+ 'xmlid': 'view_department_main_activity_kanban'} 
+2026-05-04 02:32:38,336 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A <i> with fa class (fa fa-calendar) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/employees_department_custom_fields/views/hr_dept_main_activities_view.xml',
+ 'line': 26,
+ 'name': 'department.main.activity.kanban',
+ 'view': ir.ui.view(3500,),
+ 'view.model': 'department.main.activity',
+ 'view.parent': ir.ui.view(),
+ 'xmlid': 'view_department_main_activity_kanban'} 
+2026-05-04 02:32:38,371 159 INFO odoo18 odoo.modules.loading: loading employees_department_custom_fields/views/meeting.xml 
+2026-05-04 02:32:38,420 159 INFO odoo18 odoo.modules.loading: Module employees_department_custom_fields loaded in 0.72s, 375 queries (+375 other) 
+2026-05-04 02:32:38,988 159 INFO odoo18 odoo.modules.loading: Loading module hr_employee_certifications (163/225) 
+2026-05-04 02:32:39,408 159 INFO odoo18 odoo.modules.registry: module hr_employee_certifications: creating or updating database tables 
+2026-05-04 02:32:39,573 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/security/security.xml 
+2026-05-04 02:32:39,650 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/security/ir.model.access.csv 
+2026-05-04 02:32:39,676 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/views/templates.xml 
+2026-05-04 02:32:39,705 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/views/view_certification_name_tab.xml 
+2026-05-04 02:32:39,727 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/views/certification_by_company_view.xml 
+2026-05-04 02:32:39,754 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/views/fed_cert_view.xml 
+2026-05-04 02:32:39,775 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/views/company_cert_view.xml 
+2026-05-04 02:32:39,809 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/views/hr_view.xml 
+2026-05-04 02:32:39,885 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: <b>Access Rights Inconsistency</b><br/>This view may not work for all users: some users may have a combination of groups where the elements <b><tt>&lt;button&gt;</tt></b> are displayed, but they depend on the field <b><tt>has_timesheet</tt></b> that is not accessible. You might fix this by modifying user groups to make sure that all users who have access to those elements also have access to the field, typically via group implications. Alternatively, you could adjust the “<i>groups</i>” or “<i>invisible</i>” attributes for these fields, to make sure they are always available together.<br/>Debugging information:<br/>- field “has_timesheet” is accessible for groups: &#39;base.group_system&#39; | &#39;hr.group_hr_user&#39;<br/>- element “&lt;button invisible=&#34;not has_timesheet&#34; class=&#34;oe_stat_button&#34; type=&#34;object&#34; name=&#34;action_timesheet_from_employee&#34; icon=&#34;fa-calendar&#34; groups=&#34;hr_timesheet.group_hr_timesheet_user&#34;/&gt;” is shown in the view for groups: &#39;hr_timesheet.group_hr_timesheet_user&#39;
+View error context:
+{'file': '/mnt/extra-addons/hr_employee_certifications/views/hr_view.xml',
+ 'line': 1,
+ 'name': 'hr.employee.form.inherit.cert.compliance',
+ 'view': ir.ui.view(3520,),
+ 'view.model': 'hr.employee',
+ 'view.parent': ir.ui.view(1087,),
+ 'xmlid': 'view_employee_form_inherit_cert_compliance'} 
+2026-05-04 02:32:39,885 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: <b>Access Rights Inconsistency</b><br/>This view may not work for all users: some users may have a combination of groups where the elements <b><tt>&lt;widget&gt;</tt></b> are displayed, but they depend on the field <b><tt>calendar_mismatch</tt></b> that is not accessible. You might fix this by modifying user groups to make sure that all users who have access to those elements also have access to the field, typically via group implications. Alternatively, you could adjust the “<i>groups</i>” or “<i>invisible</i>” attributes for these fields, to make sure they are always available together.<br/>Debugging information:<br/>- field “calendar_mismatch” is accessible for groups: &#39;base.group_system&#39; | &#39;hr.group_hr_user&#39;<br/>- element “&lt;widget name=&#34;contract_warning_tooltip&#34; invisible=&#34;not calendar_mismatch&#34;/&gt;” is shown in the view for groups: &#39;base.group_user&#39;
+View error context:
+{'file': '/mnt/extra-addons/hr_employee_certifications/views/hr_view.xml',
+ 'line': 1,
+ 'name': 'hr.employee.form.inherit.cert.compliance',
+ 'view': ir.ui.view(3520,),
+ 'view.model': 'hr.employee',
+ 'view.parent': ir.ui.view(1087,),
+ 'xmlid': 'view_employee_form_inherit_cert_compliance'} 
+2026-05-04 02:32:39,887 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/views/res_config_settings_views.xml 
+2026-05-04 02:32:39,930 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/views/certification_config_menu.xml 
+2026-05-04 02:32:39,941 159 INFO odoo18 odoo.modules.loading: loading hr_employee_certifications/data/ir_cron_certification.xml 
+2026-05-04 02:32:39,982 159 INFO odoo18 odoo.modules.loading: Module hr_employee_certifications loaded in 0.99s, 656 queries (+656 other) 
+2026-05-04 02:32:39,982 159 INFO odoo18 odoo.modules.loading: Loading module hr_employee_growth (164/225) 
+2026-05-04 02:32:40,417 159 INFO odoo18 odoo.modules.registry: module hr_employee_growth: creating or updating database tables 
+2026-05-04 02:32:40,504 159 INFO odoo18 odoo.modules.loading: loading hr_employee_growth/security/security.xml 
+2026-05-04 02:32:40,527 159 INFO odoo18 odoo.modules.loading: loading hr_employee_growth/security/ir.model.access.csv 
+2026-05-04 02:32:40,539 159 INFO odoo18 odoo.modules.loading: loading hr_employee_growth/views/hr_employee_growth_views.xml 
+2026-05-04 02:32:40,588 159 INFO odoo18 odoo.modules.loading: loading hr_employee_growth/views/hr_employee.xml 
+2026-05-04 02:32:40,631 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: <b>Access Rights Inconsistency</b><br/>This view may not work for all users: some users may have a combination of groups where the elements <b><tt>&lt;button&gt;</tt></b> are displayed, but they depend on the field <b><tt>has_timesheet</tt></b> that is not accessible. You might fix this by modifying user groups to make sure that all users who have access to those elements also have access to the field, typically via group implications. Alternatively, you could adjust the “<i>groups</i>” or “<i>invisible</i>” attributes for these fields, to make sure they are always available together.<br/>Debugging information:<br/>- field “has_timesheet” is accessible for groups: &#39;base.group_system&#39; | &#39;hr.group_hr_user&#39;<br/>- element “&lt;button invisible=&#34;not has_timesheet&#34; class=&#34;oe_stat_button&#34; type=&#34;object&#34; name=&#34;action_timesheet_from_employee&#34; icon=&#34;fa-calendar&#34; groups=&#34;hr_timesheet.group_hr_timesheet_user&#34;/&gt;” is shown in the view for groups: &#39;hr_timesheet.group_hr_timesheet_user&#39;
+View error context:
+{'file': '/mnt/extra-addons/hr_employee_growth/views/hr_employee.xml',
+ 'line': 1,
+ 'name': 'hr.employee.form.growth.plans.tab',
+ 'view': ir.ui.view(3526,),
+ 'view.model': 'hr.employee',
+ 'view.parent': ir.ui.view(1087,),
+ 'xmlid': 'hr_employee_form_inherit_growth_plans_tab'} 
+2026-05-04 02:32:40,632 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: <b>Access Rights Inconsistency</b><br/>This view may not work for all users: some users may have a combination of groups where the elements <b><tt>&lt;widget&gt;</tt></b> are displayed, but they depend on the field <b><tt>calendar_mismatch</tt></b> that is not accessible. You might fix this by modifying user groups to make sure that all users who have access to those elements also have access to the field, typically via group implications. Alternatively, you could adjust the “<i>groups</i>” or “<i>invisible</i>” attributes for these fields, to make sure they are always available together.<br/>Debugging information:<br/>- field “calendar_mismatch” is accessible for groups: &#39;base.group_system&#39; | &#39;hr.group_hr_user&#39;<br/>- element “&lt;widget name=&#34;contract_warning_tooltip&#34; invisible=&#34;not calendar_mismatch&#34;/&gt;” is shown in the view for groups: &#39;base.group_user&#39;
+View error context:
+{'file': '/mnt/extra-addons/hr_employee_growth/views/hr_employee.xml',
+ 'line': 1,
+ 'name': 'hr.employee.form.growth.plans.tab',
+ 'view': ir.ui.view(3526,),
+ 'view.model': 'hr.employee',
+ 'view.parent': ir.ui.view(1087,),
+ 'xmlid': 'hr_employee_form_inherit_growth_plans_tab'} 
+2026-05-04 02:32:40,634 159 INFO odoo18 odoo.modules.loading: loading hr_employee_growth/security/hr_employee_growth_rule.xml 
+2026-05-04 02:32:40,654 159 INFO odoo18 odoo.modules.loading: Module hr_employee_growth loaded in 0.67s, 301 queries (+301 other) 
+2026-05-04 02:32:41,475 159 INFO odoo18 odoo.modules.loading: Loading module hr_internal_trainings (186/225) 
+2026-05-04 02:32:42,211 159 INFO odoo18 odoo.modules.registry: module hr_internal_trainings: creating or updating database tables 
+2026-05-04 02:32:42,344 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/security/training_security.xml 
+2026-05-04 02:32:42,366 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/security/ir.model.access.csv 
+2026-05-04 02:32:42,412 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/views/training_assignment_wizard_views.xml 
+2026-05-04 02:32:42,438 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/views/training_bulk_deadline_wizard_views.xml 
+2026-05-04 02:32:42,462 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/views/training_actions_early.xml 
+2026-05-04 02:32:42,507 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/views/training_course_views.xml 
+2026-05-04 02:32:42,562 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/views/training_assignment_views.xml 
+2026-05-04 02:32:42,599 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/views/training_completion_views.xml 
+2026-05-04 02:32:42,634 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/views/training_actions.xml 
+2026-05-04 02:32:42,663 159 INFO odoo18 odoo.models.unlink: User #1 deleted ir.actions.act_window.view records with IDs: [834, 835] 
+2026-05-04 02:32:42,669 159 INFO odoo18 odoo.models.unlink: User #1 deleted ir.actions.act_window.view records with IDs: [836, 837] 
+2026-05-04 02:32:42,676 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/views/training_menu.xml 
+2026-05-04 02:32:42,720 159 INFO odoo18 odoo.modules.loading: loading hr_internal_trainings/data/training_cron.xml 
+2026-05-04 02:32:42,770 159 INFO odoo18 odoo.modules.loading: Module hr_internal_trainings loaded in 1.29s, 419 queries (+419 other) 
+2026-05-04 02:32:42,781 159 INFO odoo18 odoo.modules.loading: Loading module ticket_system (195/225) 
+2026-05-04 02:32:43,532 159 INFO odoo18 odoo.modules.registry: module ticket_system: creating or updating database tables 
+2026-05-04 02:32:43,563 159 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (note_display, note) of mail.activity() have the same label: Note. [Modules: activity_modification and mail] 
+2026-05-04 02:32:43,714 159 INFO odoo18 odoo.modules.loading: loading ticket_system/security/department_ticket_groups.xml 
+2026-05-04 02:32:43,732 159 INFO odoo18 odoo.modules.loading: loading ticket_system/security/ir.model.access.csv 
+2026-05-04 02:32:43,759 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/ticket_view.xml 
+2026-05-04 02:32:43,813 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/ticket_wizard_view.xml 
+2026-05-04 02:32:43,842 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/ticket_update_view.xml 
+2026-05-04 02:32:43,897 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/activity_plan_template.xml 
+2026-05-04 02:32:43,930 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/activity_bulk_edit_view.xml 
+2026-05-04 02:32:43,957 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/hr_department_anchor_ticket_columns.xml 
+2026-05-04 02:32:43,992 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/hr_department_project.xml 
+2026-05-04 02:32:44,018 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/hr_employee.xml 
+2026-05-04 02:32:44,078 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: <b>Access Rights Inconsistency</b><br/>This view may not work for all users: some users may have a combination of groups where the elements <b><tt>&lt;button&gt;</tt></b> are displayed, but they depend on the field <b><tt>has_timesheet</tt></b> that is not accessible. You might fix this by modifying user groups to make sure that all users who have access to those elements also have access to the field, typically via group implications. Alternatively, you could adjust the “<i>groups</i>” or “<i>invisible</i>” attributes for these fields, to make sure they are always available together.<br/>Debugging information:<br/>- field “has_timesheet” is accessible for groups: &#39;base.group_system&#39; | &#39;hr.group_hr_user&#39;<br/>- element “&lt;button invisible=&#34;not has_timesheet&#34; class=&#34;oe_stat_button&#34; type=&#34;object&#34; name=&#34;action_timesheet_from_employee&#34; icon=&#34;fa-calendar&#34; groups=&#34;hr_timesheet.group_hr_timesheet_user&#34;/&gt;” is shown in the view for groups: &#39;hr_timesheet.group_hr_timesheet_user&#39;
+View error context:
+{'file': '/mnt/extra-addons/ticket_system/views/hr_employee.xml',
+ 'line': 1,
+ 'name': 'hr.employee.form.activities.tab',
+ 'view': ir.ui.view(3571,),
+ 'view.model': 'hr.employee',
+ 'view.parent': ir.ui.view(1087,),
+ 'xmlid': 'hr_employee_form_inherit_growthplan_activities_tab'} 
+2026-05-04 02:32:44,078 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: <b>Access Rights Inconsistency</b><br/>This view may not work for all users: some users may have a combination of groups where the elements <b><tt>&lt;button&gt;</tt></b> are displayed, but they depend on the field <b><tt>has_subscribed_courses</tt></b> that is not accessible. You might fix this by modifying user groups to make sure that all users who have access to those elements also have access to the field, typically via group implications. Alternatively, you could adjust the “<i>groups</i>” or “<i>invisible</i>” attributes for these fields, to make sure they are always available together.<br/>Debugging information:<br/>- field “has_subscribed_courses” is accessible for groups: &#39;base.group_system&#39; | &#39;hr.group_hr_user&#39;<br/>- element “&lt;button name=&#34;action_open_courses&#34; class=&#34;oe_stat_button&#34; groups=&#34;website_slides.group_website_slides_officer&#34; icon=&#34;fa-graduation-cap&#34; type=&#34;object&#34; invisible=&#34;not user_id or not has_subscribed_courses&#34;/&gt;” is shown in the view for groups: &#39;base.group_user&#39; &amp; &#39;website_slides.group_website_slides_officer&#39;
+View error context:
+{'file': '/mnt/extra-addons/ticket_system/views/hr_employee.xml',
+ 'line': 1,
+ 'name': 'hr.employee.form.activities.tab',
+ 'view': ir.ui.view(3571,),
+ 'view.model': 'hr.employee',
+ 'view.parent': ir.ui.view(1087,),
+ 'xmlid': 'hr_employee_form_inherit_growthplan_activities_tab'} 
+2026-05-04 02:32:44,079 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: <b>Access Rights Inconsistency</b><br/>This view may not work for all users: some users may have a combination of groups where the elements <b><tt>&lt;widget&gt;</tt></b> are displayed, but they depend on the field <b><tt>calendar_mismatch</tt></b> that is not accessible. You might fix this by modifying user groups to make sure that all users who have access to those elements also have access to the field, typically via group implications. Alternatively, you could adjust the “<i>groups</i>” or “<i>invisible</i>” attributes for these fields, to make sure they are always available together.<br/>Debugging information:<br/>- field “calendar_mismatch” is accessible for groups: &#39;base.group_system&#39; | &#39;hr.group_hr_user&#39;<br/>- element “&lt;widget name=&#34;contract_warning_tooltip&#34; invisible=&#34;not calendar_mismatch&#34;/&gt;” is shown in the view for groups: &#39;base.group_user&#39;
+View error context:
+{'file': '/mnt/extra-addons/ticket_system/views/hr_employee.xml',
+ 'line': 1,
+ 'name': 'hr.employee.form.activities.tab',
+ 'view': ir.ui.view(3571,),
+ 'view.model': 'hr.employee',
+ 'view.parent': ir.ui.view(1087,),
+ 'xmlid': 'hr_employee_form_inherit_growthplan_activities_tab'} 
+2026-05-04 02:32:44,080 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/hr_employee_growth_views.xml 
+2026-05-04 02:32:44,101 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/activity_view_tree.xml 
+2026-05-04 02:32:44,173 159 INFO odoo18 odoo.modules.loading: loading ticket_system/views/activity_view_kanban.xml 
+2026-05-04 02:32:44,230 159 WARNING odoo18 odoo.addons.base.models.ir_ui_view: A <i> with fa class (fa fa-file-text-o me-1) must have title in its tag, parents, descendants or have text
+View error context:
+{'file': '/mnt/extra-addons/ticket_system/views/activity_view_kanban.xml',
+ 'line': 37,
+ 'name': 'mail.activity.view.kanban.inherit.tickets',
+ 'view': ir.ui.view(3575,),
+ 'view.model': 'mail.activity',
+ 'view.parent': ir.ui.view(364,),
+ 'xmlid': 'mail_activity_view_kanban_inherit_tickets'} 
+2026-05-04 02:32:44,306 159 INFO odoo18 odoo.modules.loading: Module ticket_system loaded in 1.52s, 529 queries (+529 other) 
+2026-05-04 02:32:44,306 159 INFO odoo18 odoo.modules.loading: Loading module crm_custom_fields (196/225) 
+2026-05-04 02:32:47,168 159 INFO odoo18 odoo.modules.registry: module crm_custom_fields: creating or updating database tables 
+2026-05-04 02:32:47,262 159 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (note_display, note) of mail.activity() have the same label: Note. [Modules: activity_modification and mail] 
+2026-05-04 02:32:47,700 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/security/crm_security.xml 
+2026-05-04 02:32:47,785 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/security/ir.model.access.csv 
+2026-05-04 02:32:47,900 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_stage_views.xml 
+2026-05-04 02:32:47,934 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/data/checklist_base_tasks_db.xml 
+2026-05-04 02:32:48,042 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/menu_rename.xml 
+2026-05-04 02:32:48,082 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/res_config_settings_views.xml 
+2026-05-04 02:32:48,166 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_bd_email_config_menu.xml 
+2026-05-04 02:32:48,189 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/views.xml 
+2026-05-04 02:32:48,292 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_lead_opportunity_tree_dates.xml 
+2026-05-04 02:32:48,353 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/templates.xml 
+2026-05-04 02:32:48,398 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/secondary_notebook.xml 
+2026-05-04 02:32:48,445 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_lead_post_proposal_lock.xml 
+2026-05-04 02:32:48,486 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_lead_report_tab.xml 
+2026-05-04 02:32:48,530 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/wizard/crm_lead_proposal_sent_wizard_views.xml 
+2026-05-04 02:32:48,550 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/appointment_view.xml 
+2026-05-04 02:32:48,646 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/crm_cert_view.xml 
+2026-05-04 02:32:48,691 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/checklist_view.xml 
+2026-05-04 02:32:48,752 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/disclaimer_views.xml 
+2026-05-04 02:32:48,816 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/partner_rel_views.xml 
+2026-05-04 02:32:48,830 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/contacts_views.xml 
+2026-05-04 02:32:48,886 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/bom_division_config.xml 
+2026-05-04 02:32:48,908 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/product_views.xml 
+2026-05-04 02:32:48,932 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/bom_division_view.xml 
+2026-05-04 02:32:48,977 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/item_bom_view.xml 
+2026-05-04 02:32:49,062 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/labor_title_bom.xml 
+2026-05-04 02:32:49,112 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/labor_type_bom_view.xml 
+2026-05-04 02:32:49,153 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/labor_bom_view.xml 
+2026-05-04 02:32:49,196 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/irs_mile_view.xml 
+2026-05-04 02:32:49,282 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/travel_expense_view.xml 
+2026-05-04 02:32:49,328 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/checklist_menu_view.xml 
+2026-05-04 02:32:49,352 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/data/crm_certification_cron.xml 
+2026-05-04 02:32:49,367 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/hide_stages.xml 
+2026-05-04 02:32:49,382 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/activity_view.xml 
+2026-05-04 02:32:49,442 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/bom_summary_view.xml 
+2026-05-04 02:32:49,501 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/bom_summary_adjustment.xml 
+2026-05-04 02:32:49,557 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/stage.xml 
+2026-05-04 02:32:49,573 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/data/crm_appointment_type_data.xml 
+2026-05-04 02:32:49,590 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/division_view.xml 
+2026-05-04 02:32:49,624 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/division_menu_view.xml 
+2026-05-04 02:32:49,645 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/setaside.xml 
+2026-05-04 02:32:49,703 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/notes.xml 
+2026-05-04 02:32:49,747 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/lead_subcontractor.xml 
+2026-05-04 02:32:49,798 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/job_category_config.xml 
+2026-05-04 02:32:49,825 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/search.xml 
+2026-05-04 02:32:49,858 159 INFO odoo18 odoo.modules.loading: loading crm_custom_fields/views/kanban_view.xml 
+2026-05-04 02:32:49,903 159 INFO odoo18 odoo.modules.loading: Module crm_custom_fields loaded in 5.60s, 1842 queries (+1842 other) 
+2026-05-04 02:32:49,903 159 INFO odoo18 odoo.modules.loading: Loading module hr_training_kpi_dashboard (197/225) 
+2026-05-04 02:32:50,515 159 INFO odoo18 odoo.modules.registry: module hr_training_kpi_dashboard: creating or updating database tables 
+2026-05-04 02:32:50,608 159 INFO odoo18 odoo.modules.loading: loading hr_training_kpi_dashboard/security/ir.model.access.csv 
+2026-05-04 02:32:50,631 159 INFO odoo18 odoo.modules.loading: loading hr_training_kpi_dashboard/views/training_kpi_dashboard_views.xml 
+2026-05-04 02:32:50,660 159 INFO odoo18 odoo.modules.loading: loading hr_training_kpi_dashboard/views/training_department_kpi_views.xml 
+2026-05-04 02:32:50,693 159 INFO odoo18 odoo.modules.loading: loading hr_training_kpi_dashboard/views/training_employee_kpi_views.xml 
+2026-05-04 02:32:50,723 159 INFO odoo18 odoo.modules.loading: loading hr_training_kpi_dashboard/views/training_course_kpi_views.xml 
+2026-05-04 02:32:50,767 159 INFO odoo18 odoo.modules.loading: Module hr_training_kpi_dashboard loaded in 0.86s, 335 queries (+335 other) 
+2026-05-04 02:32:50,767 159 INFO odoo18 odoo.modules.loading: Loading module project_custom_fields (198/225) 
+2026-05-04 02:32:51,500 159 INFO odoo18 odoo.modules.registry: module project_custom_fields: creating or updating database tables 
+2026-05-04 02:32:51,549 159 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (note_display, note) of mail.activity() have the same label: Note. [Modules: activity_modification and mail] 
+2026-05-04 02:32:51,731 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/security/ir.model.access.csv 
+2026-05-04 02:32:51,758 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/data/partner_employment_type_data.xml 
+2026-05-04 02:32:51,766 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/data/project_deliverable_template_data.xml 
+2026-05-04 02:32:51,774 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/menu_buttons.xml 
+2026-05-04 02:32:51,812 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_type_view.xml 
+2026-05-04 02:32:51,829 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_award_type_view.xml 
+2026-05-04 02:32:51,844 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/templates.xml 
+2026-05-04 02:32:51,883 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_partner_rel_view.xml 
+2026-05-04 02:32:51,895 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_contacts_view.xml 
+2026-05-04 02:32:51,916 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_asana_view.xml 
+2026-05-04 02:32:51,935 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/search.xml 
+2026-05-04 02:32:51,968 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/views.xml 
+2026-05-04 02:32:51,992 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/appointment_view.xml 
+2026-05-04 02:32:52,049 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/proj_cert_view.xml 
+2026-05-04 02:32:52,083 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/data/ir_cron_certification.xml 
+2026-05-04 02:32:52,091 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/data/ir_config_parameter.xml 
+2026-05-04 02:32:52,099 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/activity_view.xml 
+2026-05-04 02:32:52,122 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_subcontractor.xml 
+2026-05-04 02:32:52,156 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/meeting.xml 
+2026-05-04 02:32:52,186 159 INFO odoo18 odoo.modules.loading: loading project_custom_fields/views/project_deliverable_view.xml 
+2026-05-04 02:32:52,256 159 INFO odoo18 odoo.modules.loading: Module project_custom_fields loaded in 1.49s, 894 queries (+894 other) 
+2026-05-04 02:32:52,264 159 INFO odoo18 odoo.modules.loading: Loading module contacts_subcontractor_requirements (201/225) 
+2026-05-04 02:32:52,876 159 INFO odoo18 odoo.modules.registry: module contacts_subcontractor_requirements: creating or updating database tables 
+2026-05-04 02:32:53,023 159 INFO odoo18 odoo.modules.loading: loading contacts_subcontractor_requirements/security/ir.model.access.csv 
+2026-05-04 02:32:53,041 159 INFO odoo18 odoo.modules.loading: loading contacts_subcontractor_requirements/views/subcontractor_requirement_template_views.xml 
+2026-05-04 02:32:53,072 159 INFO odoo18 odoo.modules.loading: loading contacts_subcontractor_requirements/views/res_partner_views.xml 
+2026-05-04 02:32:53,120 159 INFO odoo18 odoo.modules.loading: loading contacts_subcontractor_requirements/views/project_subcontractor_views.xml 
+2026-05-04 02:32:53,178 159 INFO odoo18 odoo.modules.loading: loading contacts_subcontractor_requirements/views/crm_lead_subcontractor_views.xml 
+2026-05-04 02:32:53,252 159 INFO odoo18 odoo.modules.loading: Module contacts_subcontractor_requirements loaded in 0.99s, 403 queries (+403 other) 
+2026-05-04 02:32:53,253 159 INFO odoo18 odoo.modules.loading: Loading module crm_business_dev (202/225) 
+2026-05-04 02:32:53,868 159 INFO odoo18 odoo.modules.registry: module crm_business_dev: creating or updating database tables 
+2026-05-04 02:32:54,150 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/security/security.xml 
+2026-05-04 02:32:54,246 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/security/ir.model.access.csv 
+2026-05-04 02:32:54,289 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/bdo_view.xml 
+2026-05-04 02:32:54,335 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/event_view.xml 
+2026-05-04 02:32:54,364 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/event_meeting_view.xml 
+2026-05-04 02:32:54,390 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/crm_leads_view.xml 
+2026-05-04 02:32:54,407 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/track_calendar_view.xml 
+2026-05-04 02:32:54,428 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/data/ir_cron.xml 
+2026-05-04 02:32:54,435 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/associated_follow_up.xml 
+2026-05-04 02:32:54,457 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/contact_tab.xml 
+2026-05-04 02:32:54,502 159 INFO odoo18 odoo.modules.loading: loading crm_business_dev/views/activity.xml 
+2026-05-04 02:32:54,603 159 INFO odoo18 odoo.modules.loading: Module crm_business_dev loaded in 1.35s, 544 queries (+544 other) 
+2026-05-04 02:32:54,604 159 INFO odoo18 odoo.modules.loading: Loading module crm_dashboard (203/225) 
+2026-05-04 02:32:55,118 159 INFO odoo18 odoo.modules.registry: module crm_dashboard: creating or updating database tables 
+2026-05-04 02:32:55,206 159 INFO odoo18 odoo.modules.loading: loading crm_dashboard/security/ir.model.access.csv 
+2026-05-04 02:32:55,220 159 INFO odoo18 odoo.modules.loading: loading crm_dashboard/views/crm_dashboard_list_view.xml 
+2026-05-04 02:32:55,245 159 INFO odoo18 odoo.modules.loading: loading crm_dashboard/views/crm_kpi_dashboard_views.xml 
+2026-05-04 02:32:55,270 159 INFO odoo18 odoo.modules.loading: loading crm_dashboard/views/crm_kpi_dashboard_menu.xml 
+2026-05-04 02:32:55,302 159 INFO odoo18 odoo.modules.loading: Module crm_dashboard loaded in 0.70s, 170 queries (+170 other) 
+2026-05-04 02:32:55,302 159 INFO odoo18 odoo.modules.loading: Loading module crm_fields_style (204/225) 
+2026-05-04 02:32:55,792 159 INFO odoo18 odoo.modules.registry: module crm_fields_style: creating or updating database tables 
+2026-05-04 02:32:55,964 159 INFO odoo18 odoo.modules.loading: loading crm_fields_style/views/fields_style.xml 
+2026-05-04 02:32:56,040 159 INFO odoo18 odoo.modules.loading: loading crm_fields_style/views/crm_lead_kanban_view.xml 
+2026-05-04 02:32:56,062 159 INFO odoo18 odoo.modules.loading: loading crm_fields_style/views/crm_lead_list_view.xml 
+2026-05-04 02:32:56,091 159 INFO odoo18 odoo.modules.loading: Module crm_fields_style loaded in 0.79s, 165 queries (+165 other) 
+2026-05-04 02:32:56,091 159 INFO odoo18 odoo.modules.loading: Loading module crm_notes (205/225) 
+2026-05-04 02:32:56,593 159 INFO odoo18 odoo.modules.registry: module crm_notes: creating or updating database tables 
+2026-05-04 02:32:56,762 159 INFO odoo18 odoo.modules.loading: loading crm_notes/security/security.xml 
+2026-05-04 02:32:56,771 159 INFO odoo18 odoo.modules.loading: loading crm_notes/security/ir.model.access.csv 
+2026-05-04 02:32:56,782 159 INFO odoo18 odoo.modules.loading: loading crm_notes/views/crm_view.xml 
+2026-05-04 02:32:56,854 159 INFO odoo18 odoo.modules.loading: Module crm_notes loaded in 0.76s, 153 queries (+153 other) 
+2026-05-04 02:32:56,854 159 INFO odoo18 odoo.modules.loading: Loading module employee_custom_fields (206/225) 
+2026-05-04 02:32:57,322 159 INFO odoo18 odoo.modules.registry: module employee_custom_fields: creating or updating database tables 
+2026-05-04 02:32:57,663 159 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/security/ir.model.access.csv 
+2026-05-04 02:32:57,780 159 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/data/employee_trade_data.xml 
+2026-05-04 02:32:57,927 159 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/data/employee_region_data.xml 
+2026-05-04 02:32:57,950 159 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/data/setaside_data.xml 
+2026-05-04 02:32:57,967 159 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/views.xml 
+2026-05-04 02:32:58,022 159 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/contacts_config_menu.xml 
+2026-05-04 02:32:58,045 159 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/insurance_view.xml 
+2026-05-04 02:32:58,124 159 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/Associated_estimating.xml 
+2026-05-04 02:32:58,156 159 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/employee_certification_view.xml 
+2026-05-04 02:32:58,208 159 INFO odoo18 odoo.modules.loading: loading employee_custom_fields/views/employee_fields.xml 
+2026-05-04 02:32:58,303 159 INFO odoo18 odoo.modules.loading: Module employee_custom_fields loaded in 1.45s, 856 queries (+856 other) 
+2026-05-04 02:32:58,304 159 INFO odoo18 odoo.modules.loading: Loading module project_bom (207/225) 
+2026-05-04 02:32:58,846 159 INFO odoo18 odoo.modules.registry: module project_bom: creating or updating database tables 
+2026-05-04 02:32:59,069 159 INFO odoo18 odoo.modules.loading: loading project_bom/security/ir.model.access.csv 
+2026-05-04 02:32:59,092 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/bom_summary_report.xml 
+2026-05-04 02:32:59,151 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/project_secondary_tabs.xml 
+2026-05-04 02:32:59,184 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/project_project_views.xml 
+2026-05-04 02:32:59,202 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/division_view.xml 
+2026-05-04 02:32:59,233 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/item_bom_view.xml 
+2026-05-04 02:32:59,266 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/labor_title_view.xml 
+2026-05-04 02:32:59,297 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/labor_type_bom_view.xml 
+2026-05-04 02:32:59,328 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/labor_bom_view.xml 
+2026-05-04 02:32:59,358 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/irs_mile_view.xml 
+2026-05-04 02:32:59,391 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/travel_expense.xml 
+2026-05-04 02:32:59,422 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/bom_summary.xml 
+2026-05-04 02:32:59,479 159 INFO odoo18 odoo.modules.loading: loading project_bom/views/bom_balance_audit_views.xml 
+2026-05-04 02:32:59,513 159 INFO odoo18 odoo.modules.loading: Module project_bom loaded in 1.21s, 391 queries (+391 other) 
+2026-05-04 02:32:59,513 159 INFO odoo18 odoo.modules.loading: Loading module project_daily_report (208/225) 
+2026-05-04 02:32:59,959 159 INFO odoo18 odoo.modules.registry: module project_daily_report: creating or updating database tables 
+<string>:94: (ERROR/3) Unexpected indentation.
+<string>:112: (WARNING/2) Line block ends without a blank line.
+<string>:135: (ERROR/3) Unexpected indentation.
+<string>:133: (WARNING/2) Inline literal start-string without end-string.
+<string>:136: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:138: (ERROR/3) Unexpected indentation.
+<string>:139: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:141: (WARNING/2) Definition list ends without a blank line; unexpected unindent.
+<string>:141: (WARNING/2) Inline literal start-string without end-string.
+<string>:141: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:149: (ERROR/3) Unexpected indentation.
+<string>:147: (WARNING/2) Inline literal start-string without end-string.
+<string>:150: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:152: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:154: (ERROR/3) Unexpected indentation.
+<string>:155: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:157: (ERROR/3) Unexpected indentation.
+<string>:158: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:163: (ERROR/3) Unexpected indentation.
+<string>:164: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:166: (WARNING/2) Definition list ends without a blank line; unexpected unindent.
+<string>:166: (WARNING/2) Inline literal start-string without end-string.
+<string>:166: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:220: (ERROR/3) Unexpected indentation.
+<string>:197: (WARNING/2) Inline literal start-string without end-string.
+<string>:222: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:222: (WARNING/2) Inline literal start-string without end-string.
+<string>:222: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:266: (WARNING/2) Line block ends without a blank line.
+<string>:295: (ERROR/3) Unexpected indentation.
+<string>:291: (WARNING/2) Inline literal start-string without end-string.
+<string>:291: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:297: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:297: (WARNING/2) Inline literal start-string without end-string.
+<string>:297: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:309: (ERROR/3) Unexpected indentation.
+<string>:306: (WARNING/2) Inline literal start-string without end-string.
+<string>:306: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:311: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:311: (WARNING/2) Inline literal start-string without end-string.
+<string>:311: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:319: (ERROR/3) Unexpected indentation.
+<string>:317: (WARNING/2) Inline literal start-string without end-string.
+<string>:317: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:329: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:362: (ERROR/3) Unexpected indentation.
+<string>:359: (WARNING/2) Inline literal start-string without end-string.
+<string>:359: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:363: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:363: (WARNING/2) Inline literal start-string without end-string.
+<string>:363: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+<string>:112: (ERROR/3) Undefined substitution referenced: "-----".
+<string>:112: (ERROR/3) Undefined substitution referenced: "-------------".
+<string>:266: (ERROR/3) Undefined substitution referenced: "-------".
+<string>:266: (ERROR/3) Undefined substitution referenced: "-------------".
+2026-05-04 02:33:00,201 159 INFO odoo18 odoo.modules.loading: loading project_daily_report/security/ir.model.access.csv 
+2026-05-04 02:33:00,223 159 INFO odoo18 odoo.modules.loading: loading project_daily_report/data/cron.xml 
+2026-05-04 02:33:00,237 159 INFO odoo18 odoo.modules.loading: loading project_daily_report/views/report_view.xml 
+2026-05-04 02:33:00,244 159 INFO odoo18 odoo.modules.loading: loading project_daily_report/views/wizard_view.xml 
+2026-05-04 02:33:00,262 159 INFO odoo18 odoo.modules.loading: Module project_daily_report loaded in 0.75s, 98 queries (+98 other) 
+2026-05-04 02:33:00,262 159 INFO odoo18 odoo.modules.loading: Loading module project_kickoff_checklist (209/225) 
+2026-05-04 02:33:00,702 159 INFO odoo18 odoo.modules.registry: module project_kickoff_checklist: creating or updating database tables 
+2026-05-04 02:33:00,730 159 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (acg_txt, acg_id) of project.kickoff.item() have the same label: ACG. [Modules: project_kickoff_checklist and project_kickoff_checklist] 
+2026-05-04 02:33:00,730 159 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (customer_txt, customer_id) of project.kickoff.item() have the same label: Customer. [Modules: project_kickoff_checklist and project_kickoff_checklist] 
+2026-05-04 02:33:00,730 159 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (subcontractor_txt, subcontractor_id) of project.kickoff.item() have the same label: Subcontractor. [Modules: project_kickoff_checklist and project_kickoff_checklist] 
+2026-05-04 02:33:00,961 159 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/security/security.xml 
+2026-05-04 02:33:00,992 159 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/security/ir.model.access.csv 
+2026-05-04 02:33:01,008 159 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/data/checklist_items.xml 
+2026-05-04 02:33:01,035 159 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/data/fed_class_data.xml 
+2026-05-04 02:33:01,051 159 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/data/socio_status_data.xml 
+2026-05-04 02:33:01,077 159 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/views/checklist_view.xml 
+2026-05-04 02:33:01,165 159 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/views/contract_info.xml 
+2026-05-04 02:33:01,220 159 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/views/budget.xml 
+2026-05-04 02:33:01,255 159 INFO odoo18 odoo.modules.loading: loading project_kickoff_checklist/reports/kickoff_checklist_report.xml 
+2026-05-04 02:33:01,282 159 INFO odoo18 odoo.modules.loading: Module project_kickoff_checklist loaded in 1.02s, 542 queries (+542 other) 
+2026-05-04 02:33:01,282 159 INFO odoo18 odoo.modules.loading: Loading module project_mail_history (210/225) 
+2026-05-04 02:33:01,762 159 INFO odoo18 odoo.modules.registry: module project_mail_history: creating or updating database tables 
+2026-05-04 02:33:01,961 159 INFO odoo18 odoo.modules.loading: loading project_mail_history/security/ir.model.access.csv 
+2026-05-04 02:33:02,025 159 INFO odoo18 odoo.modules.loading: loading project_mail_history/data/mail_summary_cron.xml 
+2026-05-04 02:33:02,042 159 INFO odoo18 odoo.modules.loading: loading project_mail_history/views/project_task_mail_history.xml 
+2026-05-04 02:33:02,133 159 INFO odoo18 odoo.modules.loading: Module project_mail_history loaded in 0.85s, 172 queries (+172 other) 
+2026-05-04 02:33:02,133 159 INFO odoo18 odoo.modules.loading: Loading module project_notes (211/225) 
+2026-05-04 02:33:02,596 159 INFO odoo18 odoo.modules.registry: module project_notes: creating or updating database tables 
+2026-05-04 02:33:02,773 159 INFO odoo18 odoo.modules.loading: loading project_notes/security/security.xml 
+2026-05-04 02:33:02,783 159 INFO odoo18 odoo.modules.loading: loading project_notes/security/ir.model.access.csv 
+2026-05-04 02:33:02,795 159 INFO odoo18 odoo.modules.loading: loading project_notes/views/project_view.xml 
+2026-05-04 02:33:02,877 159 INFO odoo18 odoo.modules.loading: Module project_notes loaded in 0.74s, 172 queries (+172 other) 
+2026-05-04 02:33:02,877 159 INFO odoo18 odoo.modules.loading: Loading module project_past_performance (212/225) 
+2026-05-04 02:33:03,429 159 INFO odoo18 odoo.modules.registry: module project_past_performance: creating or updating database tables 
+2026-05-04 02:33:03,557 159 INFO odoo18 odoo.modules.loading: loading project_past_performance/security/security.xml 
+2026-05-04 02:33:03,571 159 INFO odoo18 odoo.modules.loading: loading project_past_performance/security/ir.model.access.csv 
+2026-05-04 02:33:03,587 159 INFO odoo18 odoo.modules.loading: loading project_past_performance/data/marketing_photo_source_data.xml 
+2026-05-04 02:33:03,622 159 INFO odoo18 odoo.modules.loading: loading project_past_performance/views/past_perf_view.xml 
+2026-05-04 02:33:03,670 159 INFO odoo18 odoo.modules.loading: loading project_past_performance/views/marketing_gallery_views.xml 
+2026-05-04 02:33:03,733 159 INFO odoo18 odoo.models.unlink: User #1 deleted ir.actions.act_window.view records with IDs: [838, 839] 
+2026-05-04 02:33:03,740 159 INFO odoo18 odoo.modules.loading: loading project_past_performance/views/project_project_marketing_views.xml 
+2026-05-04 02:33:03,830 159 INFO odoo18 odoo.modules.loading: Module project_past_performance loaded in 0.95s, 402 queries (+402 other) 
+2026-05-04 02:33:03,830 159 INFO odoo18 odoo.modules.loading: Loading module quality_assurance (213/225) 
+2026-05-04 02:33:04,429 159 INFO odoo18 odoo.modules.registry: module quality_assurance: creating or updating database tables 
+<string>:65: (ERROR/3) Unexpected indentation.
+<string>:52: (WARNING/2) Inline literal start-string without end-string.
+<string>:67: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+<string>:67: (WARNING/2) Inline literal start-string without end-string.
+<string>:67: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
+2026-05-04 02:33:04,579 159 INFO odoo18 odoo.modules.loading: loading quality_assurance/security/ir.model.access.csv 
+2026-05-04 02:33:04,604 159 INFO odoo18 odoo.modules.loading: loading quality_assurance/views/quality_assurance_views.xml 
+2026-05-04 02:33:04,644 159 INFO odoo18 odoo.modules.loading: loading quality_assurance/views/project_project_views.xml 
+2026-05-04 02:33:04,735 159 INFO odoo18 odoo.modules.loading: Module quality_assurance loaded in 0.91s, 226 queries (+226 other) 
+2026-05-04 02:33:04,746 159 INFO odoo18 odoo.modules.loading: Loading module crm_bdo_kpi_dashboard (218/225) 
+2026-05-04 02:33:05,423 159 INFO odoo18 odoo.modules.registry: module crm_bdo_kpi_dashboard: creating or updating database tables 
+2026-05-04 02:33:05,521 159 INFO odoo18 odoo.modules.loading: loading crm_bdo_kpi_dashboard/security/ir.model.access.csv 
+2026-05-04 02:33:05,546 159 INFO odoo18 odoo.modules.loading: loading crm_bdo_kpi_dashboard/views/bdo_kpi_dashboard_views.xml 
+2026-05-04 02:33:05,575 159 INFO odoo18 odoo.modules.loading: loading crm_bdo_kpi_dashboard/views/bdo_employee_kpi_views.xml 
+2026-05-04 02:33:05,606 159 INFO odoo18 odoo.modules.loading: loading crm_bdo_kpi_dashboard/views/bdo_pipeline_kpi_views.xml 
+2026-05-04 02:33:05,635 159 INFO odoo18 odoo.modules.loading: loading crm_bdo_kpi_dashboard/views/bdo_engagement_kpi_views.xml 
+2026-05-04 02:33:05,669 159 INFO odoo18 odoo.modules.loading: Module crm_bdo_kpi_dashboard loaded in 0.92s, 298 queries (+298 other) 
+2026-05-04 02:33:05,669 159 INFO odoo18 odoo.modules.loading: Loading module hr_Employee_notifications (219/225) 
+2026-05-04 02:33:06,223 159 INFO odoo18 odoo.modules.registry: module hr_Employee_notifications: creating or updating database tables 
+2026-05-04 02:33:06,328 159 INFO odoo18 odoo.modules.loading: loading hr_Employee_notifications/data/cron_jobs.xml 
+2026-05-04 02:33:06,349 159 INFO odoo18 odoo.modules.loading: Module hr_Employee_notifications loaded in 0.68s, 66 queries (+66 other) 
+2026-05-04 02:33:06,349 159 INFO odoo18 odoo.modules.loading: Loading module hr_employee_fields_style (220/225) 
+2026-05-04 02:33:06,882 159 INFO odoo18 odoo.modules.registry: module hr_employee_fields_style: creating or updating database tables 
+2026-05-04 02:33:06,982 159 INFO odoo18 odoo.modules.loading: loading hr_employee_fields_style/views/views.xml 
+2026-05-04 02:33:07,106 159 INFO odoo18 odoo.modules.loading: Module hr_employee_fields_style loaded in 0.76s, 135 queries (+135 other) 
+2026-05-04 02:33:07,106 159 INFO odoo18 odoo.modules.loading: Loading module opportunity_project_port (221/225) 
+2026-05-04 02:33:07,681 159 INFO odoo18 odoo.modules.registry: module opportunity_project_port: creating or updating database tables 
+2026-05-04 02:33:07,819 159 INFO odoo18 odoo.modules.loading: loading opportunity_project_port/security/ir.model.access.csv 
+2026-05-04 02:33:07,954 159 INFO odoo18 odoo.modules.loading: loading opportunity_project_port/wizards/crm_lead_project_port_wizard_views.xml 
+2026-05-04 02:33:08,102 159 INFO odoo18 odoo.modules.loading: loading opportunity_project_port/views/crm_lead_views.xml 
+2026-05-04 02:33:08,201 159 INFO odoo18 odoo.modules.loading: Module opportunity_project_port loaded in 1.09s, 189 queries (+189 other) 
+2026-05-04 02:33:08,201 159 INFO odoo18 odoo.modules.loading: Loading module project_change_order (222/225) 
+2026-05-04 02:33:08,752 159 INFO odoo18 odoo.modules.registry: module project_change_order: creating or updating database tables 
+2026-05-04 02:33:08,917 159 INFO odoo18 odoo.modules.loading: loading project_change_order/data/sequence.xml 
+2026-05-04 02:33:08,926 159 INFO odoo18 odoo.modules.loading: loading project_change_order/security/security.xml 
+2026-05-04 02:33:08,934 159 INFO odoo18 odoo.modules.loading: loading project_change_order/security/ir.model.access.csv 
+2026-05-04 02:33:08,956 159 INFO odoo18 odoo.modules.loading: loading project_change_order/views/change_order_view.xml 
+2026-05-04 02:33:09,011 159 INFO odoo18 odoo.modules.loading: loading project_change_order/views/project_view.xml 
+2026-05-04 02:33:09,098 159 INFO odoo18 odoo.modules.loading: loading project_change_order/views/lead_view.xml 
+2026-05-04 02:33:09,155 159 INFO odoo18 odoo.modules.loading: loading project_change_order/views/change_order_kpi_dashboard_views.xml 
+2026-05-04 02:33:09,184 159 INFO odoo18 odoo.modules.loading: loading project_change_order/views/change_order_bom_balance_views.xml 
+2026-05-04 02:33:09,227 159 INFO odoo18 odoo.modules.loading: Module project_change_order loaded in 1.03s, 511 queries (+511 other) 
+2026-05-04 02:33:09,227 159 INFO odoo18 odoo.modules.loading: Loading module project_expenses (223/225) 
+2026-05-04 02:33:09,776 159 INFO odoo18 odoo.modules.registry: module project_expenses: creating or updating database tables 
+2026-05-04 02:33:09,890 159 INFO odoo18 odoo.modules.loading: loading project_expenses/security/ir.model.access.csv 
+2026-05-04 02:33:09,903 159 INFO odoo18 odoo.modules.loading: loading project_expenses/wizard/import_expenses_wizard_views.xml 
+2026-05-04 02:33:09,941 159 INFO odoo18 odoo.modules.loading: Module project_expenses loaded in 0.71s, 115 queries (+115 other) 
+2026-05-04 02:33:09,941 159 INFO odoo18 odoo.modules.loading: Loading module project_fields_style (224/225) 
+2026-05-04 02:33:10,411 159 INFO odoo18 odoo.modules.registry: module project_fields_style: creating or updating database tables 
+2026-05-04 02:33:10,597 159 INFO odoo18 odoo.modules.loading: loading project_fields_style/views/fields_style.xml 
+2026-05-04 02:33:10,693 159 INFO odoo18 odoo.modules.loading: Module project_fields_style loaded in 0.75s, 157 queries (+157 other) 
+2026-05-04 02:33:10,693 159 INFO odoo18 odoo.modules.loading: Loading module project_dashboard (225/225) 
+2026-05-04 02:33:11,171 159 INFO odoo18 odoo.modules.registry: module project_dashboard: creating or updating database tables 
+2026-05-04 02:33:11,181 159 WARNING odoo18 odoo.addons.base.models.ir_model: Two fields (dashboard_profit_percentage, x_bom_summary_profit_percentage) of project.project() have the same label: Profit %. [Modules: project_dashboard and project_bom] 
+2026-05-04 02:33:11,354 159 INFO odoo18 odoo.modules.loading: loading project_dashboard/security/ir.model.access.csv 
+2026-05-04 02:33:11,373 159 INFO odoo18 odoo.modules.loading: loading project_dashboard/views/project_dashboard_views.xml 
+2026-05-04 02:33:11,573 159 INFO odoo18 odoo.modules.loading: loading project_dashboard/views/project_kpi_dashboard_views.xml 
+2026-05-04 02:33:11,622 159 INFO odoo18 odoo.modules.loading: Module project_dashboard loaded in 0.93s, 245 queries (+245 other) 
+2026-05-04 02:33:11,622 159 INFO odoo18 odoo.modules.loading: 225 modules loaded in 37.86s, 11902 queries (+11902 extra) 
+2026-05-04 02:33:12,492 159 INFO odoo18 odoo.modules.registry: verifying fields for every extended model 
+2026-05-04 02:33:13,461 159 INFO odoo18 odoo.modules.loading: Modules loaded. 
+2026-05-04 02:33:13,468 159 INFO odoo18 odoo.modules.registry: Registry changed, signaling through the database 
+2026-05-04 02:33:13,469 159 INFO odoo18 odoo.modules.registry: Registry loaded in 43.380s 
+2026-05-04 02:33:13,469 159 INFO odoo18 odoo.service.server: Initiating shutdown 
+2026-05-04 02:33:13,469 159 INFO odoo18 odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2026-05-04 02:33:13,469 159 INFO odoo18 odoo.sql_db: ConnectionPool(read/write;used=0/count=0/max=64): Closed 1 connections  

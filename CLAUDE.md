@@ -12,11 +12,11 @@
 |------|------|
 | OneDrive | `D:\OneDrive\` |
 | Obsidian vault | `D:\OneDrive\16 - Obsidian\01_Claude_Home` |
-| ClaudeDocs | `C:\Users\eduar\personal-claude-docs` |
+| ClaudeDocs | `C:\Users\eduar\ClaudeDocs` |
 | Claude dir | `C:\Users\eduar\.claude` |
 
 ### New Machine Setup
 ```powershell
-git clone https://github.com/Eduardodmb/ClaudeDocs.git "$env:USERPROFILE\personal-claude-docs"
-& "$env:USERPROFILE\personal-claude-docs\.claude\scripts\setup-personal.ps1"
+git clone https://github.com/Eduardodmb/ClaudeDocs.git "$env:USERPROFILE\ClaudeDocs"
+& "$env:USERPROFILE\ClaudeDocs\.claude\scripts\setup-personal.ps1"
 ```
